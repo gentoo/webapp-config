@@ -1,0 +1,573 @@
+<?xml version='1.0'?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+ "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<article>
+  <articleinfo>
+    <title>webapp-config</title>
+    
+    <authorgroup>
+      <author>
+        <firstname>Stuart</firstname>
+        <surname>Herbert</surname>
+        <affiliation>
+          <address><email>stuart@gentoo.org</email></address>
+          <address><email>stuart@gnqs.org</email></address>
+        </affiliation>
+      </author>
+      <author>
+        <firstname>Renat</firstname>
+        <surname>Lumpau</surname>
+        <affiliation>
+          <address><email>rl03@gentoo.org</email></address>
+        </affiliation>
+      </author>
+      <author>
+        <firstname>Gunnar</firstname>
+        <surname>Wrobel</surname>
+        <affiliation>
+          <address><email>php@gunnarwrobel.de</email></address>
+        </affiliation>
+      </author>
+    </authorgroup>
+
+    <copyright>
+      <year>2003-2005</year>
+      <holder>Stuart Herbert</holder>
+      <holder>Renat Lumpau</holder>
+      <holder>Gunnar Wrobel</holder>
+    </copyright>
+  </articleinfo>
+
+  <section>
+    <title>Reference</title>
+
+    <refentry>
+      <refentryinfo>
+        <title>webapp-config</title>
+	<date>November 2005</date>
+	<productname>Gentoo Linux</productname>
+      </refentryinfo>
+      <refmeta>
+        <refentrytitle>webapp-config</refentrytitle>
+	<manvolnum>8</manvolnum>
+      </refmeta>
+      <refnamediv>
+        <refname>webapp-config</refname>
+	<refpurpose>manage installs of web-based applications for virtual hosting</refpurpose>
+      </refnamediv>
+
+      <refsynopsisdiv>
+        <cmdsynopsis>
+	  <command>webapp-config</command>
+	  <arg choice="opt">
+	    <option>--bug-report</option>
+	  </arg>
+	  <arg choice="plain">
+	    <option>-I</option>
+	  </arg>
+	  <arg choice="opt">
+	    <option>-dghusDE</option>
+	    <option>--soft</option>
+	    <option>--secure</option>
+	  </arg>
+	  <arg choice="req">
+	    <replaceable>app-name</replaceable>
+	  </arg>
+	  <arg choice="req">
+	    <replaceable>app-version</replaceable>
+	  </arg>
+	</cmdsynopsis>
+
+	<cmdsynopsis>
+	  <command>webapp-config</command>
+	  <arg choice="opt">
+	    <option>--bug-report</option>
+	  </arg>
+	  <arg choice="plain">
+	    <option>-U</option>
+	  </arg>
+	  <arg choice="opt">
+	    <option>-dghusDE</option>
+	  </arg>
+	  <arg choice="req">
+	    <replaceable>app-name</replaceable>
+	  </arg>
+	  <arg choice="req">
+	    <replaceable>app-version</replaceable>
+	  </arg>
+	</cmdsynopsis>
+
+	<cmdsynopsis>
+	  <command>webapp-config</command>
+	  <arg choice="opt">
+	    <option>--bug-report</option>
+	  </arg>
+	  <arg choice="plain">
+	    <option>-C</option>
+	  </arg>
+	  <arg choice="req">
+	    <option>-d</option>
+	    <replaceable>directory</replaceable>
+	  </arg>
+	</cmdsynopsis>
+
+	<cmdsynopsis>
+	  <command>webapp-config</command>
+	  <arg choice="plain">
+	    <option>--list-installs</option>
+	  </arg>
+	  <group choice="opt">
+	    <arg>
+	      <replaceable>app-name</replaceable>
+	    </arg>
+	  </group>
+	  <group choice="opt">
+	    <arg>
+	      <replaceable>app-version</replaceable>
+	    </arg>
+	  </group>
+	</cmdsynopsis>
+
+	<cmdsynopsis>
+	  <command>webapp-config</command>
+	  <arg choice="plain">
+	    <option>--list-unused-installs</option>
+	  </arg>
+	  <group choice="opt">
+	    <arg>
+	      <replaceable>app-name</replaceable>
+	    </arg>
+	  </group>
+	  <group choice="opt">
+	    <arg>
+	      <replaceable>app-version</replaceable>
+	    </arg>
+	  </group>
+	</cmdsynopsis>
+
+	<cmdsynopsis>
+	  <command>webapp-config</command>
+	  <arg choice="plain">
+	    <option>--show-installed</option>
+	  </arg>
+	  <group choice="opt">
+	    <arg>
+	      <option>-d</option>
+	      <replaceable>directory</replaceable>
+	    </arg>
+	  </group>
+	</cmdsynopsis>
+
+	<cmdsynopsis>
+	  <command>webapp-config</command>
+	  <arg choice="plain">
+	    <option>--show-postinst</option>
+	  </arg>
+	  <arg choice="plain">
+	    <replaceable>app-name</replaceable>
+	  </arg>
+	  <arg choice="plain">
+	    <replaceable>app-version</replaceable>
+	  </arg>
+	</cmdsynopsis>
+
+	<cmdsynopsis>
+	  <command>webapp-config</command>
+	  <group choice="plain">
+	    <arg>--list-servers</arg>
+	    <arg>-v</arg>
+	    <arg>--version</arg>
+	    <arg>-h</arg>
+	    <arg>--help</arg>
+	  </group>
+	</cmdsynopsis>
+
+      </refsynopsisdiv>
+
+      <refsect1>
+        <title>Description</title>
+	<para><command>webapp-config</command> is a powerful tool that allows you to install, upgrade, and remove web-based applications in a virtual-hosting environment.</para>
+      </refsect1>
+
+      <refsect1>
+        <title>Web-Based Applications And Virtual Hosts</title>
+	<para><command>webapp-config</command> is aimed at providing the package management functionality that you need if you are running multiple web sites off of the same computer (<glossterm>virtual hosting</glossterm>).</para>
+	<refsect2>
+	  <title>Two-Stage Install</title>
+	  <para>Package managers such as <command>rpm</command> and <command>emerge</command> are designed to install one copy of a package, and to install it onto one fixed location.  This conflicts with the needs of a virtual hosting environment, where you need to be able to install a package in multiple places, so that it can be part of more than just the one website.  But package managers are essential for maintaining a computer over time - so how can we have both?</para>
+	  <para>The answer is a two-stage install.  The traditional package manager installs a <glossterm>master copy</glossterm> into <filename>/usr/share/webapps/</filename>.  This <glossterm>master copy</glossterm> isn't fit to run - but it is ready to then be used by <command>webapp-config</command> to install the package multiple times in multiple places.</para>
+	</refsect2>
+
+	<refsect2>
+	  <title>Multiple Installations Of The Same Package</title>
+	  <para><command>webapp-config</command> allows you to install multiple copies of the same package on the same computer at the same time.  You choose which directory to install each separate copy into.</para>
+	  <para>We call these multiple installations "<glossterm>virtual copies</glossterm>".</para>
+	  <para>You can also have different versions of the same package installed at the same time.  This allows you to gradually roll out a new version of a package across your sites; you are not forced to upgrade every single website at once.</para>
+	  <para><command>webapp-config</command> minimises the number of duplicated files to the absolute minimum possible, to keep disk space usage low.  The majority of files are hard linked to the master copy; only configuration files, and any files that the package needs to write to, are copied into the virtual copy.</para>
+	</refsect2>
+
+  	<refsect2>
+	  <title>File Ownership And Permissions</title>
+	  <para>If you are used to installing web-based applications by hand, you'll appreciate that it can be a pain to get every file owned by the correct user, and with the correct permissions.  Some files need to be owned by the user that the webserver runs as.  Others need to be owned by specific shell accounts, so that those users can login and edit the configuration files.  If your Linux distribution offers you a choice of web servers - each running under a different user - even the installers can struggle to get it right.</para>
+	  <para>With <command>webapp-config</command>, you tell the installer which web server you are going to be using, and which shell account needs to be able to edit the configuration files. <command>webapp-config</command> then installs your files with the correct ownership and permissions.</para>
+	</refsect2>
+
+	<refsect2>
+	  <title>Protected Configuration Files</title>
+	  <para><command>webapp-config</command> automatically ensures that your configuration files are never overwritten during an upgrade - even if you have not edited the files at all.  Additionally, <command>webapp-config</command> will never overwrite any file that it did not install, or that has been changed since it was installed by <command>webapp-config</command>.  <command>webapp-config</command> uses md5 checksums to determine whether a file has been changed or not.  In the case of symbolic links, <command>webapp-config</command> will not replace a symlink that points to a different file.</para>
+	  <para>When an upgrade does attempt to overwrite a protected file, <command>webapp-config</command> creates a ._cfg file with the new file inside.  You can use <command>etc-update</command> to complete the install, just as you would with the regular <command>emerge</command>.</para>
+	</refsect2>
+
+	<refsect2>
+	  <title>Hard Linking vs Soft Linking</title>
+	  <para>A <glossterm>virtual copy</glossterm> is built mostly by creating hard links to files under <filename>/usr/share/webapps</filename>.  If a hard link cannot be created, the file is copied from <filename>/usr/share/webapps</filename> instead.</para>
+	  <para>Hard links can only be created to files on the same filesystem.  If you keep <filename>/usr/share/webapps</filename> and <filename>/var/www</filename> on different filesystems, <command>webapp-config</command> cannot use hard links, and will be forced to copy the files instead.</para>
+	  <para>There are two ways to get around the hard link problem.</para>
+	  <para>The easiest way is to make <filename>/usr/share/webapps</filename> a symlink to a directory under <filename>/var/www</filename>.  For most people, this will ensure that everything is on the same filesystem.</para>
+	  <para>However, if you keep the websites you host on separate filesystems (like I do), then <command>webapp-config</command> is never going to be able to hard-link files for you.</para>
+	  <para>You can choose to use the <option>--soft</option> command-line switch instead.  This switch tells <command>webapp-config</command> to create symbolic links instead of hard links.  Symbolic links work across filesystems.</para>
+	  <para>The problem with using symbolic links is that some packages do not work when the virtual copy is made from symbolic links.  Many users - and system administrators alas - have also complained that they find directories full of symbolic links confusing.  For these reasons, symbolic links are not used by default in <command>webapp-config</command> any more.</para>
+	</refsect2>
+
+        <refsect2>
+          <title>Virtual File Voodoo</title>
+	  <para>By default, the <glossterm>master copy</glossterm> contains the metadata that decides which files get linked into a <glossterm>virtual copy</glossterm> and which files do not.  Files are either owned by the web server (server-owned), are configuration files (config-owned), or are linked in (virtual).  Directories can be server-ownedor config-owned, but most of the time they need to be just plain directories (default-owned) created inside the installation directory (set with the <option>-d</option> switch).  <command>webapp-config</command> provides a number of switches which allows you to override the <glossterm>master copy</glossterm>'s metadata - if you ever find that you need to.</para>
+	  <para>The <option>--default-dirs</option> and <option>--virtual-files</option> switches allow you to decide what <command>webapp-config</command> will do if (respectively) a directory or a file is marked as being default or virtual.  You can tell <command>webapp-config</command> to make the directory or file any of the other choices - server-owned or config-owned - instead.</para>
+        </refsect2>
+  	<refsect2>
+      <title>${ROOT}</title>
+      <para>This version of webapp-config is intended to fully support ${ROOT}. If you are unsure what that means, consult <citerefentry><refentrytitle>emerge</refentrytitle><manvolnum>1</manvolnum></citerefentry></para>
+	</refsect2>
+      </refsect1>
+
+      <refsect1>
+        <title>Actions</title>
+	<variablelist>
+	  <varlistentry>
+	    <term><option>-I</option></term>
+	    <term><option>--install</option></term>
+	    <listitem>
+	      <para>Activate <emphasis>install mode</emphasis>.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>-U</option></term>
+	    <term><option>--upgrade</option></term>
+	    <listitem>
+	      <para>Activate <emphasis>upgrade mode</emphasis>.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>-C</option></term>
+	    <term><option>--clean</option></term>
+	    <listitem>
+	      <para>Activate <emphasis>remove mode</emphasis>.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--list-installs</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
+	    <term><option>--li</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
+	    <listitem>
+	      <para>Outputs a list of all the virtual copies of the <replaceable>app-name</replaceable>-<replaceable>app-version</replaceable> package.</para>
+	      <para>If you omit <replaceable>app-name</replaceable> or <replaceable>app-version</replaceable> webapp-config will display all available packages/versions.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--list-unused-installs</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
+	    <term><option>--lui</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
+	    <listitem>
+	      <para>Outputs a list of all the master copies of the <replaceable>app-name</replaceable>-<replaceable>app-version</replaceable> package that have not been installed using <command>webapp-config</command> <option>-I</option>.</para>
+	      <para>Both <replaceable>app-name</replaceable> or <replaceable>app-version</replaceable> can be <emphasis>*</emphasis> to search for multiple packages or versions.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--show-installed</option></term>
+	    <term><option>--si</option></term>
+	    <listitem>
+	      <para>Outputs the app-name and app-version of the application installed in <replaceable>directory</replaceable>.</para>
+	      <para>Use the <option>-d</option> switch to tell <command>webapp-config</command> which <replaceable>directory</replaceable> to look in.  <replaceable>directory</replaceable> is a directory under the htdocs dir.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--show-postinst</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
+	    <term><option>--spi</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
+	    <listitem>
+	      <para>Displays the post-installation instructions of the <replaceable>app-name</replaceable>-<replaceable>app-version</replaceable> package.  Very handy if you didn't see them displayed when the package was installed.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--show-postupgrade</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
+	    <term><option>--spu</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
+	    <listitem>
+	      <para>Displays the post-upgrade instructions of the <replaceable>app-name</replaceable>-<replaceable>app-version</replaceable> package.  Very handy if you didn't see them displayed when the package was upgraded.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--list-servers</option></term>
+	    <term><option>--ls</option></term>
+	    <listitem>
+	      <para>Outputs a list of the web servers that <command>webapp-config</command> currently supports.</para>
+	      <para>Use the <option>-s</option> <replaceable>server</replaceable> switch to change which web-server an install or upgrade should use.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>-?</option></term>
+	    <term><option>--help</option></term>
+	    <listitem>
+	      <para>Provide a list of supported switches.  Also lists all the default values for each switch.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>-v</option></term>
+	    <term><option>--version</option></term>
+	    <listitem>
+	      <para>Displays the current version number of <command>webapp-config</command></para>
+	    </listitem>
+	  </varlistentry>
+
+	</variablelist>
+      </refsect1>
+
+      <refsect1>
+        <title>Options</title>
+	<para>List of the remaining switches that <command>webapp-config</command> accepts.  To see the default values that <command>webapp-config</command> will use when a switch is omitted, use <userinput>webapp-config --help</userinput>.</para>
+	<variablelist>
+	  <varlistentry>
+	    <term><replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
+	    <listitem>
+	      <para>Together, these two parameters tell <command>webapp-config</command> which package to install (<option>-I</option> mode), upgrade to (<option>-U</option> mode), or to search for (<option>--list-installs</option> mode).</para>
+	      <para>They must be the last two parameters passed to <command>webapp-config</command>.</para>
+	      <para>These parameters are not optional.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--bug-report</option></term>
+	    <term><option>--pretend</option></term>
+	    <term><option>-p</option></term>
+	    <listitem>
+	      <para>Provide output to include inside a bug-report.</para>
+	      <para>Use this switch if you're having problems with the install (<option>-I</option> mode), upgrade (<option>-U</option> mode), or clean (<option>-C</option> mode) operations.  Add this switch to the command-line that's not working, and make sure you paste the output into your bug report.</para>
+	      <para>If you need to use this switch, make sure it's the first switch you use to call <command>webapp-config</command>.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>-s</option> <replaceable>server</replaceable></term>
+	    <term><option>--server</option> <replaceable>server</replaceable></term>
+	    <listitem>
+	      <para>Set which web-server to install (<option>-I</option> mode) or upgrade (<option>-U</option> mode) for.</para>
+	      <para><command>webapp-config</command> needs to know which web server you are going to use to access your virtual copy.  If you don't provide the correct switch, your virtual copy may not work correctly.</para>
+	      <para>Use <userinput>webapp-config --list-servers</userinput> to see a list of valid <replaceable>server</replaceable> settings.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>-u</option> <replaceable>user</replaceable></term>
+	    <term><option>--user</option> <replaceable>user</replaceable></term>
+	    <listitem>
+	      <para>Set which user will own any installed configuration files.</para>
+	      <para>When <command>webapp-apache</command> creates a <glossterm>virtual copy</glossterm> (<option>-I</option> mode), the <glossterm>virtual copy</glossterm> creates <emphasis>local</emphasis> copies of any configuration files that the package needs to use.  By using the <option>-u</option> switch, you can specify which <replaceable>user</replaceable> owns these configuration files.</para>
+	      <para>If you give shell accounts out to the users who host websites on your computer, the <option>-u</option> allows you to give ownership of the configuration file (and therefore write permission) to the shell account associated with the website.</para>
+	      <para><replaceable>user</replaceable> can be a username or a numerical user id.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>-g</option> <replaceable>group</replaceable></term>
+	    <term><option>--group</option> <replaceable>group</replaceable></term>
+	    <listitem>
+	      <para>Set which group will own any installed configuration files.</para>
+	      <para>When <command>webapp-apache</command> creates a <glossterm>virtual copy</glossterm> (<option>-I</option> mode), the <glossterm>virtual copy</glossterm> creates <emphasis>local</emphasis> copies of any configuration files that the package needs to use.  By using the <option>-g</option> switch, you can specify which <replaceable>group</replaceable> owns these configuration files.</para>
+	      <para>If you give shell accounts out to groups of users who host websites on your computer, the <option>-g</option> allows you to give ownership of the configuration file (and therefore write permission) to the group associated with the website.</para>
+	      <para><replaceable>group</replaceable> can be a group name or a numerical group id.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>-d</option> <replaceable>directory</replaceable></term>
+	    <term><option>--dir</option> <replaceable>directory</replaceable></term>
+	    <listitem>
+	      <para>Specify where to create the virtual copy.</para>
+	      <para>The <command>webapp-config</command> tool allows you to create a virtual copy anywhere you want.  You are no longer limited to installing a web-based app in /home/httpd/htdocs/&lt;package-name&gt;/!  Simply use the <option>-d</option> switch to tell <command>webapp-config</command> where you want to create your virtual copy.</para>
+	      <para><replaceable>directory</replaceable> is a directory under your htdocs dir.  If you do not set the <replaceable>hostname</replaceable> correctly (by using the <option>-h</option> switch), <command>webapp-config</command> will look under the wrong htdocs directory!</para>
+	      <para>This option is required by the <option>-C</option> switch.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>-h</option> <replaceable>host</replaceable></term>
+	    <term><option>--host</option> <replaceable>host</replaceable></term>
+	    <listitem>
+	      <para>Specify the <glossterm>fully-qualified domain name</glossterm> of the virtual host.</para>
+	      <para>Some web-based applications - whether through genuine need or bad design - need to know the hostname of the website that they are part of.</para>
+	      <para>Some web-based applications need to install files (such as cgi scripts) that do not belong under the htdocs directory.  To make sure that these files go in the right place, you need to use the <option>-h</option> switch to tell <command>webapp-config</command> the hostname of the website.</para>
+	      <para><replaceable>host</replaceable> must be a <glossterm>fully-qualified domain name</glossterm>.</para>
+	      <para>If you do not use the <option>-h</option> switch, your virtual copy may not work correctly.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>-D</option> <replaceable>KEY=VALUE</replaceable></term>
+	    <term><option>--define</option> <replaceable>KEY=VALUE</replaceable></term>
+	    <listitem>
+	      <para>Define a configuration variable for <command>webapp-config</command>.</para>
+	      <para>
+		Allows to name a <replaceable>KEY=VALUE</replaceable>
+                pair that will be imported into the configuration
+                variables of webapp-config. This allows you to provide
+                customized variables which can be used in the
+                configuration file. This can also be used to
+                temporarily overwrite variables from the configuration
+                file.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>-E</option> <replaceable>variable name</replaceable></term>
+	    <term><option>--envvar</option> <replaceable>variable name</replaceable></term>
+	    <listitem>
+	      <para>Define an environment variable that will be picked up by <command>webapp-config</command>.</para>
+	      <para>
+		Allows to name single environment variable that will
+                be imported by webapp-config. This allows you to
+                provide customized variables which can be used in the
+                configuration file. This can also be used to
+                temporarily overwrite variables from the configuration
+                file.
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--envall</option></term>
+	    <listitem>
+	      <para>Imports all environment variables into the configuration process of <command>webapp-config</command>.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>-V</option></term>
+	    <term><option>--verbose</option></term>
+	    <listitem>
+	      <para>Use this option to increase the amount of output from the <option>--list-installs</option> switch.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--soft</option></term>
+	    <listitem>
+	      <para>Use this option to create the virtual copy using symbolic links instead of hard links.</para>
+	      <para>You may find this option useful if <filename>/usr/share/webapps</filename> is on a different filesystem to your htdocs directories.  However, it has been discovered that some packages do not work with this option, which is why it is no longer the default behaviour.  You are always better off making <filename>/usr/share/webapps</filename> a symlink to a directory on the same filesystem as your htdocs directories.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--secure</option></term>
+	    <listitem>
+	      <para>Use this option to install into the <filename>htdocs-secure</filename> directory rather than into the <filename>htdocs</filename> directory.</para>
+	      <para>This option is useful if you keep separate directories for your http: and https: sites.</para>
+	      <para>You can change 'htdocs-secure' by editing the config file <filename>/etc/vhosts/webapp-config</filename>.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--default-dirs</option> <replaceable>type</replaceable></term>
+	    <term><option>--vd</option> <replaceable>type</replaceable></term>
+	    <term><option>--virtual-files</option> <replaceable>type</replaceable></term>
+	    <term><option>--vf</option> <replaceable>type</replaceable></term>
+	    <listitem>
+	      <para><replaceable>type</replaceable> must be one of:</para>
+	      <variablelist>
+	        <varlistentry>
+		  <term>server-owned</term>
+		  <listitem>
+		    <para>Directories or files are owned by the user that the web server runs as.  Use the <option>-s</option> switch to specify which web server to use.</para>
+		  </listitem>
+		</varlistentry>
+		<varlistentry>
+		  <term>config-owned</term>
+		  <listitem>
+		    <para>Directories or files are owned by the user and group specified with the <option>-u</option> and <option>-g</option> switches.</para>
+		  </listitem>
+		</varlistentry>
+		<varlistentry>
+		  <term>virtual</term>
+		  <listitem>
+		    <para>Directories or files are shared; no local copy is created.</para>
+		  </listitem>
+		</varlistentry>
+	      </variablelist>
+	    </listitem>
+	  </varlistentry>
+
+	</variablelist>
+      </refsect1>
+
+      <refsect1>
+        <title>Examples</title>
+	<para>All of these examples are aimed at Gentoo Linux.  If you are using <command>webapp-config</command> on a different Linux distribution, they may not work out of the box for you.</para>
+	<refsect2>
+	  <title>Installing applications</title>
+	  <para>To install a copy of phpmyadmin-2.5.6, so that it is available from http://www.example.com/databases/admin/, you would do this:</para>
+	  <para><userinput>webapp-config -I -h www.example.com -d /databases/admin/ phpmyadmin 2.5.6</userinput></para>
+	  <para>To make sure that the shell account 'dbadmin' could edit the configuration files of phpmyadmin, you'd add the <option>-u</option> switch like this:</para>
+	  <para><userinput>webapp-config -I -h www.example.com -d /databases/admin -u dbadmin phpmyadmin 2.5.6</userinput></para>
+	</refsect2>
+	<refsect2>
+	  <title>Upgrading applications</title>
+	  <para>To upgrade the copy of phpmyadmin-2.5.6 to version 2.5.7, you would do this:</para>
+	  <para><userinput>webapp-config -U -d /databases/admin/ phpmyadmin 2.5.7</userinput></para>
+	  <para>To upgrade <emphasis>all</emphasis> the virtual copies of phpmyadmin-2.5.6, you would do this:</para>
+	  <para>
+	    <userinput>for x in `webapp-config --li phpmyadmin 2.5.6`;do . ${x}/.webapp &amp;&amp; webapp-config -U -h ${WEB_HOSTNAME} -d ${WEB_INSTALLDIR} phpmyadmin 2.5.7; done</userinput>
+	  </para>
+	</refsect2>
+	<refsect2>
+	  <title>Removing applications</title>
+	  <para>To remove the copy of phpmyadmin-2.5.7, you would do this:</para>
+	  <para><userinput>webapp-config -C -h www.example.com -d /databases/admin/</userinput></para>
+	  <para>To remove <emphasis>all</emphasis> the virtual copies of phpmyadmin-2.5.7, you would do this:</para>
+	  <para>
+	    <userinput>for x in `webapp-config --li phpmyadmin 2.5.7`;do . ${x}/.webapp &amp;&amp; webapp-config -C -h ${WEB_HOSTNAME} -d ${WEB_INSTALLDIR}; done</userinput>
+	  </para>
+	</refsect2>
+      </refsect1>
+
+      <refsect1>
+        <title>Files</title>
+	<variablelist>
+	  <varlistentry>
+	    <term><filename>/etc/vhosts/webapp-config</filename></term>
+	    <listitem>
+	      <para>Configuration file, holding the defaults for <command>webapp-config</command></para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term><filename>/var/db/webapps</filename></term>
+	    <listitem>
+	      <para>This directory tree holds information about the location of each virtual copy on the computer.</para>
+	    </listitem>
+	  </varlistentry>
+	</variablelist>
+      </refsect1>
+
+      <refsect1>
+        <title>See Also</title>
+	<para><citerefentry><refentrytitle>webapp.eclass</refentrytitle><manvolnum>5</manvolnum></citerefentry>, <citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>5</manvolnum></citerefentry>, <citerefentry><refentrytitle>emerge</refentrytitle><manvolnum>1</manvolnum></citerefentry></para>
+	<para><command>webapp-config</command> is based on the design for an installer for web-based application installers first defined in <ulink url="http://www.gentoo.org/proj/en/glep/glep-0011.html">GLEP #11</ulink> for the Gentoo Linux project.</para>
+      </refsect1>
+    </refentry>
+  </section>
+</article>

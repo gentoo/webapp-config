@@ -1,0 +1,13 @@
+To complete installation, you must
+
+1. Update MySQL's grant tables and the pmadb database:
+     mysql -u root -p < ${MY_SQLSCRIPTSDIR}/mysql/${PVR}_create.sql
+2. Reload MySQL:
+     /etc/init.d/mysql restart
+
+If you are upgrading from an earlier version and are using phpMyAdmin's
+features for master/foreign tables be sure to read
+  http://localhost/phpmyadmin/Documentation.html#col_com
+You will need to perform the ALTER TABLE step yourself.
+
+Finally, point your browser to http://localhost/phpmyadmin/.

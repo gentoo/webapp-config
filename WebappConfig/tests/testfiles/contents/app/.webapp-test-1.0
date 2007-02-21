@@ -1,0 +1,9 @@
+file 1 config-owned "test2" 1130601441 d8e8fca2dc0f896fd7cb4cb0031ba249 
+file 1 virtual "test6" 1130601441 d8e8fca2dc0f896fd7cb4cb0031ba249 
+file 1 virtual "dir4" 1130601441 d8e8fca2dc0f896fd7cb4cb0031ba249 
+file 1 virtual "test4" 0 d8e8fca2dc0f896fd7cb4cb0031ba249 
+sym 1 virtual "test3" 1130601441 0 fail 
+sym 1 virtual "dir3" 1130601441 d8e8fca2dc0f896fd7cb4cb0031ba249 /link
+dir 1 virtual "test7" 1130601441 d8e8fca2dc0f896fd7cb4cb0031ba249 
+dir 1 default-owned "dir1" 1130602385 0 
+dir 1 default-owned "dir2" 1130602385 0 

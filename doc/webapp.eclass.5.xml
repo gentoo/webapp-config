@@ -1,0 +1,444 @@
+<?xml version='1.0'?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+ "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<article>
+  <articleinfo>
+    <title>webapp.eclass</title>
+
+    <authorgroup>
+      <author>
+        <firstname>Stuart</firstname>
+        <surname>Herbert</surname>
+        <affiliation>
+          <address><email>stuart@gentoo.org</email></address>
+          <address><email>stuart@gnqs.org</email></address>
+        </affiliation>
+      </author>
+      <author>
+        <firstname>Renat</firstname>
+        <surname>Lumpau</surname>
+        <affiliation>
+          <address><email>rl03@gentoo.org</email></address>
+        </affiliation>
+      </author>
+      <author>
+        <firstname>Gunnar</firstname>
+        <surname>Wrobel</surname>
+        <affiliation>
+          <address><email>wrobel@gentoo.org</email></address>
+        </affiliation>
+      </author>
+    </authorgroup>
+
+    <copyright>
+      <year>2003-2006</year>
+      <holder>Stuart Herbert</holder>
+      <holder>Renat Lumpau</holder>
+      <holder>Gunnar Wrobel</holder>
+    </copyright>
+  </articleinfo>
+
+  <section>
+    <title>Reference</title>
+
+    <refentry>
+      <refentryinfo>
+        <title>webapp.eclass</title>
+	<date>January 2006</date>
+	<productname>Gentoo Linux</productname>
+      </refentryinfo>
+      <refmeta>
+        <refentrytitle>webapp.eclass</refentrytitle>
+	<manvolnum>5</manvolnum>
+      </refmeta>
+      <refnamediv>
+        <refname>webapp.eclass</refname>
+	<refpurpose>standardised approach to writing ebuilds for web-based applications</refpurpose>
+      </refnamediv>
+
+      <refsynopsisdiv>
+        <cmdsynopsis>
+	  <command>inherit webapp</command>
+	</cmdsynopsis>
+      </refsynopsisdiv>
+
+      <refsect1>
+        <title>Description</title>
+	<para>If you are writing an ebuild for a web-based application, your ebuild should use the functions, variables, and techniques documented in this man page.</para>
+	<para>The main reason to use the webapp eclass is that it provides a solution to a number of problems that plagued older approaches:</para>
+	<refsect2>
+	  <title>Support For Virtual Hosts</title>
+	  <para>Many web servers today have to be able to host more than one website at a time.  This is normally done through <glossterm>name-based virtual hosting</glossterm>.  See the Apache documentation for more details about how this works.</para>
+	  <para>Traditional package installers only install a single copy of a package.  Many webservers need to make the same package available as part of different virtual hosts.  The administrator normally ends up installing and upgrading each of these packages by hand.  This makes for more work for the administrator.</para>
+	  <para><userinput>webapp.eclass</userinput> overcomes this problem by installing packages, and associated metadata, in a format and location understood by <citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>8</manvolnum></citerefentry>.  The administrator then uses <command>webapp-config</command> to install and upgrade however many copies of the package as he needs.</para>
+	</refsect2>
+	<refsect2>
+	  <title>Installing Into The Correct Directory</title>
+	  <para>Virtual hosts are normally stored on disk in their own directories.  The location of these directories can vary from computer to computer.  It is not unusual for each administrator to have his own preferred location for putting virtual hosts.</para>
+	  <para>Traditional packagers always install a single copy of the package, normally into <filename>/home/httpd/htdocs/&lt;package-name&gt;/</filename>.   If the administrator changes the DocumentRoot of their preferred web server to point to a different directory, traditional packagers are unable to detect this and adjust accordingly.  They also are unable to detect any attempt to install a package into a virtual host.</para>
+	  <para><userinput>webapp.eclass</userinput> overcomes this problem because it makes no attempt to install packages into the webserver's DocumentRoot. Instead, it installs the files of the package into the <filename>/usr/share/webapps</filename> hierarchy - which is never directly used by any webserver.  The administrator then uses <command>webapp-config</command> to complete the installation to the directory of his choice.</para>
+	</refsect2>
+	<refsect2>
+	  <title>Installing With The Correct File Ownerships</title>
+	  <para>Web-based applications are made up of files and directories that need to be owned by more than one user.  Any files or directories that the web server needs to write to - these need to be owned by whatever user the web server runs as.  Configuration files need to be owned by the non-root user who owns the website.  The rest of the files and directories need to be owned by root, to ensure that they cannot be tampered with by other users.</para>
+	  <para>Traditional packagers have no way to understand which user the web server runs as, or which user needs to own the configuration files.  Some packages assume that the user is running the Apache web server, and hard-code the information into their installation scripts.  Unfortunately, any packages that do this will not work if the user chooses to use an alternative web server.</para>
+	  <para><userinput>webapp.eclass</userinput> overcomes this problem because it provides a number of functions which the ebuild can use to indicate who needs to own what.  When the administrator completes the install using <command>webapp-config</command>, he can tell <command>webapp-config</command> which web server the package will be running under, and which user needs to own the configuration files.</para>
+	</refsect2>
+	<refsect2>
+	  <title>Apache Modules vs CGI Scripts</title>
+	  <para>Most web-based applications are written in scripting languages such as PHP, Python, or Perl.  Most scripting languages are available either as Apache modules and as stand-alone CGI scripting engines.  Sometimes, it makes more sense to install scripting languages as CGI scripting engines.  Although CGI engines run much slower than Apache modules, the advantage is that it allows a single computer to run multiple versions of the same language - something that sometimes is necessary.</para>
+	  <para>It's also worth pointing out that the administrator has a choice of web servers - and not all scripting languages run as compiled-in modules in all web servers.</para>
+	  <para>It is difficult-to-impossible for a traditional package manager to provide a single package that can cope with all of the possible permutations.</para>
+	  <para><userinput>webapp.eclass</userinput> provides a function for ebuilds to indicate which script files need to be run by which scripting engine.  <command>webapp-config</command> can, if necessary, modify these script files to use the correct CGI engine when installing into a virtual host.</para>
+	</refsect2>
+	<refsect2>
+	  <title>Overwriting Configuration Files</title>
+	  <para>When packages are upgraded, new configuration files are installed.  Different package managers handle this in different ways.  Portage can prevent files being overwritten on a per-directory basis.  Web-based applications normally have configuration files installed in the same directories as the scripts themselves.  Packages for Portage, therefore, normally end up overwriting the configuration file because the alternative is having to wade through pages of <command>etc-update</command> output.</para>
+	  <para><userinput>webapp.eclass</userinput> avoids this problem by allowing ebuilds to indicate which files are configuration files.  <command>webapp-config</command> uses this information to ensure that configuration files are not overwritten.  The administrator can then use <command>etc-update</command> as normal to complete the upgrade.</para>
+	</refsect2>
+	<refsect2>
+	  <title>Handling Web Server Configuration Files</title>
+	  <para>There are some web-based applications that will not work without installing configuration files for the webserver.  Deciding which webserver to install configuration files for, and where to install these configuration files, is problematic at best.</para>
+	  <para><userinput>webapp.eclass</userinput> addresses this in two ways.  Firstly, ebuilds are encouraged to supply configuration files for <emphasis>all</emphasis> supported webservers.  <command>webapp-config</command> will then install the correct configuration files for the selected webserver when the virtual copy of the application is installed.</para>
+	</refsect2>
+	<refsect2>
+	  <title>Handling SQL Databases</title>
+	  <para>Many web-based applications store their data in sql-based databases.  Installing these databases is enough of a pain; upgrading them is something that's often left to the administrator to struggle through.</para>
+	  <para><userinput>webapp.eclass</userinput> does not provide a full solution today to this problem.  Ebuilds can indicate which files are SQL scripts, and which database engine the scripts are for.  A future version of <userinput>webapp.eclass</userinput> will (hopefully) provide a tool to automatically generate an upgrade script to help the administrator.</para>
+	</refsect2>
+      </refsect1>
+
+      <refsect1>
+        <title>Installation Directories</title>
+	<para><glossterm>webapp.eclass</glossterm> creates an intermediate install of a package, so that the computer's administrator can then perform multiple installations using <citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+	<para>The intermediate install (known as the <glossterm>master copy</glossterm>) is never used by, or accessed via, the web server.</para>
+	<para>The intermediate install goes into the <filename>/usr/share/webapps</filename> directory structure:</para>
+	<screen>
+/usr/share/webapps
+|- &lt;package name&gt;
+   |- &lt;package version&gt;
+      |- hostroot                     ${MY_HOSTROOTDIR}
+      |- htdocs                       ${MY_HTDOCSDIR}
+      |- cgi-bin                      ${MY_CGIBINDIR}
+      |- conf                         ${MY_SERVERCONFIGDIR}
+      |- errors                       ${MY_ERRORSDIR}
+      |- icons                        ${MY_ICONSDIR}
+        </screen>
+        <variablelist>
+          <varlistentry>
+	    <term>MY_HOSTROOTDIR</term>
+	    <listitem>
+	      <para>Any files or directories that would normally go into <filename>/var/www/localhost</filename> should be installed into this directory.</para>
+	      <para>This directory is for files that you do <emphasis>not</emphasis> want served up under the DocumentRoot.  An example of suitable files would be password databases.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>MY_HTDOCSDIR</term>
+	    <listitem>
+	      <para>Any files or directories that would normally go into <filename>/var/www/localhost/htdocs/&lt;package-name&gt;/</filename> should be installed into this directory.</para>
+	      <para>This directory is for the main files of the package.  Don't put all the files in a subdirectory called &lt;package-name&gt;.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>MY_CGIBINDIR</term>
+	    <listitem>
+	      <para>Any files or directories that would normally go into <filename>/var/www/localhost/cgi-bin/</filename> should be installed into this directory.</para>
+	      <para>At runtime (when the package is running), this directory will be read-only.  You should keep this in mind when deciding which files, scripts, and executables belong in here.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>MY_SERVERCONFIGDIR</term>
+	    <listitem>
+	      <para>This directory contains the per-vhost config files that the web server will use.</para>
+	      <para>You may have to manually configure your webserver to actually use any configuration files installed in this directory.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>MY_ERRORSDIR</term>
+	    <listitem>
+	      <para>Any files or directories that would normally go into <filename>/var/www/localhost/errors/</filename> should be installed into this directory.</para>
+	      <para>When the webserver encounters an error, such as 403: Forbidden or 404: File not found, the default behaviour of the webserver is to look for a page in the MY_ERRORSDIR directory.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>MY_ICONSDIR</term>
+	    <listitem>
+	      <para>Any files or directories that would normally to into <filename>/var/www/localhost/icons/</filename> should be installed into this directory.</para>
+	    </listitem>
+	  </varlistentry>
+        </variablelist>
+      </refsect1>
+
+      <refsect1>
+        <title>Functions</title>
+	<refsect2>
+          <title>Functions for pkg_setup()</title>
+	  <variablelist>
+	    <varlistentry>
+	      <term><command>webapp_pkg_setup</command></term>
+	      <listitem>
+	        <para>If your ebuild has a <userinput>pkg_setup</userinput>, make sure that the first thing it does is to call the <userinput>webapp_pkg_setup</userinput> function.</para>
+		<para>This function performs a lot of sanity checks.</para>
+	      </listitem>
+	    </varlistentry>
+	  </variablelist>
+        </refsect2>
+        <refsect2>
+          <title>Functions for src_install()</title>
+	  <para>The first line of your <userinput>src_install()</userinput> function must be</para>
+	  <screen>
+	  	webapp_src_preinst
+	  </screen>
+	  <para><userinput>webapp_src_preinst()</userinput> prepares ${D}, so that you can install your files into directories as normal.  Then, use these functions <emphasis>after</emphasis> you have installed your files, to add metadata that <command>webapp-config</command> will use later.</para>
+	  <para>Unless explicitly stated in the description of the function, you should assume that these functions do <emphasis>not</emphasis> copy any files into ${D} for you.</para>
+	  <variablelist>
+	    <varlistentry>
+          <term><command>webapp_configfile</command> <replaceable>file</replaceable> <replaceable>[file ...]</replaceable></term>
+	      <listitem>
+	        <para>Use this function to indicate that a particular file is an editable configuration file.  <command>webapp-config</command> will install configuration files so that they can be edited by non-root users.</para>
+		<para><replaceable>file</replaceable> is a config-file.  The file should be in ${D}.  <replaceable>file</replaceable> is normally under ${MY_HTDOCSDIR}.</para>
+	      </listitem>
+	    </varlistentry>
+	    <varlistentry>
+	      <term><command>webapp_hook_script</command> <replaceable>file</replaceable></term>
+	      <listitem>
+	        <para>Use this function to install a script that <command>webapp-config</command> will run immediately after the creation of a <glossterm>virtual copy</glossterm> and immediately before the removal of a <glossterm>virtual copy</glossterm>.</para>
+		<para><replaceable>file</replaceable> is an executable script.  The script must accept one parameter; either <userinput>file install</userinput>, or <userinput>file clean</userinput>.  When called as <userinput>file install</userinput>, the script is running after the creation of a <glossterm>virtual copy</glossterm>.  And when called as <userinput>file clean</userinput>, the script is running immediately before the removal of a <glossterm>virtual copy</glossterm>.</para>
+		<para>Think of hook scripts as a way to perform custom actions that <command>webapp-config</command> itself doesn't give you a way to do.  Because any files created by hook scripts aren't added to the contents list, it is essential that hook scripts also clean up after themselves - because <command>webapp-config</command> cannot do it for you.</para>
+        <para>Hook scripts are now run inside a sandbox. Write access is limited to <userinput>VHOST_HTDOCSDIR</userinput>, <userinput>MY_INSTALLDIR</userinput>, <userinput>VHOST_ROOT</userinput> and <userinput>VHOST_CGIBINDIR</userinput>.</para>
+		<para>Hook scripts can rely on a number of environment variables being set.  They are listed in the HOOK SCRIPT VARS section below.</para>
+        <para>Please note that hook scripts <emphasis>must</emphasis> work correctly with <userinput>${ROOT}</userinput> set!</para>
+	      </listitem>
+	    </varlistentry>
+	    <varlistentry>
+	      <term><command>webapp_postinst_txt</command> <replaceable>language</replaceable> <replaceable>file</replaceable></term>
+	      <listitem>
+	        <para>Use this function to install a plain text file that contains any post-installation instructions that the administrator needs to read about.  <command>webapp-config</command> will show these instructions to the administrator after he has run <command>webapp-config</command> <option>-I</option>.</para>
+		<para>The instructions can contain shell variables.  They will be expanded by <command>webapp-config</command> before being shown to the administrator.</para>
+		<para>The instructions can make use of the environment variables that are listed in the HOOK SCRIPT VARS section below.</para>
+		<para><replaceable>language</replaceable> is for future compatibility.  For now, always use <userinput>en</userinput>.</para>
+		<para><replaceable>file</replaceable> is a text file in ${S}.  This function will install this file for you into ${D}.</para>
+	      </listitem>
+	    </varlistentry>
+	    <varlistentry>
+	      <term><command>webapp_postupgrade_txt</command> <replaceable>language</replaceable> <replaceable>file</replaceable></term>
+	      <listitem>
+	        <para>Use this function to install a plain text file that contains any post-uprade instructions that the administrator needs to read about.  <command>webapp-config</command> will show these instructions to the administrator after he has run <command>webapp-config</command> <option>-U</option>.</para>
+		<para>The instructions can contain shell variables.  They will be expanded by <command>webapp-config</command> before being shown to the administrator.</para>
+		<para>The instructions can make use of the environment variables that are listed in the HOOK SCRIPT VARS section below.</para>
+		<para><replaceable>language</replaceable> is for future compatibility.  For now, always use <userinput>en</userinput>.</para>
+		<para><replaceable>file</replaceable> is a text file in ${S}.  This function will install this file for you into ${D}.</para>
+	      </listitem>
+	    </varlistentry>
+	    <varlistentry>
+          <term><command>webapp_serverowned</command> <replaceable>[-R]</replaceable> <replaceable>file</replaceable> <replaceable>[file ...]</replaceable></term>
+	      <listitem>
+	        <para>Use this function to mark a file that needs to be owned by whichever user the web server runs as.  <command>webapp-config</command> will ensure that the file is owned by the correct user when the time comes.</para>
+		<para><replaceable>file</replaceable> is a file under ${D}.</para>
+        <para>Use the optional <replaceable>-R</replaceable> flag to recurse into subdirectories.</para>
+	      </listitem>
+	    </varlistentry>
+	    <varlistentry>
+	      <term><command>webapp_server_configfile</command> <replaceable>server</replaceable> <replaceable>file</replaceable> <replaceable>newfile</replaceable></term>
+	      <listitem>
+	        <para>Use this function to install a webserver configuration file.  The configuration file is installed into ${MY_SERVERCONFIGDIR}, and <command>webapp-config</command> will install this file during install (-I mode).</para>
+	        <para><replaceable>server</replaceable> is one of: apache, lighttpd, aolserver.</para>
+	        <para><replaceable>file</replaceable> is a webserver configuration file in ${S}.  This should be a configuration file tested with <replaceable>server</replaceable>.</para>
+	        <para><replaceable>newfile</replaceable> is the new name for <replaceable>file</replaceable>.  This parameter is optional; if not supplied, <replaceable>newfile</replaceable> is set to <userinput>`basename <replaceable>file</replaceable>`</userinput>.</para>
+	      </listitem>
+	    </varlistentry>
+	    <varlistentry>
+	      <term><command>webapp_sqlscript</command> <replaceable>sql-engine</replaceable> <replaceable>file</replaceable></term>
+	      <listitem>
+	        <para>Use this function to install an SQL script.  The script is installed into ${MY_SQLSCRIPTSDIR}, but is <emphasis>not</emphasis> installed into any database server at this time.</para>
+		<para><replaceable>sql-engine</replaceable> is one of: mysql, postgresql.</para>
+		<para><replaceable>file</replaceable> is an SQL script in ${S}.  This should be a script to create the tables from scratch.  <replaceable>file</replaceable> will be installed into ${D} for you by this function.</para>
+	      </listitem>
+	    </varlistentry>
+	    <varlistentry>
+	      <term><command>webapp_src_install</command></term>
+	      <listitem>
+	        <para>Call this function at the end of your <userinput>src_install</userinput> function.</para>
+		<para>To see what this function does, read the source code.</para>
+	      </listitem>
+	    </varlistentry>
+	  </variablelist>
+        </refsect2>
+        <refsect2>
+          <title>Functions for pkg_postinst()</title>
+	  <variablelist>
+	    <varlistentry>
+	      <term><command>webapp_pkg_postinst</command></term>
+	      <listitem>
+	        <para>If your ebuild has a <userinput>pkg_postinst</userinput> function, make sure the last thing it does is to call <userinput>webapp_pkg_postinst</userinput>.</para>
+		<para>This function automatically calls <command>webapp-config</command> if the <emphasis>vhosts</emphasis> flag is NOT present.</para>
+	      </listitem>
+	    </varlistentry>
+	  </variablelist>
+	</refsect2>
+      </refsect1>
+
+      <refsect1>
+        <title>Hook Script Vars</title>
+	<para>These environment variables will always be present whenever <command>webapp-config</command> runs a hook script, or whenever post-installation instructions are shown.</para>
+	<variablelist>
+	  <varlistentry>
+	    <term>MY_HOSTROOTDIR</term>
+	    <term>MY_HTDOCSDIR</term>
+	    <term>MY_CGIBINDIR</term>
+	    <term>MY_ERRORSDIR</term>
+	    <term>MY_ICONSDIR</term>
+	    <term>MY_SERVERCONFIGDIR</term>
+	    <term>MY_SQLSCRIPTSDIR</term>
+	    <listitem>
+	      <para>See the Install Directories section above.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>ROOT</term>
+	    <listitem>
+	      <para>The ${ROOT} variable as set by Portage. Please note that you do not need to explicitly add the ${ROOT} prefix - webapp-config will do that automatically.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>MY_INSTALLDIR</term>
+	    <listitem>
+	      <para>The full path to the directory that the virtual copy has been installed into.</para>
+	      <para>If you are not using virtual hosts, this defaults to <filename>/var/www/localhost/htdocs/${PN}/</filename>.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_SERVER</term>
+	    <listitem>
+	      <para>The name of the webserver that we are installing for.  Set with the <option>-s</option> option to <command>webapp-config</command>.</para>
+	      <para>At the moment, <command>webapp-config</command> only supports the <command>apache-basic</command> web server, so this isn't a lot of use.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_ROOT</term>
+	    <listitem>
+	      <para>The full path to the Document Root's parent directory.</para>
+	      <para>If you are not using virtual hosts, this defaults to <filename>/var/www/localhost/</filename>.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_HOSTNAME</term>
+	    <listitem>
+	      <para>The hostname that this application will be accessed via.</para>
+	      <para>If you are not using virtual hosts, this defaults to <filename>localhost</filename>.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_HTDOCSDIR</term>
+	    <listitem>
+	      <para>The full path to the Document Root of the website that the virtual copy is being installed into.</para>
+	      <para>If you are not using virtual hosts, this defaults to <filename>/var/www/localhost/htdocs/</filename>.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_APPDIR</term>
+	    <listitem>
+	      <para>The directory under VHOST_HTDOCSDIR where the virtual copy is being installed into.  If you want the full path, use $MY_INSTALLDIR.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_CGIBINDIR</term>
+	    <listitem>
+	      <para>The directory under VHOST_HTDOCSDIR which cgi-bin files installed into.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_CONFDIR</term>
+	    <listitem>
+	      <para>The directory under VHOST_HTDOCSDIR which server configuration files are installed into.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_ERRORSDIR</term>
+	    <listitem>
+	      <para>The directory under VHOST_HTDOCSDIR which custom error files are installed into.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_ICONSDIR</term>
+	    <listitem>
+	      <para>The directory under VHOST_HTDOCSDIR which custom server icons are installed into.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_CONFIG_UID</term>
+	    <listitem>
+	      <para>The name of the user who owns all configuration files.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_CONFIG_GID</term>
+	    <listitem>
+	      <para>The name of the user who owns all configuration files.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_SERVER_UID</term>
+	    <listitem>
+	      <para>The name of the user who will own all server-owned files and directories.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_SERVER_GID</term>
+	    <listitem>
+	      <para>The name of the group who owns all server-owned files and directories.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_DEFAULT_UID</term>
+	    <listitem>
+	      <para>The name of the user who owns all the remaining files and directories.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_DEFAULT_GID</term>
+	    <listitem>
+	      <para>The name of the group who owns all the remaining files and directories.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry>
+	    <term>VHOST_PERMS_SERVEROWNED_DIR</term>
+	    <term>VHOST_PERMS_SERVEROWNED_FILE</term>
+	    <term>VHOST_PERMS_CONFIGOWNED_DIR</term>
+	    <term>VHOST_PERMS_CONFIGOWNED_FILE</term>
+	    <term>VHOST_PERMS_DEFAULTOWNED_DIR</term>
+	    <term>VHOST_PERMS_VIRTUALOWNED_DIR</term>
+	    <term>VHOST_PERMS_VIRTUALOWNED_FILE</term>
+	    <term>VHOST_PERMS_INSTALLDIR</term>
+	    <listitem>
+	      <para>See <citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>5</manvolnum></citerefentry> for details.</para>
+	    </listitem>
+	  </varlistentry>
+	</variablelist>
+      </refsect1>
+
+      <refsect1>
+        <title>Examples</title>
+	<para>See <filename>/usr/share/doc/webapp-config*/</filename> for example ebuilds.</para>
+      </refsect1>
+
+      <refsect1>
+        <title>Files</title>
+	<variablelist>
+	  <varlistentry>
+	    <term><filename>/etc/vhosts/webapp-config</filename></term>
+	    <listitem>
+	      <para>Configuration file, holding the defaults for <command>webapp-config</command> and the <userinput>webapp.eclass</userinput> eclass.</para>
+	    </listitem>
+	  </varlistentry>
+	</variablelist>
+      </refsect1>
+
+      <refsect1>
+        <title>See Also</title>
+	<para><citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>5</manvolnum></citerefentry>, <citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>emerge</refentrytitle><manvolnum>1</manvolnum></citerefentry></para>
+	<para>The <userinput>webapp.eclass</userinput> is part of the <command>webapp-config</command> package.  <command>webapp-config</command> is based on the design for an installer for web-based applications first discussed in <ulink url="http://www.gentoo.org/proj/en/glep/glep-0011.html">GLEP #11</ulink> for the Gentoo Linux project.</para>
+      </refsect1>
+    </refentry>
+  </section>
+</article>

@@ -1,0 +1,7 @@
+include config/*
+include doc/*
+include eclass/*
+include examples/*
+include xslt/*
+include *.txt
+recursive-include WebappConfig/tests *

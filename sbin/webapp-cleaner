@@ -1,0 +1,144 @@
+#!/bin/bash
+# Distributed under the terms of the GNU General Public License v2
+# $Header: $
+
+PN=
+
+ACTION=
+PRETEND=
+
+CMD="emerge -Cav"
+WEBAPP_DIR="/usr/share/webapps"
+WEBAPP_CONFIG=
+
+[[ -z ${RC_GOT_FUNCTIONS} ]] && source /sbin/functions.sh
+
+function help() {
+	echo "Remove obsolete and unused versions of web applications"
+	echo
+	echo "Usage:"
+	echo "   $0 [options] [action] app_name"
+	echo
+	echo "Options:"
+	echo "   -p, --pretend"
+	echo "       Instead of cleaning, simply show the commands to be executed"
+	echo
+	echo "Actions:"
+	echo "   -P, --prune"
+	echo "       Removes all but the latest version of a package. Similar to"
+	echo "       emerge --prune"
+	echo
+	echo "   -C, --clean-unused"
+	echo "       Removes all versions of a web application that have not been"
+	echo "       installed into a virtual host"
+	echo
+	echo "   -h, --help"
+	echo "       Displays this help message"
+	echo
+	echo "If multiple actions are given, only the action specified last will"
+	echo "be executed"
+}
+
+function sanity_checks() {
+	WEBAPP_CONFIG=$(which webapp-config)
+	if [ "${WEBAPP_CONFIG}x" == "x" ]; then
+		eerror "webapp-config not found"
+		exit 1
+	fi
+
+	if [[ -z "${ACTION}" ]]; then
+		eerror "Please specify a valid action"
+		exit 1
+	fi
+
+	if [[ -z ${PN} && ${ACTION} != "help" ]]; then
+		eerror "Please specify a web application to be cleaned"
+		exit 1
+	fi
+
+	if [[ ! -d "${WEBAPP_DIR}/${PN}" ]]; then
+		eerror "${PN} not found"
+		exit 1
+	fi
+
+}
+
+
+function prune() {
+
+	if [[ $(ls -1 "${WEBAPP_DIR}/${PN}" | wc -l) == "1" ]]; then
+		einfo "Nothing to clean"
+		return
+	else
+		local BEST_VERSION=$(ls ${WEBAPP_DIR}/${PN} | sort -nr | head -n 1)
+		for x in $(ls ${WEBAPP_DIR}/${PN}); do
+			if [[ ${BEST_VERSION} != ${x} ]]; then
+				CMD="${CMD} =${PN}-${x}"
+			fi
+		done
+
+		einfo "Multiple versions of ${PN} detected."
+		if [[ -z ${PRETEND} ]]; then
+			einfo "Running ${CMD}"
+			${CMD}
+		else
+			einfo "To prune, run the following command:"
+			einfo "${CMD}"
+		fi
+	fi
+}
+
+function clean_unused() {
+	local output=$(${WEBAPP_CONFIG} --lui ${PN})
+
+	if [[ -z ${output} ]] ; then
+		einfo "Nothing to clean"
+		return
+	else
+		CMD="${CMD} =${output}"
+		einfo "Unused versions of ${PN} detected."
+		if [[ -z ${PRETEND} ]]; then
+			einfo "Running ${CMD}"
+			${CMD}
+		else
+			einfo "To clean, run the following command:"
+			einfo "${CMD}"
+		fi
+	fi
+}
+
+function process_opts() {
+
+	if [[ -z $1 ]]; then
+		help
+		exit 0
+	fi
+
+	while [ "$1+" != "+" ]; do
+		case "$1" in
+			-p|--pretend)
+				PRETEND="yes"
+				;;
+			-P|--prune)
+				ACTION="prune"
+				;;
+			-C|--clean-unused)
+				ACTION="clean_unused"
+				;;
+			-h|--help)
+				ACTION="help"
+				;;
+			*)
+				PN="$1"
+				;;
+		esac
+
+		shift
+	done
+}
+
+process_opts $@
+
+sanity_checks
+
+${ACTION}

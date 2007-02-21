@@ -1,0 +1,5 @@
+file 1 virtual "test1" time-pretend md5-pretend
+file 1 virtual "test2" time-pretend md5-pretend
+file 1 virtual "dir2/test1" time-pretend md5-pretend
+sym 1 virtual "test3" time-pretend 0 link-pretend
+dir 1 default-owned "dir1" time-pretend 0 

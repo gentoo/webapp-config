@@ -1,0 +1,216 @@
+<?xml version='1.0'?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+ "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<article>
+  <articleinfo>
+    <title>webapp-config</title>
+
+    <authorgroup>
+      <author>
+        <firstname>Stuart</firstname>
+        <surname>Herbert</surname>
+        <affiliation>
+          <address><email>stuart@gentoo.org</email></address>
+          <address><email>stuart@gnqs.org</email></address>
+        </affiliation>
+      </author>
+      <author>
+        <firstname>Renat</firstname>
+        <surname>Lumpau</surname>
+        <affiliation>
+          <address><email>rl03@gentoo.org</email></address>
+        </affiliation>
+      </author>
+      <author>
+        <firstname>Gunnar</firstname>
+        <surname>Wrobel</surname>
+        <affiliation>
+          <address><email>php@gunnarwrobel.de</email></address>
+        </affiliation>
+      </author>
+    </authorgroup>
+
+    <copyright>
+      <year>2003-2005</year>
+      <holder>Stuart Herbert</holder>
+      <holder>Renat Lumpau</holder>
+      <holder>Gunnar Wrobel</holder>
+    </copyright>
+
+  </articleinfo>
+
+  <section>
+    <title>Reference</title>
+
+    <refentry>
+      <refentryinfo>
+        <title>webapp-config</title>
+	<date>November 2005</date>
+	<productname>Gentoo Linux</productname>
+      </refentryinfo>
+      <refmeta>
+        <refentrytitle>webapp-config</refentrytitle>
+	<manvolnum>5</manvolnum>
+      </refmeta>
+      <refnamediv>
+        <refname>webapp-config</refname>
+	<refpurpose>Configuration file for the <citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>8</manvolnum></citerefentry> tool</refpurpose>
+      </refnamediv>
+      <refsynopsisdiv>
+        <cmdsynopsis><command>/etc/vhosts/webapp-config</command></cmdsynopsis>
+      </refsynopsisdiv>
+
+      <refsect1>
+        <title>Description</title>
+	<para><filename>/etc/vhosts/webapp-config</filename> contains the default settings for the <citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>8</manvolnum></citerefentry> installer tool.</para>
+      </refsect1>
+
+      <refsect1>
+        <title>Settings</title>
+	<variablelist>
+	  <varlistentry>
+	    <term>vhost_root</term>
+	    <listitem>
+	      <para>Directory which holds the <filename>htdocs</filename> directory for your website.</para>
+	      <para>By default, all websites are <filename>/var/www/<replaceable>fqdn</replaceable></filename>, where <replaceable>fqdn</replaceable> is the full hostname of the website (e.g. www.gentoo.org).  If you are putting your websites somewhere else, you must update vhost_root to suit.</para>
+	      <para>You can use the value of  <userinput>vhost_hostname</userinput> in your definition of <userinput>vhost_root</userinput>.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_hostname</term>
+	    <listitem>
+	      <para>Default value when <command>webapp-config</command>'s <option>-h</option> switch hasn't been used.</para>
+	      <para>By default, this is set to the full hostname of your computer.  If this hasn't been set correctly, then this is set to <userinput>localhost</userinput> instead.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_subdomain_{1,2,3...}</term>
+	    <listitem>
+	      <para>The value of <userinput>vhost_hostname</userinput>
+	      is splitted at each dot and the resulting domain name
+	      parts are stored in sequentially
+	      numbered <userinput>vhost_subdomain_N</userinput>
+	      variables (e.g. <userinput>www.test.org</userinput>
+	      results
+	      in <userinput>vhost_subdomain_1</userinput>=org, <userinput>vhost_subdomain_2</userinput>=test,
+	      etc.). 
+	      </para>
+	      <para>
+		You may not set these variables yourself since they
+		are generated internally
+		by <command>webapp-config</command>. But you can use
+		them within the configuration file. So if you want to
+		have fine grained control over the location the web
+		applications get installed, you can
+		set <userinput>vhost_root</userinput>="/var/www/${vhost_subdomain_1}/${vhost_subdomain_2}/${vhost_subdomain_3}"
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_server</term>
+	    <listitem>
+	      <para>Default value when <command>webapp-config</command>'s <option>-s</option> switch hasn't been used.</para>
+	      <para>By default, this is set to <userinput>apache</userinput>, which is the webserver that most people use.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_config_uid</term>
+	    <listitem>
+	      <para>Default value when <command>webapp-config</command>'s <option>-u</option> switch hasn't been used.</para>
+	      <para>By default, this is set to the username of the user who is running <command>webapp-config</command>.  At the time of writing, <command>webapp-config</command> only works for the <userinput>root</userinput> user, because only the <userinput>root</userinput> user is allowed to change the ownership of files and directories on disk.</para>
+	      <para>This can be <emphasis>either</emphasis> the name of a user or their numerical user id.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_config_gid</term>
+	    <listitem>
+	      <para>Default value when <command>webapp-config</command>'s <option>-g</option> switch hasn't been used.</para>
+	      <para>By default, this is set to the primary group of the user who is running <command>webapp-config</command>.</para>
+	      <para>This can be <emphasis>either</emphasis> the name of a group or their numerical group id.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_config_virtual_files</term>
+	    <listitem>
+	      <para>Default value when <command>webapp-config</command>'s <option>--virtual-files</option> switch hasn't been used.</para>
+	      <para>By default, files which can be shared are hardlinked in.  The <glossterm>virtual install</glossterm> does not get a local copy of the file, which normally prevents the web server or non-root users from editing the file.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_default_uid</term>
+	    <listitem>
+	      <para>Default user to own all files and directories that aren't server-owned or config-owned.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_default_gid</term>
+	    <listitem>
+	      <para>Default group to own all files and directories that aren't server-owned or config-owned.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_htdocs_insecure</term>
+	    <term>vhost_htdocs_secure</term>
+	    <listitem>
+	      <para>Default values for the basename of the DocumentRoot.</para>
+	      <para><command>webapp-config</command> installs into <filename>vhost_root/vhost_htdocs_insecure</filename> by default.  If you use the <option>--secure</option> switch, <command>webapp-config</command> installs into <filename>vhost_root/vhost_htdocs_secure</filename> instead.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_perms_serverowned_dir</term>
+	    <term>vhost_perms_serverowned_file</term>
+	    <listitem>
+	      <para>Default filesystem permissions for directories and files that are installed as 'server-owned'.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_perms_configowned_dir</term>
+	    <term>vhost_perms_configowned_file</term>
+	    <listitem>
+	      <para>Default filesystem permissions for directories and files that are installed as 'config-owned'.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_perms_defaultowned_dir</term>
+	    <listitem>
+	      <para>Default filesystem permissions for directories that are installed as 'default-owned'.  Note that it is not possible to install files that are 'default-owned'.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_perms_virtual_dir</term>
+	    <term>vhost_perms_virtual_file</term>
+	    <listitem>
+	      <para>Default filesystem permissions for directories and files that are installed as 'virtual'.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_perms_installdir</term>
+	    <listitem>
+	      <para>Default filesystem permissions for the directory that <command>webapp-config</command> installs the package into.</para>
+	    </listitem>
+	  </varlistentry>
+	</variablelist>
+      </refsect1>
+
+      <refsect1>
+        <title>See Also</title>
+	<para><citerefentry><refentrytitle>webapp.eclass</refentrytitle><manvolnum>5</manvolnum></citerefentry>, <citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>8</manvolnum></citerefentry></para>
+	<para><command>webapp-config</command> is based on the design for an installer for web-based applications first defined in <ulink url="http://www.gentoo.org/proj/en/glep/glep-0011.html">GLEP #11</ulink> for the Gentoo Linux project.</para>
+      </refsect1>
+    </refentry>
+  </section>
+</article>

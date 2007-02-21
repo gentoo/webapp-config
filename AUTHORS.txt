@@ -1,0 +1,22 @@
+AUTHORS
+-------
+
+Original design came from GLEP 11:
+
+	http://glep.gentoo.org/
+
+Code authors:
+
+        Stuart Herbert <stuart@gentoo.org>
+        Renat Lumpau <rl03@gentoo.org>
+        Gunnar Wrobel  <php@gunnarwrobel.de>
+
+Significant contributors (testing, review, design suggestions):
+	
+	dju`
+	Dietrich Heise
+	Rob Holland
+	Martin Holzner
+	Robin H. Johnson
+	Max Kalika
+	Sven Wegener

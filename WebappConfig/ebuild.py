@@ -82,7 +82,7 @@ class Ebuild:
     >>> basic = Basic({'source': '', 'destination': '', 'hostroot': '', 'vhostroot':''},
     ...               config.create_permissions(),
     ...               {'source':'','content':'','protect':'','dotconfig':'','ebuild':'','db':''},
-    ...               {'verbose':False,'pretend':True})
+    ...               {'verbose':False,'pretend':True}, 'portage')
     >>> a.run_hooks('test', basic)
 
     The same on a directory that misses a hook dir:

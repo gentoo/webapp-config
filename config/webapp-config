@@ -4,12 +4,12 @@
 #
 #       Part of the Gentoo Linux distribution
 #
-# Copyright (c) 1999-2005 Gentoo Foundation
+# Copyright (c) 1999-2007 Authors
 #       Released under v2 of the GNU GPL
 #
-# Author(s)     Stuart Herbert <stuart@gentoo.org>
-#               Renat Lumpau <rl03@gentoo.org>
-#               Gunnar Wrobel <php@gunnarwrobel.de>
+# Author(s)     Stuart Herbert
+#               Renat Lumpau   <rl03@gentoo.org>
+#               Gunnar Wrobel  <wrobel@gentoo.org>
 #
 # ========================================================================
 
@@ -183,6 +183,8 @@ vhost_perms_virtualowned_file="o-w"
 
 vhost_perms_installdir="0755"
 
+# Supported package managers: portage, paludis
+package_manager="portage"
 
 # ========================================================================
 # END OF USER-EDITABLE SETTINGS

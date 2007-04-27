@@ -44,16 +44,27 @@ class BashConfigParser(ConfigParser.SafeConfigParser):
 
     _interpvar_match = re.compile(r"(%\(([^)]+)\)s|\$\{([^}]+)\})").match
 
+    def __init__(self, defaults=None):
+        self.error_action = 1
+        ConfigParser.SafeConfigParser.__init__(self, defaults)
+
+    def on_error(self, action = 0):
+        self.error_action = action
+
     def get(self, section, option):
         try:
             return ConfigParser.SafeConfigParser.get(self, section, option)
         except Exception, e:
-            OUT.die('\nThere is a problem with your configuration file.\n'
-                    'webapp-config tried to read the variable "' 
-                    + str(option) + '"\nand received the following error:'
-                    '\n\n' + str(e) + '\nPlease note that webapp-config i'
-                    's not written in bash anymore\nand that you cannot u'
-                    'se the bash scripting features.')
+            error = '\nThere is a problem with your configuration file.\n' \
+                'webapp-config tried to read the variable "' + str(option) \
+                + '"\nand received the following error:\n\n' + str(e) +    \
+                '\nPlease note that webapp-config is not written in bash ' \
+                'anymore\nand that you cannot use the bash scripting feat' \
+                'ures.'
+            if self.error_action == 0:
+                OUT.die(error)
+            elif self.error_action == 1:
+                OUT.warn(error)
             return ''
 
     def _interpolate_some(self, option, accum, rest, section, map, depth):
@@ -666,10 +677,10 @@ class Config:
     # Parse the command-line parameters, ready to verify them
     #
     # Inputs:
-    #	$*	- the command-line the script was called with
+    #  $* - the command-line the script was called with
     #
     # Outputs
-    #	None
+    #  None
 
     def parseparams (self):
 
@@ -714,7 +725,7 @@ class Config:
         OUT.debug('Successfully parsed command line options', 7)
 
         # handle debugging
-	OUT.cli_handle(options)
+        OUT.cli_handle(options)
 
         # Second config level are environment variables
 
@@ -955,6 +966,7 @@ class Config:
             self.check_version_set()
 
             # List all variables in bash format for the eclass
+            self.config.on_error(2)
             for i in self.config.options('USER'):
                 if not i in ['pn', 'pvr']:
                     try:

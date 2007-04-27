@@ -296,7 +296,9 @@ class Basic:
 
     def supported(self):
         # I don't think we should be forcing to have a webserver installed -- rl03
-        if self.dep:     # and package_installed(self.dep):
+        # Maybe, but the test should then be disabled somewhere else.
+        # Reverted back to the original version for now -- wrobel
+        if self.dep and package_installed(self.dep):
             return True
         return False
 

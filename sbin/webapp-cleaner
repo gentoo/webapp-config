@@ -56,11 +56,15 @@ function sanity_checks() {
 		exit 1
 	fi
 
+	if [[ $(expr index "${PN}" "/") == "0" ]] ; then
+		eerror "Package name must be in the form CATEGORY/PN"
+		exit 1
+	fi
+
 	if [[ ! -d "${WEBAPP_DIR}/${PN}" ]]; then
 		eerror "${PN} not found"
 		exit 1
 	fi
-
 }
 
 

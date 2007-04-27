@@ -6,12 +6,12 @@
 #
 #       Originally written for the Gentoo Linux distribution
 #
-# Copyright (c) 1999-2006 Gentoo Foundation
+# Copyright (c) 1999-2007 Authors
 #       Released under v2 of the GNU GPL
 #
-# Author(s)     Stuart Herbert <stuart@gentoo.org>
+# Author(s)     Stuart Herbert
 #               Renat Lumpau   <rl03@gentoo.org>
-#               Gunnar Wrobel  <php@gunnarwrobel.de>
+#               Gunnar Wrobel  <wrobel@gentoo.org>
 #
 # ========================================================================
 ''' This module provides handlers for the web application database as
@@ -45,12 +45,14 @@ class AppHierarchy:
 
 
     def __init__(self,
+                 fs_root,
                  root,
-                 package = '',
-                 version = '',
-                 dbfile = 'installs'):
+                 category   = '',
+                 package    = '',
+                 version    = '',
+                 dbfile     = 'installs'):
 
-        self.__r        = wrapper.get_root()
+        self.__r        = fs_root
         self.root       = self.__r + root
         self.root       = re.compile('/+').sub('/', self.root)
 
@@ -59,6 +61,7 @@ class AppHierarchy:
                     '-config needs a valid directory to store/retrieve in'
                     'formation. Please correct your settings.')
 
+        self.category   = category
         self.pn         = package
         self.pvr        = version
         self.dbfile     = dbfile
@@ -66,7 +69,14 @@ class AppHierarchy:
     def package_name(self):
         ''' Returns the package name in case the database has been initialized
         with a specific name and version.'''
-        return self.pn + '-' + self.pvr
+        if self.category:
+            return self.category + '/' + self.pn + '-' + self.pvr
+        else:
+            return self.pn + '-' + self.pvr
+
+    def set_category(self, cat):
+        ''' Set category name.'''
+        self.category = cat
 
     def set_package(self, package):
         ''' Set the package name.'''
@@ -79,7 +89,7 @@ class AppHierarchy:
     def approot(self):
         ''' Return the root directory of the package.'''
         if self.pn:
-            result = self.root + '/' + self.pn
+            result = self.root + '/' + self.category + '/' + self.pn
             return re.compile('/+').sub('/', result)
 
     def appdir(self):
@@ -102,7 +112,7 @@ class AppHierarchy:
         dbpath = self.appdb()
 
         if dbpath and os.path.isfile(dbpath):
-            return {dbpath : [ self.pn, self.pvr]}
+            return {dbpath : [ self.category, self.pn, self.pvr]}
 
         if dbpath and not os.path.isfile(dbpath):
             OUT.debug('Package "' + self.package_name()
@@ -111,28 +121,38 @@ class AppHierarchy:
             return {}
 
         locations = {}
+        packages  = []
 
         if self.pn:
-            packages = [self.pn]
+            packages.append(os.path.join(self.root, self.pn))
+            if self.category:
+                packages.append(os.path.join(self.root, self.category, self.pn))
         else:
-            packages = os.listdir(self.root)
+            packages.extend(os.path.join(self.root, m) for m in os.listdir(self.root))
+            for i in packages:
+                if os.path.isdir(i):
+                    packages.extend(os.path.join(i,m) for m in os.listdir(i))
 
         for i in packages:
 
             OUT.debug('Checking package', 8)
 
-            if os.path.isdir(self.root + '/' + i):
+            if os.path.isdir(i):
 
                 OUT.debug('Checking version', 8)
 
-                versions = os.listdir(self.root + '/' + i)
+                versions = os.listdir(i)
 
                 for j in versions:
-                    appdir = self.root + '/' + i + '/' + j
-                    location = appdir + '/' + self.dbfile
+                    appdir = os.path.join(i,j)
+                    location = os.path.join( appdir, self.dbfile)
                     if (os.path.isdir(appdir) and
                         os.path.isfile(location)):
-                        locations[location] = [ i, j ]
+                            pn = os.path.basename(i)
+                            cat = os.path.basename(os.path.split(i)[0])
+                            if cat == "webapps":
+                                cat = ""
+                            locations[location] = [ cat, pn, j ]
 
         return locations
 
@@ -157,7 +177,7 @@ class WebappDB(AppHierarchy):
 
     Initialize the class:
 
-    >>> a = WebappDB(here + '/tests/testfiles/webapps')
+    >>> a = WebappDB(root = here + '/tests/testfiles/webapps')
 
     This lists the database:
     >>> a.listinstalls()
@@ -167,7 +187,7 @@ class WebappDB(AppHierarchy):
 
     Which is also possible in a more user friendly way:
 
-    >>> b = WebappDB(here + '/tests/testfiles/webapps', verbose = True)
+    >>> b = WebappDB(root = here + '/tests/testfiles/webapps', verbose = True)
     >>> b.listinstalls()
     * Installs for gallery-1.4.4_p6
     *   /var/www/localhost/htdocs/gallery
@@ -186,12 +206,12 @@ class WebappDB(AppHierarchy):
     >>> sb = [i[1] for i in b.list_locations().items()]
     >>> sb.sort(lambda x,y: cmp(x[0]+x[1],y[0]+y[1]))
     >>> sb
-    [['gallery', '1.4.4_p6'], ['gallery', '2.0_rc2'], ['horde', '3.0.5'], ['phpldapadmin', '0.9.7_alpha4']]
+    [['', 'gallery', '1.4.4_p6'], ['', 'gallery', '2.0_rc2'], ['', 'horde', '3.0.5'], ['', 'phpldapadmin', '0.9.7_alpha4']]
 
-    >>> c = WebappDB(here + '/tests/testfiles/webapps',
+    >>> c = WebappDB(root = here + '/tests/testfiles/webapps',
     ...              package = 'horde', version = '3.0.5')
     >>> [i[1] for i in c.list_locations().items()]
-    [['horde', '3.0.5']]
+    [['', 'horde', '3.0.5']]
 
     Package specifiers that do not map to an install file will yield
     an empty result and a warning.
@@ -199,14 +219,14 @@ class WebappDB(AppHierarchy):
     The warning is turned off for the example:
     >>> OUT.warn_off()
 
-    >>> c = WebappDB(here + '/tests/testfiles/webapps',
+    >>> c = WebappDB(root = here + '/tests/testfiles/webapps',
     ...              package = 'garbish', version = '3.0.5')
     >>> [i[1] for i in c.list_locations().items()]
     []
 
     Package specifiers that do not map to an install file will yield
     an empty result and a warning:
-    >>> c = WebappDB(here + '/tests/testfiles/webapps',
+    >>> c = WebappDB(root = here + '/tests/testfiles/webapps',
     ...              package = 'horde', version = '8.1.1')
     >>> [i[1] for i in c.list_locations().items()]
     []
@@ -217,7 +237,7 @@ class WebappDB(AppHierarchy):
     Virtual installs can be added or removed using the corresponding
     functions (the example will just pretend to write):
 
-    >>> d = WebappDB(here + '/tests/testfiles/webapps', pretend = True,
+    >>> d = WebappDB(root = here + '/tests/testfiles/webapps', pretend = True,
     ...              package = 'horde', version = '3.0.5')
     >>> d.add('/my/really/weird/hierarchy/for/horde', #doctest: +ELLIPSIS
     ...       user = 'me', group = 'me')
@@ -241,7 +261,9 @@ class WebappDB(AppHierarchy):
     '''
 
     def __init__(self,
+                 fs_root    = '/',
                  root       = '/var/db/webapps',
+                 category   = '',
                  package    = '',
                  version    = '',
                  installs   = 'installs',
@@ -251,7 +273,9 @@ class WebappDB(AppHierarchy):
                  pretend    = False):
 
         AppHierarchy.__init__(self,
+                              fs_root,
                               root,
+                              category,
                               package,
                               version,
                               dbfile = installs)
@@ -346,7 +370,7 @@ class WebappDB(AppHierarchy):
             OUT.die('No package specified!')
 
         if not self.__p and not os.path.isdir(os.path.dirname(dbpath)):
-            os.mkdir(os.path.dirname(dbpath), self.__dir_perm(0755))
+            os.makedirs(os.path.dirname(dbpath), self.__dir_perm(0755))
 
         fd = None
 
@@ -382,7 +406,11 @@ class WebappDB(AppHierarchy):
 
         for j in files.keys():
 
-            p = files[j][0] + '/' + files[j][1]
+            if files[j][0]:
+                p = files[j][0] + '/' + files[j][1] + '-' + files[j][2]
+            else:
+                p = files[j][1] + '-' + files[j][2]
+
             add = []
 
             installs = open(j).readlines()
@@ -447,32 +475,40 @@ class WebappSource(AppHierarchy):
 
     Initialize the class:
 
-    >>> a = WebappSource(here + '/tests/testfiles/share-webapps',)
+    >>> a = WebappSource(root = here + '/tests/testfiles/share-webapps',)
 
     A WebappDB class is needed to retrive information about installed
     packages:
-    >>> b = WebappDB(here + '/tests/testfiles/webapps')
+    >>> b = WebappDB(root = here + '/tests/testfiles/webapps')
 
     This lists the database:
     >>> a.listunused(b)
-    installtest-1.0
-    uninstalled-6.6.6
+    share-webapps/horde-3.0.5
+    share-webapps/installtest-1.0
+    share-webapps/uninstalled-6.6.6
+
 
     '''
 
     def __init__(self,
-                 root = '/usr/share/webapps',
+                 fs_root    = '/',
+                 root       = '/usr/share/webapps',
+                 category   = '',
                  package    = '',
                  version    = '',
-                 installed  = 'installed_by_webapp_eclass'):
+                 installed  = 'installed_by_webapp_eclass',
+                 pm         = ''):
 
         AppHierarchy.__init__(self,
+                              fs_root,
                               root,
+                              category,
                               package,
                               version,
                               dbfile = installed)
 
         self.__types = None
+        self.pm = pm
 
         # Ignore specific files from the install location
         self.ignore = []
@@ -487,8 +523,8 @@ class WebappSource(AppHierarchy):
 
         >>> import os.path
         >>> here = os.path.dirname(os.path.realpath(__file__))
-        >>> a = WebappSource(here + '/tests/testfiles/share-webapps',
-        ...             'horde', '3.0.5')
+        >>> a = WebappSource(root=here + '/tests/testfiles/share-webapps',
+        ...             category='', package='horde', version='3.0.5')
 
         >>> a.read()
         >>> a.filetype('test1')
@@ -547,8 +583,8 @@ class WebappSource(AppHierarchy):
 
         >>> import os.path
         >>> here = os.path.dirname(os.path.realpath(__file__))
-        >>> a = WebappSource(here + '/tests/testfiles/share-webapps',
-        ...             'horde', '3.0.5')
+        >>> a = WebappSource(root = here + '/tests/testfiles/share-webapps',
+        ...             category='', package='horde', version='3.0.5')
 
         >>> a.source_exists('htdocs')
         True
@@ -568,8 +604,8 @@ class WebappSource(AppHierarchy):
 
         >>> import os.path
         >>> here = os.path.dirname(os.path.realpath(__file__))
-        >>> a = WebappSource(here + '/tests/testfiles/share-webapps',
-        ...             'horde', '3.0.5')
+        >>> a = WebappSource(root = here + '/tests/testfiles/share-webapps',
+        ...             category='', package='horde', version='3.0.5')
         >>> d = a.get_source_directories('htdocs')
         >>> [i for i in d if i != '.svn']
         ['dir1', 'dir2']
@@ -601,8 +637,8 @@ class WebappSource(AppHierarchy):
 
         >>> import os.path
         >>> here = os.path.dirname(os.path.realpath(__file__))
-        >>> a = WebappSource(here + '/tests/testfiles/share-webapps',
-        ...             'horde', '3.0.5')
+        >>> a = WebappSource(root = here + '/tests/testfiles/share-webapps',
+        ...             category='', package='horde', version='3.0.5')
         >>> a.get_source_files('htdocs')
         ['test1', 'test2']
         '''
@@ -622,7 +658,7 @@ class WebappSource(AppHierarchy):
         if self.ignore:
             files = [i for i in  files
                     if not i in self.ignore]
-            
+
         files.sort()
 
         return files
@@ -640,15 +676,19 @@ class WebappSource(AppHierarchy):
         keys = packages.keys()
         keys.sort()
 
-        OUT.debug('Check for unused web apps', 7)
+        OUT.debug('Check for unused web applications', 7)
 
         for i in keys:
 
-            db.set_package(packages[i][0])
-            db.set_version(packages[i][1])
+            db.set_category(packages[i][0])
+            db.set_package (packages[i][1])
+            db.set_version (packages[i][2])
 
             if not db.has_installs():
-                OUT.notice(packages[i][0] + '-' + packages[i][1])
+                if packages[i][0]:
+                    OUT.notice(packages[i][0] + '/' + packages[i][1] + '-' + packages[i][2])
+                else:
+                    OUT.notice(packages[i][1] + '-' + packages[i][2])
 
 
     def packageavail(self):
@@ -669,8 +709,8 @@ class WebappSource(AppHierarchy):
 
         Does not exist:
 
-        >>> a = WebappSource(here + '/tests/testfiles/share-webapps',
-        ...             'nothere', '1')
+        >>> a = WebappSource(root = here + '/tests/testfiles/share-webapps',
+        ...             category='www-apps',package='nothere', version='1',pm='portage')
         >>> a.packageavail()
         1
 
@@ -681,7 +721,8 @@ class WebappSource(AppHierarchy):
 
         OUT.debug('Verifying package ' + self.package_name(), 6)
 
-        if not wrapper.package_installed('=' + self.package_name()):
+        # not using self.package_name() here as we don't need pvr
+        if not wrapper.package_installed(self.category + '/' + self.pn, self.pm):
             return 1
 
         # unfortunately, just because a package has been installed, it

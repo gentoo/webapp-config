@@ -6,12 +6,12 @@
 #
 #       Originally written for the Gentoo Linux distribution
 #
-# Copyright (c) 1999-2006 Gentoo Foundation
+# Copyright (c) 1999-2007 Authors
 #       Released under v2 of the GNU GPL
 #
-# Author(s)     Stuart Herbert <stuart@gentoo.org>
+# Author(s)     Stuart Herbert
 #               Renat Lumpau   <rl03@gentoo.org>
-#               Gunnar Wrobel  <php@gunnarwrobel.de>
+#               Gunnar Wrobel  <wrobel@gentoo.org>
 #
 # ========================================================================
 
@@ -203,10 +203,7 @@ class Config:
 
     def __init__(self):
 
-        ## These are the webapp-config default configuration
-        ## values.
-
-        self.__root = wrapper.get_root()
+        ## These are the webapp-config default configuration values.
 
         hostname = 'localhost'
         try:
@@ -215,7 +212,7 @@ class Config:
             pass
 
         self.__d = {
-            'config_protect'               : wrapper.config_protect,
+            'config_protect'               : '',
             # Necessary to load the config file
             'my_etcconfig'                 : '/etc/vhosts/webapp-config',
             'my_dotconfig'                 : '.webapp',
@@ -257,35 +254,20 @@ class Config:
             # --show-post*. Think about it again.
             #
             # -- wrobel
+
+            # see self.determine_category for the rest of config vars
             'vhost_server_uid'  : 'root',
             'vhost_server_gid'  : 'root',
+            'my_persistroot'    : '/var/db/webapps',
+            'wa_installsbase'   : 'installs',
             'vhost_root'        : '/var/www/%(vhost_hostname)s',
             'g_htdocsdir'       : '%(vhost_root)s/%(my_htdocsbase)s',
-            'my_appdir'         : '%(my_approot)s/%(my_appsuffix)s',
-            'my_htdocsdir'      : '%(my_appdir)s/htdocs',
-            'my_persistdir'     : '%(my_persistroot)s/%(my_appsuffix)s',
-            'my_hostrootdir'    : '%(my_appdir)s/%(my_hostrootbase)s',
             'my_cgibindir'      : '%(my_hostrootdir)s/%(my_cgibinbase)s',
             'my_iconsdir'       : '%(my_hostrootdir)s/%(my_iconsbase)s',
             'my_errorsdir'      : '%(my_hostrootdir)s/%(my_errorsbase)s',
-            'my_approot'        : '/usr/share/webapps',
-            'my_appsuffix'      : '%(pn)s/%(pvr)s',
-            'my_persistroot'    : '/var/db/webapps',
-            'my_hostrootbase'   : 'hostroot',
-            'my_cgibinbase'     : 'cgi-bin',
-            'my_iconsbase'      : 'icons',
-            'my_errorsbase'     : 'error',
-            'my_sqlscriptsdir'  : '%(my_appdir)s/sqlscripts',
             'g_cgibindir'      : '%(vhost_root)s/%(my_cgibinbase)s',
-            'my_hookscriptsdir' : '%(my_appdir)s/hooks',
-            'my_serverconfigdir': '%(my_appdir)s/conf',
-            'wa_configlist'     : '%(my_appdir)s/config-files',
-            'wa_solist'         : '%(my_appdir)s/server-owned-files',
-            'wa_virtuallist'    : '%(my_appdir)s/virtuals',
-            'wa_installsbase'   : 'installs',
-            'wa_installs'       : '%(my_persistdir)s/%(wa_installsbase)s',
-            'wa_postinstallinfo':
-            '%(my_appdir)s/post-install-instructions.txt',
+            'my_approot'        : '/usr/share/webapps',
+            'package_manager'   : 'portage'
             }
 
         # Setup basic defaults
@@ -298,6 +280,113 @@ class Config:
         self.work = 'help'
 
         self.flag_dir = False
+
+    def set_configprotect(self):
+        self.config.set('USER', 'config_protect',
+           wrapper.config_protect(self.config.get('USER', 'cat'),
+                                  self.config.get('USER', 'pn'),
+                                  self.config.get('USER', 'pvr'),
+                                  self.config.get('USER', 'package_manager') ))
+
+    def set_vars(self):
+
+        if not self.config.has_option('USER', 'my_appsuffix'):
+            self.determine_appsuffix()
+
+        self.set_configprotect()
+        wrapper.get_root(self)
+
+        pn  = self.config.get('USER', 'pn')
+        pvr = self.config.get('USER', 'pvr')
+        my_approot = self.config.get('USER', 'my_approot')
+        my_appsuffix    = self.config.get('USER', 'my_appsuffix')
+        persist_suffix    = self.config.get('USER', 'persist_suffix')
+
+        my_appdir       = os.path.join(my_approot,my_appsuffix)
+        my_hostrootbase = 'hostroot'
+        my_hostrootdir  = os.path.join(my_appdir,my_hostrootbase)
+        my_cgibinbase   = 'cgi-bin'
+        my_iconsbase    = 'icons'
+        my_errorsbase   = 'error'
+        my_persistroot  = '/var/db/webapps'
+        wa_installsbase = 'installs'
+        my_persistdir   = os.path.join(my_persistroot,persist_suffix)
+
+        a = {
+        'my_appdir'         : my_appdir,
+        'my_hostrootdir'    : my_hostrootdir,
+        'my_hostrootbase'   : my_hostrootbase,
+        'my_cgibinbase'     : my_cgibinbase,
+        'my_iconsbase'      : my_iconsbase,
+        'my_errorsbase'     : my_errorsbase,
+        'my_persistroot'    : my_persistroot,
+        'wa_installsbase'   : wa_installsbase,
+        'my_persistdir'     : my_persistdir,
+        'my_htdocsdir'      : '/'.join([my_appdir,'htdocs']),
+        'my_hostrootdir'    : '/'.join([my_appdir,my_hostrootbase]),
+        'my_cgibindir'      : '/'.join([my_hostrootdir,my_cgibinbase]),
+        'my_iconsdir'       : '/'.join([my_hostrootdir,my_iconsbase]),
+        'my_errorsdir'      : '/'.join([my_hostrootdir,my_errorsbase]),
+        'my_sqlscriptsdir'  : '/'.join([my_appdir,'sqlscripts']),
+        'my_hookscriptsdir' : '/'.join([my_appdir,'hooks']),
+        'my_serverconfigdir': '/'.join([my_appdir,'conf']),
+        'wa_configlist'     : '/'.join([my_appdir,'config-files']),
+        'wa_solist'         : '/'.join([my_appdir,'server-owned-files']),
+        'wa_virtuallist'    : '/'.join([my_appdir,'virtuals']),
+        'wa_installs'       : '/'.join([my_persistdir,wa_installsbase]),
+        'wa_postinstallinfo': '/'.join([my_appdir,'post-install-instructions.txt'])
+        }
+
+        for key in a.keys():
+            self.config.set('USER', key, a[key])
+
+    def determine_appsuffix(self):
+
+        cat = self.maybe_get('cat')
+        pn  = self.config.get('USER', 'pn')
+        pvr = self.config.get('USER', 'pvr')
+        my_approot = self.config.get('USER', 'my_approot')
+
+        old_layout =     os.path.join(my_approot,      pn, pvr)
+
+        if cat:
+            new_layout = os.path.join(my_approot, cat, pn, pvr)
+            # include cat in persist_suffix. Note that webapp.eclass will always
+            # supply category info, so the db will always end up in the right place.
+            self.config.set('USER', 'persist_suffix', '/'.join([cat,pn,pvr]))
+
+            if os.path.isdir(new_layout):
+                self.config.set('USER', 'my_appsuffix', '%(cat)s/%(pn)s/%(pvr)s')
+            elif os.path.isdir(old_layout):
+                self.config.set('USER', 'my_appsuffix', '%(pn)s/%(pvr)s')
+                self.config.set('USER', 'cat', '')
+            else:
+                OUT.die('Unable to determine location of master copy')
+        else:
+            if os.path.isdir(old_layout):
+                self.config.set('USER', 'my_appsuffix', '%(pn)s/%(pvr)s')
+                self.config.set('USER', 'cat', '')
+                # no category info at all is available, so drop it from persist_suffix
+                self.config.set('USER', 'persist_suffix', '/'.join([pn,pvr]))
+            else:
+                hits = []
+                for e in os.listdir(my_approot):
+                    if os.path.isdir(os.path.join(my_approot, e, pn, pvr)):
+                            hits.append('/'.join([e,pn,pvr]))
+
+                if len(hits) == 0:
+                    OUT.die('Unable to determine location of master copy')
+                elif len(hits) > 1:
+                    msg = 'Multiple packages found:\n'
+                    for a in hits:
+                        msg += my_approot + '/' + a + '\n'
+                    msg += 'Please specify a category'
+                    OUT.die(msg)
+                else:
+                    self.config.set('USER', 'my_appsuffix', hits[0])
+                    cat = hits[0].split('/')[0]
+                    self.config.set('USER', 'cat', cat)
+                    self.config.set('USER', 'persist_suffix', '/'.join([cat,pn,pvr]))
 
     def setup_parser(self):
 
@@ -616,7 +705,7 @@ class Config:
         try:
             result = PermissionMap(self.maybe_get(permission))
         except Exception, e:
-            OUT.die('You did specify an invalid permission value for the'
+            OUT.die('You specified an invalid permission value for the'
                     ' variable "' + permission + "'")
         return result
 
@@ -625,7 +714,7 @@ class Config:
         try:
             result = Perm.get_user(self.maybe_get(user))
         except KeyError, e:
-            OUT.die('You did specify an invalid user value for the'
+            OUT.die('You specified an invalid user value for the'
                     ' variable "' + user + "'")
         return result
 
@@ -634,7 +723,7 @@ class Config:
         try:
             result = Perm.get_group(self.maybe_get(group))
         except KeyError, e:
-            OUT.die('You did specify an invalid group value for the'
+            OUT.die('You specified an invalid group value for the'
                     ' variable "' + group + "'")
         return result
 
@@ -642,7 +731,7 @@ class Config:
         return self.maybe_get('g_installdir')
 
     def packagename(self, sep='-'):
-        return self.maybe_get('pn') + sep + self.maybe_get('pvr')
+        return self.maybe_get('cat') + '/' + self.maybe_get('pn') + sep + self.maybe_get('pvr')
 
     def maybe_getboolean(self, option, section = 'USER'):
 
@@ -742,24 +831,24 @@ class Config:
 
         OUT.debug('Trying to import environment variables', 7)
 
-        if envmap:           
+        if envmap:
             for (key, value) in os.environ.items():
 
                 if envmap == 'all' or key.lower() in envmap:
-                    
-                    OUT.debug('Adding environment variable', 8)
-                    
-                    self.config.set('USER', 
-                                    key.lower(),
-                                    value)            
 
-        if (options.__dict__.has_key('define') and 
+                    OUT.debug('Adding environment variable', 8)
+
+                    self.config.set('USER',
+                                    key.lower(),
+                                    value)
+
+        if (options.__dict__.has_key('define') and
               options.__dict__['define']):
             for i in options.__dict__['define']:
                 if '=' in i:
                     self.config.set('USER', 
                                     i.split('=')[0].lower(),
-                                    i.split('=')[1])            
+                                    i.split('=')[1])
 
         # Indicate that --dir was found
         if options.__dict__.has_key('dir'):
@@ -836,12 +925,18 @@ class Config:
         OUT.debug('Checking command line arguments', 1)
 
         if len(args) > 0:
-            self.config.set('USER', 'pn', args[0])
+            # get cat / pn
+            m = args[0].split('/')
+            if len(m) == 1:
+                self.config.set('USER', 'pn',  m[0])
+            elif len(m) == 2:
+                self.config.set('USER', 'cat', m[0])
+                self.config.set('USER', 'pn',  m[1])
+            else:
+                OUT.die('Invalid package name')
 
         if len(args) > 1:
             self.config.set('USER', 'pvr', args[-1])
-
-
 
     # --------------------------------------------------------------------
     # Helper functions
@@ -881,10 +976,14 @@ class Config:
         #
         # this makes sure we don't write rubbish into the installs list
 
-        installpath = self.config.get('USER', 'g_htdocsdir') + '/' +     \
-                      self.config.get('USER', 'g_installdir')
+        g_installdir = self.config.get('USER', 'g_installdir')
 
-        installpath = re.compile('/+').sub('/', self.__root + installpath)
+        if os.path.isabs(g_installdir):
+            installpath = g_installdir
+        else:
+            installpath = self.config.get('USER', 'g_htdocsdir') + '/' + g_installdir
+
+        installpath = re.compile('/+').sub('/', self.__r + installpath)
 
         while installpath[-1] == '/':
             installpath = installpath[:-1]
@@ -965,6 +1064,15 @@ class Config:
             self.check_package_set()
             self.check_version_set()
 
+            # set my_appsuffix right away
+            cat = self.config.get('USER', 'cat')
+            pn  = self.config.get('USER', 'pn')
+            pvr = self.config.get('USER', 'pvr')
+            self.config.set('USER', 'my_appsuffix',   '/'.join([cat,pn,pvr]))
+            self.config.set('USER', 'persist_suffix', '/'.join([cat,pn,pvr]))
+
+            self.set_vars()
+
             # List all variables in bash format for the eclass
             self.config.on_error(2)
             for i in self.config.options('USER'):
@@ -978,8 +1086,10 @@ class Config:
 
         if self.work == 'list_unused_installs':
             # Get the handler for the virtual install db
-            db = self.create_webapp_db(self.maybe_get('USER', 'pn'),
-                                       self.maybe_get('USER', 'pvr'))
+            self.__r = wrapper.get_root(self)
+            db = self.create_webapp_db( self.maybe_get('cat'),
+                                        self.maybe_get('pn'),
+                                        self.maybe_get('pvr'))
 
             # Compare this against the installed web applications
             self.create_webapp_source().listunused(db)
@@ -987,13 +1097,15 @@ class Config:
         if self.work == 'list_installs':
             # Get the handler for the virtual install db and list the
             # virtual installations
-            self.create_webapp_db(self.maybe_get('pn'),
-                                  self.maybe_get('pvr')).listinstalls()
+            self.__r = wrapper.get_root(self)
+            self.create_webapp_db(  self.maybe_get('cat'),
+                                    self.maybe_get('pn'),
+                                    self.maybe_get('pvr')).listinstalls()
 
         if self.work == 'show_installed':
 
-            # This reads a .webap file in the specified
-            # installdir.
+            # This reads a .webapp file in the specified installdir.
+            self.__r = wrapper.get_root(self)
             self.setinstalldir()
             self.create_dotconfig().show_installed()
 
@@ -1001,8 +1113,11 @@ class Config:
 
             # The user needs to specify package and version
             # for this action
+            self.__r = wrapper.get_root(self)
+            wrapper.want_category(self)
             self.check_package_set()
             self.check_version_set()
+            self.set_vars()
 
             # The package must be installed
             self.create_webapp_source().reportpackageavail()
@@ -1014,8 +1129,11 @@ class Config:
 
             # The user needs to specify package and version
             # for this action
+            self.__r = wrapper.get_root(self)
+            wrapper.want_category(self)
             self.check_package_set()
             self.check_version_set()
+            self.set_vars()
 
             # The package must be installed
             self.create_webapp_source().reportpackageavail()
@@ -1038,10 +1156,14 @@ class Config:
             # command-line parameters have been parsed, and assigned to the
             # $G_... variables.
 
-            # The user needs to specify package and version
-            # for this action
+            # Required: package name and version
+            # Category may be required
+
+            self.__r = wrapper.get_root(self)
+            wrapper.want_category(self)
             self.check_package_set()
             self.check_version_set()
+            self.set_vars()
 
             # Check that all configurations are valid
             self.checkconfig()
@@ -1080,9 +1202,11 @@ class Config:
                          'rectory.\nIs this what you meant to do?\n')
 
             # Now we can install
-            self.create_server(self.create_content(self.maybe_get('pn'),
-                                                   self.maybe_get('pvr')),
+            self.create_server(self.create_content( self.maybe_get('cat'),
+                                                    self.maybe_get('pn'),
+                                                    self.maybe_get('pvr')),
                                ws,
+                               self.config.get('USER', 'cat'),
                                self.config.get('USER', 'pn'),
                                self.config.get('USER', 'pvr')).install()
 
@@ -1095,6 +1219,15 @@ class Config:
             #
             # This function is called from fn_verify(), and runs after the command-
             # line parameters have been parsed.
+
+            # Required: package name and version
+            # Category may be required
+
+            self.__r = wrapper.get_root(self)
+            wrapper.want_category(self)
+            self.check_package_set()
+            self.check_version_set()
+            self.set_vars()
 
             # special case
             #
@@ -1123,6 +1256,7 @@ class Config:
 
             OUT.info('Removing installed files and directories')
 
+            self.config.set('USER', 'cat',  old['WEB_CATEGORY'])
             self.config.set('USER', 'pn',  old['WEB_PN'])
             self.config.set('USER', 'pvr', old['WEB_PVR'])
 
@@ -1135,6 +1269,7 @@ class Config:
             # okay - what do we have?
 
             OUT.info('Removing '
+                     + old['WEB_CATEGORY'] + '/'
                      + old['WEB_PN'] + '-'
                      + old['WEB_PVR'] + ' from '
                      + self.installdir() + '\n'
@@ -1144,12 +1279,12 @@ class Config:
                      +'  Config files owned by '
                      + old['WEB_INSTALLEDFOR'], 1)
 
-            content = self.create_content(old['WEB_PN'], old['WEB_PVR'])
+            content = self.create_content(old['WEB_CATEGORY'], old['WEB_PN'], old['WEB_PVR'])
             content.read()
 
             self.create_server(content,
                                self.create_webapp_source(),
-                               old['WEB_PN'], old['WEB_PVR']).clean()
+                               old['WEB_CATEGORY'], old['WEB_PN'], old['WEB_PVR']).clean()
 
         if self.work == 'upgrade':
 
@@ -1166,10 +1301,14 @@ class Config:
             #
             # see Gentoo bug 98638
 
-            # The user needs to specify package and version
-            # for this action
+            # Required: package name and version
+            # Category may be required
+
+            self.__r = wrapper.get_root(self)
+            wrapper.want_category(self)
             self.check_package_set()
             self.check_version_set()
+            self.set_vars()
 
             # Check that all configurations are valid
             self.checkconfig()
@@ -1201,18 +1340,25 @@ class Config:
             # package x to package y? In principle we are just running
             # -C followed by -I so it does not matter too much what
             # we remove and add. Why did the originial bash version
-            # invert romving and adding?
-            if (self.config.get('USER', 'pn') == old['WEB_PN'] and
+            # invert removing and adding?
+
+            # I don't really think the above comments still apply -- rl03
+
+            if (self.config.get('USER', 'cat') == old['WEB_CATEGORY'] and
+                self.config.get('USER', 'pn') == old['WEB_PN'] and
                 self.config.get('USER', 'pvr') == old['WEB_PVR']):
                 OUT.warn('Do you really want to upgrade to the same pac'
                          'kage?\nWaiting for 8 seconds...\nPress Ctrl-c i'
                          'f you are uncertain.')
                 time.sleep(8)
 
-            if (self.config.get('USER', 'pn') != old['WEB_PN']):
+            if (self.config.get('USER','cat') + self.config.get('USER', 'pn') != \
+                    old['WEB_CATEGORY'] + old['WEB_PN']):
                 OUT.warn('Do you really want to switch the installation'
-                         ' from package "' + old['WEB_PN'] + '" to packag'
-                         'e "' + self.config.get('USER', 'pn') + '"?\nWai'
+                         ' from package "' + old['WEB_CATEGORY'] + '/' +
+                         old['WEB_PN'] + '" to package "' + \
+                         self.config.get('USER','cat') + '/' + \
+                         self.config.get('USER', 'pn') + '"?\nWai'
                          'ting for 8 seconds... \nPress Ctrl-c if you are'
                          ' uncertain.')
                 time.sleep(8)
@@ -1220,6 +1366,7 @@ class Config:
             # okay, what do we have?
 
             OUT.info('Upgrading '
+                     + old['WEB_CATEGORY'] + '/'
                      + old['WEB_PN'] + '-'
                      + old['WEB_PVR'] + ' to '
                      + self.packagename() + '\n'
@@ -1229,21 +1376,25 @@ class Config:
                      +'  Config files owned by '
                      + old['WEB_INSTALLEDFOR'], 1)
 
-            content = self.create_content(old['WEB_PN'], old['WEB_PVR'])
+            content = self.create_content(old['WEB_CATEGORY'], old['WEB_PN'], old['WEB_PVR'])
             content.read()
 
             self.create_server(content,
                                ws,
-                               old['WEB_PN'], 
-                               old['WEB_PVR']).upgrade(self.config.get('USER', 'pn'),
+                               old['WEB_CATEGORY'],
+                               old['WEB_PN'],
+                               old['WEB_PVR']).upgrade(self.config.get('USER', 'cat'),
+                                                       self.config.get('USER', 'pn'),
                                                        self.config.get('USER', 'pvr'))
 
 
-    def create_webapp_db(self, package, version):
+    def create_webapp_db(self, category, package, version):
 
         from WebappConfig.db import  WebappDB
 
-        return WebappDB(self.maybe_get('my_persistroot'),
+        return WebappDB(self.__r,
+                        self.maybe_get('my_persistroot'),
+                        category,
                         package,
                         version,
                         self.maybe_get('wa_installsbase'),
@@ -1263,9 +1414,12 @@ class Config:
 
         from WebappConfig.db import  WebappSource
 
-        return WebappSource(self.maybe_get('my_approot'),
+        return WebappSource(self.__r,
+                            self.maybe_get('my_approot'),
+                            self.maybe_get('cat'),
                             self.maybe_get('pn'),
-                            self.maybe_get('pvr'))
+                            self.maybe_get('pvr'),
+                            pm = self.config.get('USER', 'package_manager'))
 
     def create_dotconfig(self):
 
@@ -1283,19 +1437,21 @@ class Config:
         return Ebuild(self)
 
 
-    def create_content(self, package, version):
+    def create_content(self, category, package, version):
 
         from WebappConfig.content import  Contents
 
         return Contents(self.installdir(),
+                        category,
                         package,
                         version,
                         self.get_perm('g_perms_dotconfig'),
                         self.maybe_get('my_dotconfig'),
                         self.verbose(),
-                        self.pretend())
+                        self.pretend(),
+                        self.__r)
 
-    def create_server(self, content, webapp_source, package, version):
+    def create_server(self, content, webapp_source, category, package, version):
 
         # handle server type
 
@@ -1319,8 +1475,9 @@ class Config:
         handlers = {'source'    : webapp_source,
                     'dotconfig' : self.create_dotconfig(),
                     'ebuild'    : self.create_ebuild(),
-                    'db'        : self.create_webapp_db(package, version),
-                    'protect'   : Protection(),
+                    'db'        : self.create_webapp_db(category, package, version),
+                    'protect'   : Protection(category,package,version,
+                                    self.config.get('USER','package_manager')),
                     'content'   : content}
 
         flags = {'linktype' : self.maybe_get('g_link_type'),

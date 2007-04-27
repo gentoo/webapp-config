@@ -268,7 +268,8 @@ class Config:
             'my_errorsdir'      : '%(my_hostrootdir)s/%(my_errorsbase)s',
             'g_cgibindir'      : '%(vhost_root)s/%(my_cgibinbase)s',
             'my_approot'        : '/usr/share/webapps',
-            'package_manager'   : 'portage'
+            'package_manager'   : 'portage',
+            'allow_absolute'    : 'no',
             }
 
         # Setup basic defaults
@@ -979,7 +980,8 @@ class Config:
 
         g_installdir = self.config.get('USER', 'g_installdir')
 
-        if os.path.isabs(g_installdir):
+        if (os.path.isabs(g_installdir) 
+            and self.config.get('USER', 'allow_absolute') == 'yes'):
             installpath = g_installdir
         else:
             installpath = self.config.get('USER', 'g_htdocsdir') + '/' + g_installdir

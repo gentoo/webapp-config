@@ -183,6 +183,9 @@ vhost_perms_virtualowned_file="o-w"
 
 vhost_perms_installdir="0755"
 
+# Allow specifying absolute path names using the -d option?
+allow_absolute="no"
+
 # Supported package managers: portage, paludis
 package_manager="portage"
 

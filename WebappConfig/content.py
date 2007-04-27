@@ -6,12 +6,12 @@
 #
 #       Originally written for the Gentoo Linux distribution
 #
-# Copyright (c) 1999-2006 Gentoo Foundation
+# Copyright (c) 1999-2007 Authors
 #       Released under v2 of the GNU GPL
 #
-# Author(s)     Stuart Herbert <stuart@gentoo.org>
+# Author(s)     Stuart Herbert
 #               Renat Lumpau   <rl03@gentoo.org>
-#               Gunnar Wrobel  <php@gunnarwrobel.de>
+#               Gunnar Wrobel  <wrobel@gentoo.org>
 #
 # ========================================================================
 ''' This class handles the contents file of a virtual install
@@ -42,20 +42,23 @@ class Contents:
 #self.worker.get_config('g_perms_dotconfig')
     def __init__(self,
                  installdir,
+                 category   = '',
                  package    = '',
                  version    = '',
                  permission = PermissionMap('0600'),
                  dbfile     = '.webapp',
                  verbose    = False,
-                 pretend    = False):
+                 pretend    = False,
+                 root       = ''):
 
-        self.__root       = wrapper.get_root()
+        self.__root       = root
         self.__re         = re.compile('/+')
         self.__installdir = installdir
 
+        self.__cat        = category
         self.__pn         = package
         self.__pvr        = version
-        self.__dbfile     = dbfile 
+        self.__dbfile     = dbfile
 
         self.__perm = permission
         self.__v    = verbose
@@ -72,7 +75,15 @@ class Contents:
 
     def package_name(self):
         ''' Return the package name for the virtual install.'''
-        return self.__pn + '-' + self.__pvr
+        if self.__cat:
+            # use _ instead of / because we don't want to create a directory
+            return self.__cat + '_' + self.__pn + '-' + self.__pvr
+        else:
+            return self.__pn + '-' + self.__pvr
+
+    def set_category(self, cat):
+        ''' Set category name.'''
+        self.__cat = cat
 
     def set_package(self, package):
         ''' Set the package name.'''

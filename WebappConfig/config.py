@@ -55,7 +55,8 @@ class BashConfigParser(ConfigParser.SafeConfigParser):
         try:
             return ConfigParser.SafeConfigParser.get(self, section, option)
         except Exception, e:
-            error = '\nThere is a problem with your configuration file.\n' \
+            error = '\nThere is a problem with your configuration file or' \
+                ' an environment variable.\n' \
                 'webapp-config tried to read the variable "' + str(option) \
                 + '"\nand received the following error:\n\n' + str(e) +    \
                 '\nPlease note that webapp-config is not written in bash ' \

@@ -6,12 +6,12 @@
 #
 #       Originally written for the Gentoo Linux distribution
 #
-# Copyright (c) 1999-2006 Gentoo Foundation
+# Copyright (c) 1999-2007 Authors
 #       Released under v2 of the GNU GPL
 #
-# Author(s)     Stuart Herbert <stuart@gentoo.org>
+# Author(s)     Stuart Herbert
 #               Renat Lumpau   <rl03@gentoo.org>
-#               Gunnar Wrobel  <php@gunnarwrobel.de>
+#               Gunnar Wrobel  <wrobel@gentoo.org>
 #
 # ========================================================================
 ''' This module provides the classes for actually adding or removing
@@ -191,13 +191,13 @@ class WebappAdd:
     The handler for protected files is simple:
 
     >>> import WebappConfig.protect
-    >>> c = WebappConfig.protect.Protection()
+    >>> c = WebappConfig.protect.Protection('','horde','3.0.5','portage')
 
     And finally a fully initialized source is needed:
 
     >>> from WebappConfig.db import WebappSource
-    >>> d = WebappSource(here + '/tests/testfiles/share-webapps',
-    ...             'installtest', '1.0')
+    >>> d = WebappSource(root=here + '/tests/testfiles/share-webapps',
+    ...             category='', package='installtest', version='1.0')
     >>> d.read()
     >>> d.ignore = ['.svn']
 

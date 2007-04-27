@@ -6,12 +6,12 @@
 #
 #       Originally written for the Gentoo Linux distribution
 #
-# Copyright (c) 1999-2006 Gentoo Technologies, Inc
+# Copyright (c) 1999-2007 Authors
 #       Released under v2 of the GNU GPL
 #
-# Author(s)     Stuart Herbert <stuart@gentoo.org>
+# Author(s)     Stuart Herbert
 #               Renat Lumpau   <rl03@gentoo.org>
-#               Gunnar Wrobel  <php@gunnarwrobel.de>
+#               Gunnar Wrobel  <wrobel@gentoo.org>
 #
 # ========================================================================
 
@@ -101,7 +101,7 @@ class Basic:
         self.__add       = None
 
 
-    def upgrade(self, new_package, new_version):
+    def upgrade(self, new_category, new_package, new_version):
 
         # I have switched the order of upgrades
         # we are now removing the olde app and then installing the new one
@@ -116,8 +116,10 @@ class Basic:
         self.clean()
 
         # now install the new one
+        self.__content.set_category(new_category)
         self.__content.set_version(new_version)
         self.__content.set_package(new_package)
+        self.__db.set_category(new_category)
         self.__db.set_version(new_version)
         self.__db.set_package(new_package)
 
@@ -181,7 +183,7 @@ class Basic:
         OUT.debug('Basic server install', 7)
 
         # The root of the virtual install location needs to exist
-        
+
         if not os.path.isdir(self.__destd) and not self.__p:
 
             OUT.debug('Directory missing', 7)
@@ -207,7 +209,7 @@ class Basic:
                              self.__perm['dir']['install-owned'][1])
 
                 if self.__v:
-                    OUT.info('  Creating installation directory: ' 
+                    OUT.info('  Creating installation directory: '
                              + i)
 
         # Create the handler for installing
@@ -253,7 +255,8 @@ class Basic:
 
         OUT.info('  Files and directories installed', 1)
 
-        self.__dotconfig.write(self.__ws.pn,
+        self.__dotconfig.write(self.__ws.category,
+                               self.__ws.pn,
                                self.__ws.pvr,
                                self.__flags['host'],
                                self.__flags['orig'],
@@ -292,7 +295,8 @@ class Basic:
         OUT.info('Install completed - success', 1)
 
     def supported(self):
-        if self.dep and package_installed(self.dep):
+        # I don't think we should be forcing to have a webserver installed -- rl03
+        if self.dep:     # and package_installed(self.dep):
             return True
         return False
 

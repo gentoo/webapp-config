@@ -6,7 +6,7 @@ inherit eutils distutils
 
 DESCRIPTION="Gentoo's installer for web-based applications"
 HOMEPAGE="http://www.gentoo.org/"
-SRC_URI="http://dev.gentoo.org/~wrobel/webapp-config/${PF}.tar.gz"
+SRC_URI="mirror://sourceforge/${PN}/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"

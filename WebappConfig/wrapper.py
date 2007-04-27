@@ -6,25 +6,18 @@
 #
 #       Originally written for the Gentoo Linux distribution
 #
-# Copyright (c) 1999-2006 Gentoo Foundation
+# Copyright (c) 1999-2007 Authors
 #       Released under v2 of the GNU GPL
 #
-# Author(s)     Stuart Herbert <stuart@gentoo.org>
+# Author(s)     Stuart Herbert
 #               Renat Lumpau   <rl03@gentoo.org>
-#               Gunnar Wrobel  <php@gunnarwrobel.de>
+#               Gunnar Wrobel  <wrobel@gentoo.org>
 #
 # ========================================================================
 '''
 This helper module intends to provide a wrapper for some Gentoo
 specific features used by webapp-config. This might make it easier
 to use the tool on other distributions.
-
-Currently two parameters and one function are provided:
-
- - conf_libdir        [directory for libraries]
- - config_protect     [list of configuration protected directories]
-
- - package_installed  [indicates if the specified package is installed]
 '''
 
 __version__ = "$Id: wrapper.py 283 2006-04-20 22:53:04Z wrobel $"
@@ -33,7 +26,7 @@ __version__ = "$Id: wrapper.py 283 2006-04-20 22:53:04Z wrobel $"
 # Dependencies
 # ------------------------------------------------------------------------
 
-import sys, portage, os, types
+import sys, os, types, string
 
 from WebappConfig.debug       import OUT
 
@@ -44,67 +37,143 @@ from WebappConfig.version import WCVERSION
 # Portage Wrapper
 # ------------------------------------------------------------------------
 
-# Variable for config protected files (used by protect.py)
-config_protect  = portage.settings['CONFIG_PROTECT']
-
-# Try to derive the correct libdir location by first examining the portage
-# variable ABI then using it to determine the appropriate variable to read. For
-# example, if ABI == 'amd64' then read LIBDIR_amd64. This routine should work on
-# all arches as it sets '/usr/lib' as a fallback. See bugs #125032 and #125156.
-
-config_libdir = '/usr/lib'
-
-if 'ABI' in portage.settings.keys():
-    config_abi  = portage.settings['ABI']
-    if 'LIBDIR_' + config_abi in portage.settings.keys():
-        config_libdir = '/usr/' + portage.settings['LIBDIR_' + config_abi]
-    else:
-        # This shouldn't happen but we want to know if it ever does
-        OUT.warn('Failed to determine libdir from portage.settings[\'LIBDIR_' + config_abi + '\']\n')
-
 protect_prefix  = '._cfg'
 update_command  = 'etc-update'
 
 # Link for bug reporting
 bugs_link  = 'http://bugs.gentoo.org/'
 
-def get_root():
-    '''
-    This function returns the $ROOT variable
-    '''
-    return portage.root
+def config_protect(cat, pn, pvr, pm):
+    '''Return CONFIG_PROTECT (used by protect.py)'''
+    if pm == "portage":
+        try:
+            import portage
+        except ImportError, e:
+            OUT.die("Portage libraries not found, quitting:\n%s" % e)
 
-def package_installed(packagename):
+        return portage.settings['CONFIG_PROTECT']
+
+    elif pm == "paludis":
+        cmd="paludis --log-level silent --no-color --environment-variable %s/%s CONFIG_PROTECT" % (cat,pn)
+
+        fi, fo, fe = os.popen3(cmd)
+        fi.close()
+        result_lines = fo.readlines()
+        error_lines  = fe.readlines()
+        fo.close()
+        fe.close()
+
+        return string.join(result_lines, ' ').strip()
+    else:
+        OUT.die("Unknown package manager: " + pm)
+
+def config_libdir(pm):
+    OUT.die("I shouldn't get called at all")
+
+def want_category(config):
+    '''Check if the package manager requires category info
+
+    Portage: optional
+    Paludis: mandatory
+    '''
+
+    if config.config.get('USER', 'package_manager') == "portage":
+        return
+    elif config.config.get('USER', 'package_manager') == "paludis":
+        if not config.config.has_option('USER', 'cat'):
+            OUT.die("Package name must be in the form CAT/PN")
+    else:
+        OUT.die("Unknown package manager: " + pm)
+
+def get_root(config):
+    '''Returns the $ROOT variable'''
+    if config.config.get('USER', 'package_manager') == "portage":
+        try:
+            import portage
+        except ImportError, e:
+            OUT.die("Portage libraries not found, quitting:\n%s" % e)
+
+        return portage.root
+
+    elif config.config.get('USER', 'package_manager') == "paludis":
+        cat = config.maybe_get('cat')
+        pn  = config.maybe_get('pn')
+
+        if cat and pn:
+            cmd="paludis --log-level silent --no-color --environment-variable %s/%s ROOT" % (cat,pn)
+
+            fi, fo, fe = os.popen3(cmd)
+            fi.close()
+            result_lines = fo.readlines()
+            error_lines  = fe.readlines()
+            fo.close()
+            fe.close()
+
+            if result_lines[0].strip():
+                return result_lines[0].strip()
+            else:
+                return '/'
+        else:
+            return '/'
+    else:
+        OUT.die("Unknown package manager: " + pm)
+
+def package_installed(full_name, pm):
     '''
     This function identifies installed packages.
-    Stolen from gentoolkit.
+    The Portage part is stolen from gentoolkit.
     We are not using gentoolkit directly as it doesn't seem to support ${ROOT}
     '''
-    if packagename in portage.settings.pprovideddict.keys():
-        return True
-    try:
-        t = portage.db[portage.root]["vartree"].dbapi.match(packagename)
-    # catch the "ambiguous package" Exception
-    except ValueError, e:
-        if type(e[0]) == types.ListType:
-            t = []
-            for cp in e[0]:
-                t += portage.db[portage.root]["vartree"].dbapi.match(cp)
-        else:
-            raise ValueError(e)
-    return t
+
+    if pm == "portage":
+        try:
+            import portage
+        except ImportError, e:
+            OUT.die("Portage libraries not found, quitting:\n%s" % e)
+
+        try:
+             t = portage.db[portage.root]["vartree"].dbapi.match(full_name)
+        # catch the "ambiguous package" Exception
+        except ValueError, e:
+            if type(e[0]) == types.ListType:
+                t = []
+                for cp in e[0]:
+                    t += portage.db[portage.root]["vartree"].dbapi.match(cp)
+            else:
+                raise ValueError(e)
+        return t
+
+    elif pm == "paludis":
+
+        cmd="paludis --best-version %s" % (full_name)
+
+        fi, fo, fe = os.popen3(cmd)
+        fi.close()
+        result_lines = fo.readlines()
+        error_lines  = fe.readlines()
+        fo.close()
+        fe.close()
+
+        if error_lines:
+            for i in error_lines:
+                OUT.warn(i)
+
+        return string.join(result_lines, ' ')
+
+    else:
+        OUT.die("Unknown package manager: " + pm)
 
 if __name__ == '__main__':
-    OUT.info('\nPORTAGE WRAPPER')
+    OUT.info('\nPACKAGE MANAGER WRAPPER')
     OUT.info('---------------\n')
-    if package_installed('=webapp-config-' + WCVERSION):
+    if package_installed('=app-admin/webapp-config-' + WCVERSION, 'portage'):
         a = 'YES'
     else:
         a = 'NO'
 
     OUT.info('package_installed("webapp-config-'
              + WCVERSION + '") : ' + a + '\n')
-    OUT.info('config_protect : ' + config_protect)
+    OUT.info('config_protect : ' + config_protect('app-admin','webapp-config',WCVERSION,'portage'))
     OUT.info('protect_prefix : ' + protect_prefix)
     OUT.info('update_command : ' + update_command)
     OUT.info('bugs_link : ' + bugs_link)

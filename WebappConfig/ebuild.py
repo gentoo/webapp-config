@@ -6,12 +6,12 @@
 #
 #       Originally written for the Gentoo Linux distribution
 #
-# Copyright (c) 1999-2006 Gentoo Foundation
+# Copyright (c) 1999-2007 Authors
 #       Released under v2 of the GNU GPL
 #
-# Author(s)     Stuart Herbert <stuart@gentoo.org>
+# Author(s)     Stuart Herbert
 #               Renat Lumpau   <rl03@gentoo.org>
-#               Gunnar Wrobel  <php@gunnarwrobel.de>
+#               Gunnar Wrobel  <wrobel@gentoo.org>
 #
 # ========================================================================
 ''' Provides a class that handles ebuild related tasks.  '''
@@ -63,6 +63,17 @@ class Ebuild:
 
     Time to create the ebuild handler:
 
+    >>> my_approot = config.config.get('USER', 'my_approot')
+    >>> my_appdir = my_approot + "/horde/3.0.5"
+    >>> config.config.set('USER', 'my_appdir', my_appdir)
+    >>> config.config.set('USER', 'my_hookscriptsdir', my_appdir + '/hooks')
+    >>> config.config.set('USER', 'my_cgibinbase', 'cgi-bin')
+    >>> config.config.set('USER', 'my_errorsbase', 'error')
+    >>> config.config.set('USER', 'my_iconsbase', 'icons')
+    >>> config.config.set('USER', 'my_serverconfigdir', '/'.join([my_appdir,'conf']))
+    >>> config.config.set('USER', 'my_hostrootdir', '/'.join([my_appdir,'hostroot']))
+    >>> config.config.set('USER', 'my_htdocsdir', '/'.join([my_appdir,'htdocs']))
+    >>> config.config.set('USER', 'my_sqlscriptsdir', '/'.join([my_appdir,'sqlscripts']))
     >>> a = Ebuild(config)
 
     Run a hook script:
@@ -73,8 +84,6 @@ class Ebuild:
     ...               {'source':'','content':'','protect':'','dotconfig':'','ebuild':'','db':''},
     ...               {'verbose':False,'pretend':True})
     >>> a.run_hooks('test', basic)
-    Called with test
-    <BLANKLINE>
 
     The same on a directory that misses a hook dir:
 
@@ -95,8 +104,8 @@ class Ebuild:
 
     def __init__(self, config):
 
-        self.__root    = wrapper.get_root()
         self.config    = config
+        self.__root    = wrapper.get_root(self.config)
         self.__re      = re.compile('/+')
         self.__sourced = self.__re.sub('/', self.__root
                            + self.get_config('my_appdir'))
@@ -203,6 +212,17 @@ class Ebuild:
         >>> here = os.path.dirname(os.path.realpath(__file__))
         >>> config.config.set('USER', 'my_approot', here +
         ...                   '/tests/testfiles/share-webapps')
+        >>> my_approot = config.config.get('USER', 'my_approot')
+        >>> my_appdir = my_approot + "/horde/3.0.5"
+        >>> config.config.set('USER', 'my_appdir', my_appdir)
+        >>> config.config.set('USER', 'my_hookscriptsdir', my_appdir + '/hooks')
+        >>> config.config.set('USER', 'my_cgibinbase', 'cgi-bin')
+        >>> config.config.set('USER', 'my_errorsbase', 'error')
+        >>> config.config.set('USER', 'my_iconsbase', 'icons')
+        >>> config.config.set('USER', 'my_serverconfigdir', '/'.join([my_appdir,'conf']))
+        >>> config.config.set('USER', 'my_hostrootdir', '/'.join([my_appdir,'hostroot']))
+        >>> config.config.set('USER', 'my_htdocsdir', '/'.join([my_appdir,'htdocs']))
+        >>> config.config.set('USER', 'my_sqlscriptsdir', '/'.join([my_appdir,'sqlscripts']))
 
         Time to create the ebuild handler:
 
@@ -303,10 +323,11 @@ class Ebuild:
                       'VHOST_PERMS_DEFAULTOWNED_DIR' : None,
                       'VHOST_PERMS_VIRTUALOWNED_FILE': None,
                       'VHOST_PERMS_INSTALLDIR'       : None,
-                      'ROOT'                         : wrapper.get_root(),
+                      'ROOT'                         : self.__root,
                       'PN' : None,
                       'PVR': None}
 
+        result = {}
         for i in export_map.keys():
 
             value = export_map[i]
@@ -315,6 +336,9 @@ class Ebuild:
                 value = self.get_config(i.lower())
 
             os.putenv(i, str(value))
+            result[i] = str(value)
+
+        return result
 
 if __name__ == '__main__':
     import doctest, sys

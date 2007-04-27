@@ -48,7 +48,7 @@ class Basic:
                  flags,
                  pm):
 
-        if self.dep and not self.supported():
+        if self.dep and not self.supported(pm):
             OUT.die('Your configuration file sets the server type "' + self.name
                     + '"\nbut the corresponding package does not seem to be '
                     'installed!\nPlease "emerge ' + self.dep + '" or correct '
@@ -79,8 +79,6 @@ class Basic:
         self.__perm      = permissions
         self.__handler   = handler
         self.__flags     = flags
-
-        self.pm          = pm
 
         self.__ws        = handler['source']
         self.__content   = handler['content']
@@ -297,11 +295,11 @@ class Basic:
 
         OUT.info('Install completed - success', 1)
 
-    def supported(self):
+    def supported(self, pm):
         # I don't think we should be forcing to have a webserver installed -- rl03
         # Maybe, but the test should then be disabled somewhere else.
         # Reverted back to the original version for now -- wrobel
-        if self.dep and package_installed(self.dep, self.pm):
+        if self.dep and package_installed(self.dep, pm):
             return True
         return False
 

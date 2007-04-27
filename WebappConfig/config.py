@@ -1491,7 +1491,8 @@ class Config:
         return allowed_servers[server](directories,
                                        self.create_permissions(),
                                        handlers,
-                                       flags)
+                                       flags,
+                                       pm = self.config.get('USER', 'package_manager'))
 
     def create_permissions(self):
 

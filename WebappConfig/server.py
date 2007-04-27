@@ -45,7 +45,8 @@ class Basic:
                  directories,
                  permissions,
                  handler,
-                 flags):
+                 flags,
+                 pm):
 
         if self.dep and not self.supported():
             OUT.die('Your configuration file sets the server type "' + self.name
@@ -78,6 +79,8 @@ class Basic:
         self.__perm      = permissions
         self.__handler   = handler
         self.__flags     = flags
+
+        self.__pm        = pm
 
         self.__ws        = handler['source']
         self.__content   = handler['content']
@@ -298,7 +301,7 @@ class Basic:
         # I don't think we should be forcing to have a webserver installed -- rl03
         # Maybe, but the test should then be disabled somewhere else.
         # Reverted back to the original version for now -- wrobel
-        if self.dep and package_installed(self.dep):
+        if self.dep and package_installed(self.dep, self.__pm):
             return True
         return False
 

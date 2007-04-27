@@ -1,3 +1,10 @@
+2007-04-28  Gunnar Wrobel  <p@rdus.de>
+
+	* WebappConfig/*.py: 
+
+	Support categories, support paludis.  Allow absolute paths, fix
+	config variable import, updated sandbox.
+
 2006-12-30  Gunnar Wrobel  <wrobel@pardus.de>
 
 	* WebappConfig/*.py: 

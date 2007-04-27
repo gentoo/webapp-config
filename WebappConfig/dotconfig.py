@@ -6,12 +6,12 @@
 #
 #       Originally written for the Gentoo Linux distribution
 #
-# Copyright (c) 1999-2006 Gentoo Foundation
+# Copyright (c) 1999-2007 Authors
 #       Released under v2 of the GNU GPL
 #
-# Author(s)     Stuart Herbert <stuart@gentoo.org>
+# Author(s)     Stuart Herbert
 #               Renat Lumpau   <rl03@gentoo.org>
-#               Gunnar Wrobel  <php@gunnarwrobel.de>
+#               Gunnar Wrobel  <wrobel@gentoo.org>
 #
 # ========================================================================
 ''' Handles the information stored within the virtual install location
@@ -73,11 +73,12 @@ class DotConfig:
 
     >>> OUT.color_off() 
     >>> a = DotConfig('/nowhere', pretend = True)
-    >>> a.write('horde', '5.5.5', 'localhost', '/horde3', 'me:me') #doctest: +ELLIPSIS
+    >>> a.write('www-apps', 'horde', '5.5.5', 'localhost', '/horde3', 'me:me') #doctest: +ELLIPSIS
     * Would have written the following information into /nowhere/.webapp:
     * # .webapp
     ...
     * 
+    * WEB_CATEGORY="www-apps"
     * WEB_PN="horde"
     * WEB_PVR="5.5.5"
     * WEB_INSTALLEDBY="..."
@@ -106,7 +107,8 @@ class DotConfig:
         self.__perm    = permission
         self.__p       = pretend
         self.__data    = {}
-        self.__tokens  = ['WEB_PN',
+        self.__tokens  = ['WEB_CATEGORY',
+                          'WEB_PN',
                           'WEB_PVR',
                           'WEB_INSTALLEDBY',
                           'WEB_INSTALLEDDATE',
@@ -161,7 +163,13 @@ class DotConfig:
 
         self.read()
 
-        OUT.notice(self.__data['WEB_PN'] + ' ' +
+        if self.__data.has_key('WEB_CATEGORY'):
+            OUT.notice(self.__data['WEB_CATEGORY'] + ' ' +
+                   self.__data['WEB_PN'] + ' ' +
+                   self.__data['WEB_PVR'])
+        else:
+            OUT.notice(
+                   self.__data['WEB_PN'] + ' ' +
                    self.__data['WEB_PVR'])
 
     def packagename(self):
@@ -170,9 +178,12 @@ class DotConfig:
 
         OUT.debug('Trying to retrieve package name', 6)
 
-        if ('WEB_PN' in self.__data.keys()
-            and 'WEB_PVR' in self.__data.keys()):
-            return self.__data['WEB_PN'] + '-' + self.__data['WEB_PVR']
+        if 'WEB_PN' in self.__data.keys() and 'WEB_PVR' in self.__data.keys():
+            if 'WEB_CATEGORY' in self.__data.keys():
+                return self.__data['WEB_CATEGORY'] + '/' + \
+                    self.__data['WEB_PN'] + '-' + self.__data['WEB_PVR']
+            else:
+                return self.__data['WEB_PN'] + '-' + self.__data['WEB_PVR']
         return ''
 
     def read(self):
@@ -208,6 +219,7 @@ class DotConfig:
                 break
 
     def write(self,
+              category,
               package,
               version,
               host,
@@ -217,6 +229,7 @@ class DotConfig:
         Output the .webapp file, that tells us in future what has been installed
         into this directory.
         '''
+        self.__data['WEB_CATEGORY']      = category
         self.__data['WEB_PN']            = package
         self.__data['WEB_PVR']           = version
         self.__data['WEB_INSTALLEDBY']   = pwd.getpwuid(os.getuid())[0]

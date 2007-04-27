@@ -6,12 +6,12 @@
 #
 #       Originally written for the Gentoo Linux distribution
 #
-# Copyright (c) 1999-2006 Gentoo Foundation
+# Copyright (c) 1999-2007 Authors
 #       Released under v2 of the GNU GPL
 #
-# Author(s)     Stuart Herbert <stuart@gentoo.org>
+# Author(s)     Stuart Herbert
 #               Renat Lumpau   <rl03@gentoo.org>
-#               Gunnar Wrobel  <php@gunnarwrobel.de>
+#               Gunnar Wrobel  <wrobel@gentoo.org>
 #
 # ========================================================================
 ''' Helper functions for config protected files.'''
@@ -37,12 +37,12 @@ class Protection:
     A small helper class to handle config protection.
     '''
 
-    def __init__(self):
+    def __init__(self, cat, pn, pvr, pm):
         '''
         This is distribution specific so the information is provided by
         wrapper.py
         '''
-        self.config_protect = WebappConfig.wrapper.config_protect
+        self.config_protect = WebappConfig.wrapper.config_protect(cat, pn, pvr, pm)
         self.protect_prefix = WebappConfig.wrapper.protect_prefix
         self.update_command = WebappConfig.wrapper.update_command
 
@@ -72,7 +72,7 @@ class Protection:
         >>> import os.path
         >>> here = os.path.dirname(os.path.realpath(__file__))
 
-        >>> a = Protection()
+        >>> a = Protection('','horde','3.0.5','portage')
         >>> a.get_protectedname(here + '/tests/testfiles/protect/empty',
         ...                     'test')#doctest: +ELLIPSIS
         '.../tests/testfiles/protect/empty//._cfg0000_test'
@@ -120,7 +120,7 @@ class Protection:
         given install dir and checks if any matches the list
         of config protected files.
 
-        >>> a = Protection()
+        >>> a = Protection('','horde','3.0.5','portage')
 
         Add a virtual config protected directory:
 
@@ -180,7 +180,7 @@ class Protection:
         Instruct the user how to update the application.
 
         >>> OUT.color_off()
-        >>> a = Protection()
+        >>> a = Protection('','horde','3.0.5','portage')
 
         >>> a.how_to_update(['/my/strange/htdocs/where/i/installed/x'])
         * One or more files have been config protected

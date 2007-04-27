@@ -1,13 +1,13 @@
 # Copyright 1999-2006 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/eclass/webapp.eclass,v 1.43 2006/07/10 00:52:34 rl03 Exp $
+# $Header: /var/cvsroot/gentoo-x86/eclass/webapp.eclass,v 1.48 2007/01/03 20:16:39 rl03 Exp $
 #
 # eclass/webapp.eclass
 #				Eclass for installing applications to run under a web server
 #
 #				Part of the implementation of GLEP #11
 #
-# Author(s)		Stuart Herbert <stuart@gentoo.org>
+# Author(s)		Stuart Herbert
 #				Renat Lumpau <rl03@gentoo.org>
 #				Gunnar Wrobel <wrobel@gentoo.org>
 #
@@ -24,7 +24,7 @@
 
 SLOT="${PVR}"
 IUSE="vhosts"
-DEPEND="app-admin/webapp-config"
+DEPEND=">=app-admin/webapp-config-1.50.15"
 RDEPEND="${DEPEND}"
 
 EXPORT_FUNCTIONS pkg_postinst pkg_setup src_install pkg_prerm
@@ -37,6 +37,7 @@ INSTALL_CHECK_FILE="installed_by_webapp_eclass"
 
 ETC_CONFIG="${ROOT}/etc/vhosts/webapp-config"
 WEBAPP_CONFIG="${ROOT}/usr/sbin/webapp-config"
+WEBAPP_CLEANER="${ROOT}/usr/sbin/webapp-cleaner"
 
 # ------------------------------------------------------------------------
 # INTERNAL FUNCTION - USED BY THIS ECLASS ONLY
@@ -49,12 +50,8 @@ WEBAPP_CONFIG="${ROOT}/usr/sbin/webapp-config"
 
 function webapp_read_config ()
 {
-	if has_version '>=app-admin/webapp-config-1.50'; then
-		ENVVAR=$(${WEBAPP_CONFIG} --query ${PN} ${PVR}) || die "Could not read settings from webapp-config!"
-		eval ${ENVVAR}
-	else
-		. ${ETC_CONFIG} || die "Unable to read ${ETC_CONFIG}"
-	fi
+	ENVVAR=$(${WEBAPP_CONFIG} --query ${CATEGORY}/${PN} ${PVR}) || die "Could not read settings from webapp-config!"
+	eval ${ENVVAR}
 }
 
 # ------------------------------------------------------------------------
@@ -301,12 +298,12 @@ function webapp_sqlscript ()
 	# are we dealing with an 'upgrade'-type script?
 	if [ -n "${3}" ]; then
 		# yes we are
-		elog "(${1}) upgrade script from ${PN}-${PVR} to ${3}"
+		elog "(${1}) upgrade script from ${CATEGORY}/${PN}-${PVR} to ${3}"
 		cp "${2}" "${D}${MY_SQLSCRIPTSDIR}/${1}/${3}_to_${PVR}.sql"
 		chmod 600 "${D}${MY_SQLSCRIPTSDIR}/${1}/${3}_to_${PVR}.sql"
 	else
 		# no, we are not
-		elog "(${1}) create script for ${PN}-${PVR}"
+		elog "(${1}) create script for ${CATEGORY}/${PN}-${PVR}"
 		cp "${2}" "${D}/${MY_SQLSCRIPTSDIR}/${1}/${PVR}_create.sql"
 		chmod 600 "${D}/${MY_SQLSCRIPTSDIR}/${1}/${PVR}_create.sql"
 	fi
@@ -332,10 +329,6 @@ function webapp_src_install ()
 
 	# to test whether or not the ebuild has correctly called this function
 	# we add an empty file to the filesystem
-	#
-	# we used to just set a variable in the shell script, but we can
-	# no longer rely on Portage calling both webapp_src_install() and
-	# webapp_pkg_postinst() within the same shell process
 
 	touch "${D}/${MY_APPDIR}/${INSTALL_CHECK_FILE}"
 }
@@ -352,17 +345,9 @@ function webapp_pkg_setup ()
 {
 	# add sanity checks here
 
-	if [ "${SLOT}+" != "${PVR}+" ]; then
-		# special case - some ebuilds *do* need to overwride the SLOT
-		if [ "${WEBAPP_MANUAL_SLOT}" != "yes" ]; then
-			die "ebuild sets SLOT, overrides webapp.eclass"
-		else
-			ewarn
-			ewarn "This ebuild overrides the default SLOT behaviour for webapps"
-			ewarn "If this package installs files into the htdocs dir, this is"
-			ewarn "probably a bug in the ebuild."
-			ewarn
-		fi
+	# special case - some ebuilds *do* need to overwride the SLOT
+	if [[ "${SLOT}+" != "${PVR}+" && "${WEBAPP_MANUAL_SLOT}" != "yes" ]]; then
+		die "Set WEBAPP_MANUAL_SLOT=\"yes\" if you need to SLOT manually"
 	fi
 
 	# pull in the shared configuration file
@@ -382,17 +367,13 @@ function webapp_pkg_setup ()
 
 			if [ "$?" != "0" ]; then
 				# okay, whatever is there, it isn't webapp-config-compatible
-			    ewarn "You already have something installed in ${my_dir}"
+				ewarn "You already have something installed in ${my_dir}"
 				ewarn
 				ewarn "Whatever is in ${my_dir}, it's not"
 				ewarn "compatible with webapp-config."
 				ewarn
 				ewarn "This ebuild may be overwriting important files."
 				ewarn
-			elif [ "$(echo ${my_output} | awk '{ print $1 }')" != "${PN}" ]; then
-				eerror "${my_dir} contains ${my_output}"
-				eerror "I cannot upgrade that"
-				die "Cannot upgrade contents of ${my_dir}"
 			fi
 		fi
 	fi
@@ -414,12 +395,13 @@ function webapp_getinstalltype ()
 			#
 			# make sure it isn't the same version
 
-			local my_pn="$(echo ${my_output} | awk '{ print $1 }')"
-			local my_pvr="$(echo ${my_output} | awk '{ print $2 }')"
+			local my_cat="$(echo ${my_output} | awk '{ print $1 }')"
+			local  my_pn="$(echo ${my_output} | awk '{ print $2 }')"
+			local my_pvr="$(echo ${my_output} | awk '{ print $3 }')"
 
-			REMOVE_PKG="${my_pn}-${my_pvr}"
+			REMOVE_PKG="${my_cat}/${my_pn}-${my_pvr}"
 
-			if [ "${my_pn}" == "${PN}" ]; then
+			if [[ "${my_pn}" == "${PN}" && "${my_cat}" == "${CATEGORY}" ]]; then
 				if [ "${my_pvr}" != "${PVR}" ]; then
 					elog "This is an upgrade"
 					IS_UPGRADE=1
@@ -483,35 +465,24 @@ function webapp_pkg_postinst ()
 		webapp_read_config
 
 		if [ "${IS_REPLACE}" = "1" ]; then
-			elog "${PN}-${PVR} is already installed - replacing"
+			elog "${CATEGORY}/${PN}-${PVR} is already installed - replacing"
 			my_mode=-I
 		elif [ "${IS_UPGRADE}" = "1" ]; then
 			elog "${REMOVE_PKG} is already installed - upgrading"
 			my_mode=-U
 		else
-			elog "${PN}-${PVR} is not installed - using install mode"
+			elog "${CATEGORY}/${PN}-${PVR} is not installed - using install mode"
 		fi
 
-		my_cmd="${WEBAPP_CONFIG} ${my_mode} -h localhost -u root -d ${INSTALL_DIR} ${PN} ${PVR}"
+		my_cmd="${WEBAPP_CONFIG} ${my_mode} -h localhost -u root -d ${INSTALL_DIR} ${CATEGORY}/${PN} ${PVR}"
 		elog "Running ${my_cmd}"
 		${my_cmd}
 
-		# remove the old version
-		#
-		# why do we do this?  well ...
-		#
-		# normally, emerge -u installs a new version and then removes the
-		# old version.  however, if the new version goes into a different
-		# slot to the old version, then the old version gets left behind
-		#
-		# if USE=-vhosts, then we want to remove the old version, because
-		# the user is relying on portage to do the magical thing for it
-
-		if [ "${IS_UPGRADE}" = "1" ] ; then
-			elog "Removing old version ${REMOVE_PKG}"
-
-			emerge -C "${REMOVE_PKG}"
-		fi
+		# run webapp-cleaner instead of emerge
+		echo
+		local cleaner="${WEBAPP_CLEANER} -p -C ${CATEGORY}/${PN}"
+		einfo "Running ${cleaner}"
+		${cleaner}
 	else
 		# vhosts flag is on
 		#
@@ -519,12 +490,12 @@ function webapp_pkg_postinst ()
 
 		elog
 		elog "The 'vhosts' USE flag is switched ON"
-		elog "This means that Portage will not automatically run webapp-config to"
+		elog "This means that webapp-config will not be run automatically to"
 		elog "complete the installation."
 		elog
-		elog "To install ${PN}-${PVR} into a virtual host, run the following command:"
+		elog "To install ${CATEGORY}/${PN}-${PVR} into a virtual host, run the following command:"
 		elog
-		elog "    webapp-config -I -h <host> -d ${PN} ${PN} ${PVR}"
+		elog "    webapp-config -I -h <host> -d ${PN} ${CATEGORY}/${PN} ${PVR}"
 		elog
 		elog "For more details, see the webapp-config(8) man page"
 	fi
@@ -539,27 +510,29 @@ function webapp_pkg_prerm ()
 	local my_output
 	local x
 
-	my_output="$(${WEBAPP_CONFIG} --list-installs ${PN} ${PVR})"
+	my_output="$(${WEBAPP_CONFIG} --list-installs ${CATEGORY}/${PN} ${PVR})"
 
 	if [ "${?}" != "0" ]; then
 		return
 	fi
 
-	for x in ${my_output} ; do
-		[ -f ${x}/.webapp ] && . ${x}/.webapp || ewarn "Cannot find file ${x}/.webapp"
+	if ! use vhosts ; then # remove any installed copies
 
-		if [ -z "${WEB_HOSTNAME}" -o -z "${WEB_INSTALLDIR}" ]; then
-			ewarn "Don't forget to use webapp-config to remove the copy of"
-			ewarn "${PN}-${PVR} installed in"
-			ewarn
+		for x in ${my_output} ; do
+			[ -f ${x}/.webapp ] && . ${x}/.webapp || ewarn "Cannot find file ${x}/.webapp"
+			if [ "${WEB_HOSTNAME}" -a "${WEB_INSTALLDIR}" ]; then
+				${WEBAPP_CONFIG} -C -h ${WEB_HOSTNAME} -d ${WEB_INSTALLDIR} ${CATEGORY}/${PN} ${PVR}
+			fi
+		done
+	else # don't remove anything, but warn user. bug #136959
+
+		ewarn "Don't forget to use webapp-config to remove any copies of"
+		ewarn "${CATEGORY}/${PN}-${PVR} installed in"
+		ewarn
+
+		for x in ${my_output} ; do
+			[ -f ${x}/.webapp ] && . ${x}/.webapp || ewarn "Cannot find file ${x}/.webapp"
 			ewarn "    ${x}"
-			ewarn
-		else
-			# we have enough information to remove the virtual copy ourself
-
-			${WEBAPP_CONFIG} -C -h ${WEB_HOSTNAME} -d ${WEB_INSTALLDIR}
-
-			# if the removal fails - we carry on anyway!
-		fi
-	done
+		done
+	fi
 }

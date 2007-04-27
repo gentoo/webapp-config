@@ -117,11 +117,8 @@ class Ebuild:
 
         sandbox = Sandbox(self.config)
 
-        if sandbox.start():
-            OUT.debug('Disabling hooks')
-            return
-
-        self.run_vars(server)
+        # save list of environment variables to set
+        env_map = self.run_vars(server)
 
         if os.path.isdir(self.__hooksd):
             for x in os.listdir(self.__hooksd):
@@ -131,23 +128,7 @@ class Ebuild:
 
                     OUT.debug('Running hook script', 7)
 
-                    fi, fo, fe = os.popen3(self.__hooksd + '/' + x + ' ' 
-                                           + type)
-                    fi.close()
-                    result_lines = fo.readlines()
-                    error_lines  = fe.readlines()
-                    fo.close()
-                    fe.close()
-
-                    if result_lines:
-                        for i in result_lines:
-                            OUT.notice(i)
-
-                    if error_lines:
-                        for i in error_lines:
-                            OUT.warn(i)
-
-        sandbox.stop()
+                    sandbox.spawn(self.__hooksd + '/' + x + ' ' + type, env_map)
 
     def show_post(self, filename, ptype, server = None):
         '''

@@ -6,7 +6,7 @@
 #
 #       Originally written for the Gentoo Linux distribution
 #
-# Copyright (c) 1999-2006 Gentoo Foundation
+# Copyright (c) 1999-2005 Gentoo Foundation
 #       Released under v2 of the GNU GPL
 #
 # Author(s)     Stuart Herbert <stuart@gentoo.org>
@@ -24,38 +24,36 @@ __version__ = "$Id: permissions.py 129 2005-11-06 12:46:31Z wrobel $"
 # Dependencies
 # ------------------------------------------------------------------------
 
-import os, string, time
-
-from WebappConfig.wrapper   import config_libdir
+import os, os.path, string, time, sys
 
 from WebappConfig.debug     import OUT
+
+# stolen from portage
+if os.path.isdir("/proc/%i/fd" % os.getpid()):
+    def get_open_fds():
+        return map(int, [fd for fd in os.listdir("/proc/%i/fd" % os.getpid()) if fd.isdigit()])
+else:
+    def get_open_fds():
+        return xrange(max_fd_limit)
+
 
 class Sandbox:
     '''
     Basic class for handling sandbox stuff
-    Concept stolen from app-shells/sandboxshell
     '''
 
     def __init__(self, config):
 
         self.config     = config
-        self.__path     =  [config_libdir + '/libsandbox.so',
-                           '/usr/lib/libsandbox.so', '/lib/libsandbox.so']
-        self.__export   = {}
         self.__write    = ['g_installdir',
                            'g_htdocsdir',
                            'g_cgibindir',
                            'vhost_root']
-        self.__read     =  '/'
-
         self.__syswrite = ':/dev/tty:/dev/pts:/dev/null:/tmp'
 
-        self.sandbox    = ''
+        self.sandbox_binary = '/usr/bin/sandbox'
 
-        self.log        = '/tmp/w-c.sandbox-' \
-                            + time.strftime("%Y-%m-%d-%H.%M.%S",time.gmtime())\
-                            + '.log'
-        self.debug_log        = self.log + '.debug'
+        self.env      = {'SANDBOX_WRITE' : self.get_write() }
 
     def get_write(self):
         '''Return write paths.'''
@@ -66,49 +64,116 @@ class Sandbox:
         ''' Return a config option.'''
         return self.config.config.get('USER', option)
 
-    def start(self):
-        '''
-        Start sandbox. Return 1 if failed.
-        '''
+    # stolen from portage
+    def spawn(self, mycommand, full_env):
+        """
+        Spawns a given command.
 
-        OUT.debug('Initializing sandbox', 7)
-        for i in self.__path:
-            if os.access(i, os.R_OK):
-                self.sandbox = i
-                break
+        @param mycommand: the command to execute
+        @type mycommand: String or List (Popen style list)
+        @param full_env: A dict of Key=Value pairs for env variables
+        @type full_env: Dictionary
+        """
 
-        if not self.sandbox:
-            OUT.warn("Could not find a sandbox, disabling hooks")
-            return 1
+        # Default to propagating our stdin, stdout and stderr.
+        fd_pipes = {0:0, 1:1, 2:2}
 
-        try:
-            self.__ld     = os.environ['LD_PRELOAD']
-        except KeyError, e:
-            self.__ld     = ""
+        # mypids will hold the pids of all processes created.
+        mypids = []
 
-        self.__export = {'LD_PRELOAD'         : self.sandbox,
-                         'SANDBOX_WRITE'      : self.get_write(),
-                         'SANDBOX_READ'       : self.__read,
-                         'SANDBOX_LOG'        : self.log,
-                         'SANDBOX_DEBUG_LOG'  : self.debug_log,
-                         'SANDBOX_ON'         : "1",
-                         'SANDBOX_ACTIVE'     : "armedandready"}
-        self.run_vars()
+        command = []
+        command.append(self.sandbox_binary)
+        command.append(mycommand)
 
-    def stop(self):
-        '''Stop sandbox'''
+        # merge full_env (w-c variables) with env (write path)
+        self.env.update(full_env)
+        for a in self.env.keys():
+            if not self.env[a]:
+                self.env[a] = ''
 
-        self.__export = {'LD_PRELOAD'         : self.__ld,
-                         'SANDBOX_WRITE'      : "",
-                         'SANDBOX_READ'       : "",
-                         'SANDBOX_LOG'        : "",
-                         'SANDBOX_DEBUG_LOG'  : "",
-                         'SANDBOX_ON'         : "0",
-                         'SANDBOX_ACTIVE'     : ""}
-        self.run_vars()
+        pid = os.fork()
 
-    def run_vars(self):
+        if not pid:
+            try:
+                self._exec(command, self.env, fd_pipes)
+            except Exception, e:
+                # We need to catch _any_ exception so that it doesn't
+                # propagate out of this function and cause exiting
+                # with anything other than os._exit()
+                sys.stderr.write("%s:\n   %s\n" % (e, " ".join(command)))
+                sys.stderr.flush()
+                os._exit(1)
 
-        for i in self.__export.keys():
-            value = self.__export[i]
-            os.putenv(i, value)
+        # Add the pid to our list
+        mypids.append(pid)
+
+        # Clean up processes
+        while mypids:
+
+            # Pull the last reader in the pipe chain. If all processes
+            # in the pipe are well behaved, it will die when the process
+            # it is reading from dies.
+            pid = mypids.pop(0)
+
+            # and wait for it.
+            retval = os.waitpid(pid, 0)[1]
+
+            if retval:
+                # If it failed, kill off anything else that
+                # isn't dead yet.
+                for pid in mypids:
+                    if os.waitpid(pid, os.WNOHANG) == (0,0):
+                        os.kill(pid, signal.SIGTERM)
+                        os.waitpid(pid, 0)
+
+                # If it got a signal, return the signal that was sent.
+                if (retval & 0xff):
+                    return ((retval & 0xff) << 8)
+
+                # Otherwise, return its exit code.
+                return (retval >> 8)
+
+        # Everything succeeded
+        return 0
+
+    # stolen from portage
+    def _exec(self, binary, env, fd_pipes):
+
+        """
+        Execute a given binary with options in a sandbox
+
+        @param binary: Name of program to execute
+        @type binary: String
+        @param env: Key,Value mapping for Environmental Variables
+        @type env: Dictionary
+        @param fd_pipes: Mapping pipes to destination; { 0:0, 1:1, 2:2 }
+        @type fd_pipes: Dictionary
+        @rtype: None
+        @returns: Never returns (calls os.execve)
+        """
+
+        # If the process we're creating hasn't been given a name
+        # assign it the name of the executable.
+        opt_name = os.path.basename(binary[0])
+
+        # Set up the command's pipes.
+        my_fds = {}
+        # To protect from cases where direct assignment could
+        # clobber needed fds ({1:2, 2:1}) we first dupe the fds
+        # into unused fds.
+        for fd in fd_pipes:
+            my_fds[fd] = os.dup(fd_pipes[fd])
+        # Then assign them to what they should be.
+        for fd in my_fds:
+            os.dup2(my_fds[fd], fd)
+        # Then close _all_ fds that haven't been explictly
+        # requested to be kept open.
+        for fd in get_open_fds():
+            if fd not in my_fds:
+                try:
+                    os.close(fd)
+                except OSError:
+                    pass
+
+        # And switch to the new process.
+        os.execve(binary[0], binary, env)

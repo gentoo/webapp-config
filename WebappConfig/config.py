@@ -255,14 +255,16 @@ class Config:
             # --show-post*. Think about it again.
             #
             # -- wrobel
-
-            # see self.determine_category for the rest of config vars
             'vhost_server_uid'  : 'root',
             'vhost_server_gid'  : 'root',
             'my_persistroot'    : '/var/db/webapps',
             'wa_installsbase'   : 'installs',
             'vhost_root'        : '/var/www/%(vhost_hostname)s',
             'g_htdocsdir'       : '%(vhost_root)s/%(my_htdocsbase)s',
+            'my_appdir'         : '%(my_approot)s/%(my_appsuffix)s',
+            'my_htdocsdir'      : '%(my_appdir)s/htdocs',
+            'my_persistdir'     : '%(my_persistroot)s/%(my_appsuffix)s',
+            'my_hostrootdir'    : '%(my_appdir)s/%(my_hostrootbase)s',
             'my_cgibindir'      : '%(my_hostrootdir)s/%(my_cgibinbase)s',
             'my_iconsdir'       : '%(my_hostrootdir)s/%(my_iconsbase)s',
             'my_errorsdir'      : '%(my_hostrootdir)s/%(my_errorsbase)s',
@@ -270,6 +272,19 @@ class Config:
             'my_approot'        : '/usr/share/webapps',
             'package_manager'   : 'portage',
             'allow_absolute'    : 'no',
+            'my_hostrootbase'   : 'hostroot',
+            'my_cgibinbase'     : 'cgi-bin',
+            'my_iconsbase'      : 'icons',
+            'my_errorsbase'     : 'error',
+            'my_sqlscriptsdir'  : '%(my_appdir)s/sqlscripts',
+            'my_hookscriptsdir' : '%(my_appdir)s/hooks',
+            'my_serverconfigdir': '%(my_appdir)s/conf',
+            'wa_configlist'     : '%(my_appdir)s/config-files',
+            'wa_solist'         : '%(my_appdir)s/server-owned-files',
+            'wa_virtuallist'    : '%(my_appdir)s/virtuals',
+            'wa_installs'       : '%(my_persistdir)s/%(wa_installsbase)s',
+            'wa_postinstallinfo':
+            '%(my_appdir)s/post-install-instructions.txt',
             }
 
         # Setup basic defaults
@@ -285,7 +300,7 @@ class Config:
 
     def set_configprotect(self):
         self.config.set('USER', 'config_protect',
-           wrapper.config_protect(self.config.get('USER', 'cat'),
+           wrapper.config_protect(self.maybe_get('cat'),
                                   self.config.get('USER', 'pn'),
                                   self.config.get('USER', 'pvr'),
                                   self.config.get('USER', 'package_manager') ))
@@ -296,51 +311,6 @@ class Config:
             self.determine_appsuffix()
 
         self.set_configprotect()
-        wrapper.get_root(self)
-
-        pn  = self.config.get('USER', 'pn')
-        pvr = self.config.get('USER', 'pvr')
-        my_approot = self.config.get('USER', 'my_approot')
-        my_appsuffix    = self.config.get('USER', 'my_appsuffix')
-        persist_suffix    = self.config.get('USER', 'persist_suffix')
-
-        my_appdir       = os.path.join(my_approot,my_appsuffix)
-        my_hostrootbase = 'hostroot'
-        my_hostrootdir  = os.path.join(my_appdir,my_hostrootbase)
-        my_cgibinbase   = 'cgi-bin'
-        my_iconsbase    = 'icons'
-        my_errorsbase   = 'error'
-        my_persistroot  = '/var/db/webapps'
-        wa_installsbase = 'installs'
-        my_persistdir   = os.path.join(my_persistroot,persist_suffix)
-
-        a = {
-        'my_appdir'         : my_appdir,
-        'my_hostrootdir'    : my_hostrootdir,
-        'my_hostrootbase'   : my_hostrootbase,
-        'my_cgibinbase'     : my_cgibinbase,
-        'my_iconsbase'      : my_iconsbase,
-        'my_errorsbase'     : my_errorsbase,
-        'my_persistroot'    : my_persistroot,
-        'wa_installsbase'   : wa_installsbase,
-        'my_persistdir'     : my_persistdir,
-        'my_htdocsdir'      : '/'.join([my_appdir,'htdocs']),
-        'my_hostrootdir'    : '/'.join([my_appdir,my_hostrootbase]),
-        'my_cgibindir'      : '/'.join([my_hostrootdir,my_cgibinbase]),
-        'my_iconsdir'       : '/'.join([my_hostrootdir,my_iconsbase]),
-        'my_errorsdir'      : '/'.join([my_hostrootdir,my_errorsbase]),
-        'my_sqlscriptsdir'  : '/'.join([my_appdir,'sqlscripts']),
-        'my_hookscriptsdir' : '/'.join([my_appdir,'hooks']),
-        'my_serverconfigdir': '/'.join([my_appdir,'conf']),
-        'wa_configlist'     : '/'.join([my_appdir,'config-files']),
-        'wa_solist'         : '/'.join([my_appdir,'server-owned-files']),
-        'wa_virtuallist'    : '/'.join([my_appdir,'virtuals']),
-        'wa_installs'       : '/'.join([my_persistdir,wa_installsbase]),
-        'wa_postinstallinfo': '/'.join([my_appdir,'post-install-instructions.txt'])
-        }
-
-        for key in a.keys():
-            self.config.set('USER', key, a[key])
 
     def determine_appsuffix(self):
 
@@ -349,10 +319,13 @@ class Config:
         pvr = self.config.get('USER', 'pvr')
         my_approot = self.config.get('USER', 'my_approot')
 
-        old_layout =     os.path.join(my_approot,      pn, pvr)
+        old_layout = os.path.join(my_approot, pn, pvr)
 
         if cat:
             new_layout = os.path.join(my_approot, cat, pn, pvr)
+
+            OUT.debug('Checking for new layout', 7)
+
             # include cat in persist_suffix. Note that webapp.eclass will always
             # supply category info, so the db will always end up in the right place.
             self.config.set('USER', 'persist_suffix', '/'.join([cat,pn,pvr]))
@@ -365,6 +338,9 @@ class Config:
             else:
                 OUT.die('Unable to determine location of master copy')
         else:
+
+            OUT.debug('Checking for old layout', 7)
+
             if os.path.isdir(old_layout):
                 self.config.set('USER', 'my_appsuffix', '%(pn)s/%(pvr)s')
                 self.config.set('USER', 'cat', '')
@@ -1068,7 +1044,7 @@ class Config:
             self.check_version_set()
 
             # set my_appsuffix right away
-            cat = self.config.get('USER', 'cat')
+            cat = self.maybe_get('cat')
             pn  = self.config.get('USER', 'pn')
             pvr = self.config.get('USER', 'pvr')
             self.config.set('USER', 'my_appsuffix',   '/'.join([cat,pn,pvr]))
@@ -1209,7 +1185,7 @@ class Config:
                                                     self.maybe_get('pn'),
                                                     self.maybe_get('pvr')),
                                ws,
-                               self.config.get('USER', 'cat'),
+                               self.maybe_get('cat'),
                                self.config.get('USER', 'pn'),
                                self.config.get('USER', 'pvr')).install()
 
@@ -1347,7 +1323,7 @@ class Config:
 
             # I don't really think the above comments still apply -- rl03
 
-            if (self.config.get('USER', 'cat') == old['WEB_CATEGORY'] and
+            if (self.maybe_get('cat') == old['WEB_CATEGORY'] and
                 self.config.get('USER', 'pn') == old['WEB_PN'] and
                 self.config.get('USER', 'pvr') == old['WEB_PVR']):
                 OUT.warn('Do you really want to upgrade to the same pac'
@@ -1355,12 +1331,12 @@ class Config:
                          'f you are uncertain.')
                 time.sleep(8)
 
-            if (self.config.get('USER','cat') + self.config.get('USER', 'pn') != \
+            if (self.maybe_get('cat') + self.config.get('USER', 'pn') != \
                     old['WEB_CATEGORY'] + old['WEB_PN']):
                 OUT.warn('Do you really want to switch the installation'
                          ' from package "' + old['WEB_CATEGORY'] + '/' +
                          old['WEB_PN'] + '" to package "' + \
-                         self.config.get('USER','cat') + '/' + \
+                         self.maybe_get('cat') + '/' + \
                          self.config.get('USER', 'pn') + '"?\nWai'
                          'ting for 8 seconds... \nPress Ctrl-c if you are'
                          ' uncertain.')
@@ -1386,7 +1362,7 @@ class Config:
                                ws,
                                old['WEB_CATEGORY'],
                                old['WEB_PN'],
-                               old['WEB_PVR']).upgrade(self.config.get('USER', 'cat'),
+                               old['WEB_PVR']).upgrade(self.maybe_get('cat'),
                                                        self.config.get('USER', 'pn'),
                                                        self.config.get('USER', 'pvr'))
 

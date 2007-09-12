@@ -3,5 +3,7 @@ include doc/*
 include eclass/*
 include examples/*
 include xslt/*
+include AUTHORS
+include COPYING
 include *.txt
 recursive-include WebappConfig/tests *

@@ -1,47 +1,55 @@
+2007-09-12  Gunnar Wrobel  <p@rdus.de>
+
+	* sbin/webapp-cleaner:
+
+	Merge fix from rl03 for #177775.
+	http://bugs.gentoo.org/show_bug.cgi?id=177775
+	svn merge -r51:52 branches/rl03/trunk/ trunk/
+
 2007-05-11  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/config.py (Config): 
+	* WebappConfig/config.py (Config):
 
 	Fixed the way the target directory for a portage install is set.
 
 
 2007-04-28  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/*.py: 
+	* WebappConfig/*.py:
 
 	Support categories, support paludis.  Allow absolute paths, fix
 	config variable import, updated sandbox.
 
-2006-12-30  Gunnar Wrobel  <wrobel@pardus.de>
+2006-12-30  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/*.py: 
+	* WebappConfig/*.py:
 
 	Fixed copyright years.
-	
-	* WebappConfig/content.py (Contents.get_canremove): 
+
+	* WebappConfig/content.py (Contents.get_canremove):
 
 	Fixed doc testing for older get_canremove fix.
 
-	* WebappConfig/ebuild.py (Ebuild.run_vars): 
+	* WebappConfig/ebuild.py (Ebuild.run_vars):
 
 	Fixed doc testing for uid/gid fixes.
 
-	* WebappConfig/config.py (Config.__init__, Config.get_perm): 
+	* WebappConfig/config.py (Config.__init__, Config.get_perm):
 
 	Fixed uid/gid BDS problems (bugs #104652 and #149939)
 
 	Fixed type in get_perm (bug #133530)
-	
-	* WebappConfig/permissions.py (PermissionMap): 
+
+	* WebappConfig/permissions.py (PermissionMap):
 
 	Fixed permission map parsing (bug #146059)
 
-	* WebappConfig/wrapper.py (package_installed): 
+	* WebappConfig/wrapper.py (package_installed):
 
 	Added support for package.provided when detecting installed
 	packages (bug #139965)
-	
-2006-04-21    <post@gunnarwrobel.de>
+
+2006-04-21  Gunnar Wrobel  <p@rdus.de>
 
 	* doc/webapp-config.8.xml: Added -D and -E description.
 	Fixed upgrade instructions. Bug #129167
@@ -56,18 +64,18 @@
 	* WebappConfig/server.py (Cherokee): Added cherokee
 	support. Bug #129359
 
-	* WebappConfig/config.py (Config.split_hostname): 
+	* WebappConfig/config.py (Config.split_hostname):
 	Added support for splitting hostnames into subdomains.
 	Bug #126486
 
-	* WebappConfig/wrapper.py: Added types import. 
+	* WebappConfig/wrapper.py: Added types import.
 	Bug #126534
 
-2006-03-06    <post@gunnarwrobel.de>
+2006-03-06  Gunnar Wrobel  <p@rdus.de>
 
 	* WebappConfig/version.py: Version bump to 1.50.13
 
-	* WebappConfig/wrapper.py: Fix for the libdir 
+	* WebappConfig/wrapper.py: Fix for the libdir
 	problem (see bug #125156)
 
 	* WebappConfig/sandbox.py (Sandbox.__init__): Second
@@ -81,55 +89,55 @@
 	* WebappConfig/sandbox.py (Sandbox.__init__): Added
 	possible amd64 libdir fix
 
-2006-02-28    <post@gunnarwrobel.de>
+2006-02-28  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/db.py (WebappSource.packageavail): 
+	* WebappConfig/db.py (WebappSource.packageavail):
 	Adapted to change in package_installed
 
-	* WebappConfig/wrapper.py (package_installed): 
+	* WebappConfig/wrapper.py (package_installed):
 	Fixed logic to allow for non-exact checks
 
 	* WebappConfig/server.py (Basic.__init__): Added check
 	for installed web server.
 	(Basic.supported): Added package check.
 
-2006-01-30    <post@gunnarwrobel.de>
+2006-01-30  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/db.py (WebappSource.get_source_files): 
+	* WebappConfig/db.py (WebappSource.get_source_files):
 	Added array sorting.
-	(WebappSource.get_source_directories): 
+	(WebappSource.get_source_directories):
 	Added array sorting.
 
-	* WebappConfig/ebuild.py (Ebuild.run_vars): Fixed 
+	* WebappConfig/ebuild.py (Ebuild.run_vars): Fixed
 	pass-through of the server variable and modified
 	the uid/gid extraction to result in readable names.
 
 	* WebappConfig/server.py (Basic.install): Showing the
 	instructions now includes the server argument.
 
-2006-01-29    <post@gunnarwrobel.de>
+2006-01-29  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/config.py (Config.run): Both 
-	vhost_config_virtual_files and 
+	* WebappConfig/config.py (Config.run): Both
+	vhost_config_virtual_files and
 	vhost_config_default_dirs were ignored. Fixed.
 
-2006-01-27    <post@gunnarwrobel.de>
+2006-01-27  Gunnar Wrobel  <p@rdus.de>
 
 	* WebappConfig/version.py: Version bump to 1.50.9
 
 	* WebappConfig/server.py (Basic): Fixed
 	behaviour for upgrades. Now shows upgrade instructions
 
-	* WebappConfig/config.py (BashConfigParser.get): 
-	Fixed error message for a problematic configuration 
+	* WebappConfig/config.py (BashConfigParser.get):
+	Fixed error message for a problematic configuration
 	configuration file.
 
-2006-01-13    <post@gunnarwrobel.de>
+2006-01-13  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/content.py (Contents.get_canremove): 
+	* WebappConfig/content.py (Contents.get_canremove):
 	Fix for recognizing config protected files
 
-	* WebappConfig/worker.py (WebappAdd.mkfile): 
+	* WebappConfig/worker.py (WebappAdd.mkfile):
 	Fix for recognizing config protected files
 
 	* WebappConfig/filetype.py (FileType.__init__): New
@@ -141,10 +149,10 @@
 	* WebappConfig/server.py (Basic.__init__): Setting
 	server permissions for config-server-owned
 
-	* WebappConfig/config.py (Config.create_permissions): 
+	* WebappConfig/config.py (Config.create_permissions):
 	Added permissions for config-server-owned
 
-2006-01-09    <post@gunnarwrobel.de>
+2006-01-09  Gunnar Wrobel  <p@rdus.de>
 
 	* WebappConfig/version.py: Releasing .7
 
@@ -157,14 +165,14 @@
 	* WebappConfig/ebuild.py (Ebuild.run_vars): Fixed
 	VHOST_SERVER_UID (see ticket #40 -> www.vhost-tools.org)
 
-2006-01-05    <post@gunnarwrobel.de>
+2006-01-05  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/worker.py (WebappAdd.mkfile): Fix to 
+	* WebappConfig/worker.py (WebappAdd.mkfile): Fix to
 	support broken symlinks.
 
-2006-01-04    <post@gunnarwrobel.de>
+2006-01-04  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/db.py (WebappSource.reportpackageavail): 
+	* WebappConfig/db.py (WebappSource.reportpackageavail):
 	Removed problematic doc tests.
 
 	* WebappConfig/version.py: Version 1.50.5
@@ -183,82 +191,82 @@
 	* ebuild/webapp-config-1.50.4.ebuild (src_test): Added
 	testing function.
 
-2005-12-28    <post@gunnarwrobel.de>
+2005-12-28  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/content.py (Contents.read): Fixed a 
+	* WebappConfig/content.py (Contents.read): Fixed a
 	problem that I introduced with 1.50.3. The cleaning of
 	the hostroot dir did not work anymore.
 
 	* WebappConfig/version.py: Version 1.50.4
 
-	* WebappConfig/db.py (WebappSource.get_source_files): 
+	* WebappConfig/db.py (WebappSource.get_source_files):
 	Tried to fix the symlinking problem.
 
-	* WebappConfig/config.py (Config.setinstalldir): 
+	* WebappConfig/config.py (Config.setinstalldir):
 	Fixed trailing slashes for the installdir (bug #115765)
 
-2005-12-09    <post@gunnarwrobel.de>
+2005-12-09  Gunnar Wrobel  <p@rdus.de>
 
 	* WebappConfig/content.py (Contents.write): Fixed
 	handling of content file between upgrades.
 
-2005-12-07    <post@gunnarwrobel.de>
+2005-12-07  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/config.py (Config.create_permissions): 
+	* WebappConfig/config.py (Config.create_permissions):
 	Removed "root" reference and modified group owner
 	from "root" to config user gid. Unclear why the bash
 	version used root here.
 
-	* WebappConfig/server.py (Basic.set_server_user): 
+	* WebappConfig/server.py (Basic.set_server_user):
 	Removed "root" reference.
 
-2005-11-30    <post@gunnarwrobel.de>
+2005-11-30  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/ebuild.py (Ebuild.run_vars): Added 
+	* WebappConfig/ebuild.py (Ebuild.run_vars): Added
 	MY_HOSTROOTDIR to the exported variables.
 
 	Added doctests for the last two changes.
 
-2005-11-27    <post@gunnarwrobel.de>
+2005-11-27  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/ebuild.py (Ebuild.run_hooks): Reverted 
+	* WebappConfig/ebuild.py (Ebuild.run_hooks): Reverted
 	hook logic. Stupid mistake. Thanks Renat!
 
-2005-11-07    <post@gunnarwrobel.de>
+2005-11-07  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/db.py (AppHierarchy.list_locations): 
+	* WebappConfig/db.py (AppHierarchy.list_locations):
 	Improved handling of situations where the user only
 	specifies the project name.
-	(AppHierarchy.list_locations): 
-	Fixes for --listunsed which did not report unused 
+	(AppHierarchy.list_locations):
+	Fixes for --listunsed which did not report unused
 	packages.
 
-	* WebappConfig/config.py (Config.run): Fixed call for 
+	* WebappConfig/config.py (Config.run): Fixed call for
 	list-installs
 
 	* WebappConfig/server.py (Basic.upgrade): Added support
 	for switching packages during upgrading
 
-	* WebappConfig/config.py: Removed upgrade check, added 
+	* WebappConfig/config.py: Removed upgrade check, added
 	warnings.
 
 	* Many changes to remove --force-virtual support
 
-2005-11-06    <post@gunnarwrobel.de>
+2005-11-06  Gunnar Wrobel  <p@rdus.de>
 
 	* WebappConfig/server.py (Basic.install): Fixed
 	creation of the root directory
 
-	* WebappConfig/content.py (Contents.check_installdir): 
+	* WebappConfig/content.py (Contents.check_installdir):
 	Moved check for the installation directory to a better
 	place
 
 	* WebappConfig/config.py: Fixed permission issues
 
-	* WebappConfig/worker.py (WebappAdd.mkfile): Fixed 
+	* WebappConfig/worker.py (WebappAdd.mkfile): Fixed
 	messages while linking.
 
-	* WebappConfig/config.py (Config.create_server): 
+	* WebappConfig/config.py (Config.create_server):
 	Fixed soft linking.
 
 	* WebappConfig/protect.py: Fixed some bugs concerning
@@ -269,47 +277,47 @@
 
 	* WebappConfig/filetype.py: Fixed double slashes.
 
-	* WebappConfig/server.py: Adapted to the new user/group 
+	* WebappConfig/server.py: Adapted to the new user/group
 	handliing
 
-	* WebappConfig/wrapper.py: Fixed import statement from 
+	* WebappConfig/wrapper.py: Fixed import statement from
 	gentoolkit
 
-	* WebappConfig/config.py: Adapted to the new user/group 
+	* WebappConfig/config.py: Adapted to the new user/group
 	handliing
 
-	* WebappConfig/worker.py: Adapted to the new user/group 
+	* WebappConfig/worker.py: Adapted to the new user/group
 	handliing
 
 	* WebappConfig/permissions.py: Added functions get_user and
 	get_group to handle numerical uid's and gid's
 
-	* doc/webapp-config.8.xml: Fixed instructions concerning 
+	* doc/webapp-config.8.xml: Fixed instructions concerning
 	numerical uid and gid
 
 	* config/webapp-config: Removed fixmes concerning numerical
 	uid and gid
 
-2005-11-05    <post@gunnarwrobel.de>
+2005-11-05  Gunnar Wrobel  <p@rdus.de>
 
 	* WebappConfig/permissions.py: Added the permission handler.
 
 	* sbin/webapp-config: pylintification.
 
-2005-11-03    <post@gunnarwrobel.de>
+2005-11-03  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/content.py: Removed pretend check for file 
+	* WebappConfig/content.py: Removed pretend check for file
 	operations.
 	(Contents.read): Incorrect check for relative flag fixed.
 
-	* WebappConfig/config.py (Config.create_permissions): 
+	* WebappConfig/config.py (Config.create_permissions):
 	Incorrect permissions fixed.
 
 	* WebappConfig/dotconfig.py (DotConfig.write): Added quotes
 	that I forgot before
 
 	* WebappConfig/db.py: Doctest fix.
-	(WebappDB.add):  Fixed handling of newlines in the "install" 
+	(WebappDB.add):  Fixed handling of newlines in the "install"
 	files
 
 	* WebappConfig/content.py (Contents.add): Handling absoulte
@@ -317,13 +325,13 @@
 
 	* WebappConfig/worker.py: Fixed handling absolute paths.
 
-	* WebappConfig/server.py (Basic.install): Fixed handling 
+	* WebappConfig/server.py (Basic.install): Fixed handling
 	absolute paths.
 
 	* WebappConfig/config.py (Config.run): Fixed creating the
 	virtual install location.
 
-2005-11-02    <post@gunnarwrobel.de>
+2005-11-02  Gunnar Wrobel  <p@rdus.de>
 
 	* WebappConfig/db.py: Another doctest fix.
 
@@ -339,7 +347,7 @@
 	variables, extended status message function (not needed
 	by w-c)
 
-2005-11-01    <post@gunnarwrobel.de>
+2005-11-01  Gunnar Wrobel  <p@rdus.de>
 
 	* WebappConfig/version.py: Version 1.22
 
@@ -349,23 +357,23 @@
 	* WebappConfig/server.py: Pretending to install and clean
 	runs through now but still has bugs.
 
-	* WebappConfig/worker.py 
-	(WebappRemove.remove_dirs) 
-	(WebappRemove.remove_files): 
+	* WebappConfig/worker.py
+	(WebappRemove.remove_dirs)
+	(WebappRemove.remove_files):
 	Fixed return value (anything left behind)
-	
+
 	* WebappConfig/dotconfig.py (DotConfig.__getitem__): Added
 	function to retrieve red values.
 
-	* WebappConfig/server.py: Adapted to the new source 
+	* WebappConfig/server.py: Adapted to the new source
 	organization.
 
-	* WebappConfig/config.py: Adapted to the new source 
+	* WebappConfig/config.py: Adapted to the new source
 	organization.
 
-2005-10-31    <post@gunnarwrobel.de>
+2005-10-31  Gunnar Wrobel  <p@rdus.de>
 
-	* WebappConfig/content.py (Contents.add): Fixed action 
+	* WebappConfig/content.py (Contents.add): Fixed action
 	when pretending.
 	(Contents.kill): Added function to remove the content file.
 
@@ -378,23 +386,23 @@
 
 	* WebappConfig/content.py:  Fixed variable typo.
 
-	* WebappConfig/db.py 
-	(WebappSource.source_exists): 
-	(WebappSource.get_source_directories): 
-	(WebappSource.get_source_files): 
+	* WebappConfig/db.py
+	(WebappSource.source_exists):
+	(WebappSource.get_source_directories):
+	(WebappSource.get_source_files):
 	Added functions.
-	
-	(WebappSource.read): 
+
+	(WebappSource.read):
 	Added support for filetypes from whithin the source handler.
 
 	* WebappConfig/worker.py: Splitted the worker in adding and
 	removing. Nearly finished doctesting.
 
-2005-10-30    <post@gunnarwrobel.de>
+2005-10-30  Gunnar Wrobel  <p@rdus.de>
 
 	* WebappConfig/content.py: Finished doctesting the module.
 
-2005-10-29    <post@gunnarwrobel.de>
+2005-10-29  Gunnar Wrobel  <p@rdus.de>
 
 	* WebappConfig/tests/testfiles: Added a number of test
 	files for the doc tests.
@@ -402,24 +410,24 @@
 	* WebappConfig/content.py: Handler for the contents
 	file (split from worker.py)
 
-	* WebappConfig/db.py: Moved functions for package 
+	* WebappConfig/db.py: Moved functions for package
 	availability into the Webapps handler
 
-	* WebappConfig/protect.py: Handler for config protected 
+	* WebappConfig/protect.py: Handler for config protected
 	files (split from worker.py)
-	
+
 	* WebappConfig/dotconfig.py: Handler for the dotConfig file
 	in virtual install locations (split from worker.py/config.py)
 
 	* WebappConfig/ebuild.py: Handler for the ebuild postinstall
 	files and script hooks. (split from worker.py)
 
-2005-10-28    <post@gunnarwrobel.de>
+2005-10-28  Gunnar Wrobel  <p@rdus.de>
 
 	* WebappConfig/content.py: Handler for the contents of
 	a virtual install. (split from worker.py)
 
-	* WebappConfig/db.py: Handler for /var/db/webapps and 
+	* WebappConfig/db.py: Handler for /var/db/webapps and
 	/usr/share/webapps (split from worker.py)
 
 	* WebappConfig/filetype.py: Handler for different file types.
@@ -441,7 +449,7 @@
 
 	* TODO.txt: Merged in revision (r45:47)
 
-2005-10-27    <post@gunnarwrobel.de>
+2005-10-27  Gunnar Wrobel  <p@rdus.de>
 
 	* WebappConfig/config.py: Merged revisions (r41:42)
 
@@ -453,5 +461,3 @@
 	branch.
 
 	* branch/gunnar: Created separate branch based on revision 36.
-	
-

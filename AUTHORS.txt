@@ -9,7 +9,7 @@ Code authors:
 
         Stuart Herbert <stuart@gentoo.org>
         Renat Lumpau <rl03@gentoo.org>
-        Gunnar Wrobel  <php@gunnarwrobel.de>
+        Gunnar Wrobel  <wrobel@gentoo.org>
 
 Significant contributors (testing, review, design suggestions):
 	

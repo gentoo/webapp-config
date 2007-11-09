@@ -161,7 +161,7 @@ class Basic:
 
         # is the installation directory empty?
 
-        if not os.listdir(self.__destd):
+        if not os.listdir(self.__destd) and os.path.isdir(self.__destd):
             if not self.__p:
                 os.rmdir(self.__destd)
         else:

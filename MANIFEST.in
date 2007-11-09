@@ -4,6 +4,12 @@ include eclass/*
 include examples/*
 include xslt/*
 include AUTHORS
+include ChangeLog
+include CHANGES
 include COPYING
-include *.txt
+include HACKING
+include INSTALL
+include README
+include RELEASE_NOTES
+include TODO
 recursive-include WebappConfig/tests *

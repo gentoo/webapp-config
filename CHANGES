@@ -2,7 +2,8 @@ Version 1.50.19 - Released
 =========================================
 
   * bug fix: webapp-config-1.50.16 errors out during uninstall if
-  	     htdocs is a symlink (Gentoo bug #181938)
+	     htdocs is a symlink (Gentoo bug #181938)
+  * bug fix: Check for Apache fixed to www-servers category
 
 Version 1.50.18 - Released 
 =========================================

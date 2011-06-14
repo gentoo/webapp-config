@@ -16,9 +16,9 @@ Required enhancements
 1.50.19
 
 Update the CHANGES file.
-Check the freshmeat project site.
-Check the sourceforge project site.
-Check the Ohloh project site
+DEPRECATED(blueness) - Check the freshmeat project site.
+DEPRECATED(blueness) - Check the sourceforge project site.
+DEPRECATED(blueness) - Check the Ohloh project site
 Complete the README file.
 Complete the INSTALL file.
 Complete the HACKING file.
@@ -27,7 +27,7 @@ Get a common file header for the code files.
 Plans
 -----
 
-Three RSS feeds: commits, devnotes, announcements
+DEPRECATED(blueness) - Three RSS feeds: commits, devnotes, announcements
 
 
 Deferred For webapp-config-v2

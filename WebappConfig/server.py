@@ -49,6 +49,7 @@ class Basic:
                  pm):
 
         if self.dep and not self.supported(pm):
+            print self.dep
             OUT.die('Your configuration file sets the server type "' + self.name
                     + '"\nbut the corresponding package does not seem to be '
                     'installed!\nPlease "emerge ' + self.dep + '" or correct '
@@ -307,7 +308,7 @@ class Apache(Basic):
 
     name   = 'Apache'
     desc   = 'supports installation on Apache 1 & 2'
-    dep    = '>=net-www/apache-1.3'
+    dep    = '>=www-servers/apache-1.3'
 
     def set_server_user(self):
         self.vhost_server_uid = get_user('apache')

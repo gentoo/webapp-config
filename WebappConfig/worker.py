@@ -386,6 +386,7 @@ class WebappAdd:
                            dirtype,
                            self.__destd,
                            directory,
+                           directory,
                            self.__relative)
 
     def mkfile(self, filename):
@@ -555,6 +556,7 @@ class WebappAdd:
                            file_type,
                            self.__destd,
                            filename,
+                           dst_name,
                            self.__relative)
 
 

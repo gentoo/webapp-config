@@ -321,6 +321,7 @@ class Contents:
             ctype,
             destination,
             path,
+            real_path,
             relative = True):
         '''
         Add an entry to the contents file.
@@ -376,7 +377,9 @@ class Contents:
           ctype       - internal webapp-config type
                       - (server-owned | config-owned | virtual)
           destination - install dir (normally $G_INSTALLDIR)
-          entry       - filename inside 'destination'
+          path        - filename inside 'destination'
+          real_path   - for config-protected files realpath =! path
+                        (and this is important for md5)
           relative    - 1 for storing a relative filename, 0 otherwise
 
         >>> OUT.color_off()
@@ -509,7 +512,7 @@ class Contents:
                                       ctype,
                                       '"' + path + '"',
                                       self.file_time(entry),
-                                      a[1](entry),
+                                      a[1](real_path),
                                       a[2](entry)]
 
             if self.__v:

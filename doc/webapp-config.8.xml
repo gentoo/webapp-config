@@ -133,16 +133,14 @@
 	  <arg choice="plain">
 	    <option>--list-unused-installs</option>
 	  </arg>
-	  <group choice="opt">
-	    <arg>
-	      <replaceable>app-name</replaceable>
-	    </arg>
-	  </group>
-	  <group choice="opt">
-	    <arg>
+	  <arg choice="opt">
+	    <arg choice="req">
 	      <replaceable>app-version</replaceable>
 	    </arg>
-	  </group>
+	    <arg choice="opt">
+	      <replaceable>app-version</replaceable>
+	    </arg>
+	  </arg>
 	</cmdsynopsis>
 
 	<cmdsynopsis>
@@ -281,7 +279,6 @@
 	    <term><option>--lui</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
 	    <listitem>
 	      <para>Outputs a list of all the master copies of the <replaceable>app-name</replaceable>-<replaceable>app-version</replaceable> package that have not been installed using <command>webapp-config</command> <option>-I</option>.</para>
-	      <para>Both <replaceable>app-name</replaceable> or <replaceable>app-version</replaceable> can be <emphasis>*</emphasis> to search for multiple packages or versions.</para>
 	    </listitem>
 	  </varlistentry>
 

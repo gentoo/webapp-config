@@ -572,11 +572,9 @@ class Config:
                          '--lui',
                          action='store_true',
                          help = 'List all master images which currently a'
-                         're not used. Use * for the package name and/or '
-                         'version number to list more than one package / '
-                         'version of a package. Remember to include the *'
-                         ' in single quotes to stop your shell from expan'
-                         'ding it first!!')
+                         're not used. Optionally, provide a package and/'
+                         'or version number as arguments to restrict the '
+                         'listing.')
 
         group.add_option('--show-installed',
                          '--si',

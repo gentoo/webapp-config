@@ -242,7 +242,7 @@
 	      <term><command>webapp_server_configfile</command> <replaceable>server</replaceable> <replaceable>file</replaceable> <replaceable>newfile</replaceable></term>
 	      <listitem>
 	        <para>Use this function to install a webserver configuration file.  The configuration file is installed into ${MY_SERVERCONFIGDIR}, and <command>webapp-config</command> will install this file during install (-I mode).</para>
-	        <para><replaceable>server</replaceable> is one of: apache, lighttpd, aolserver.</para>
+	        <para><replaceable>server</replaceable> is one of: apache, lighttpd, cherokee.</para>
 	        <para><replaceable>file</replaceable> is a webserver configuration file in ${S}.  This should be a configuration file tested with <replaceable>server</replaceable>.</para>
 	        <para><replaceable>newfile</replaceable> is the new name for <replaceable>file</replaceable>.  This parameter is optional; if not supplied, <replaceable>newfile</replaceable> is set to <userinput>`basename <replaceable>file</replaceable>`</userinput>.</para>
 	      </listitem>

@@ -65,7 +65,6 @@ vhost_hostname="localhost"
 # your choices are:
 #
 # apache
-# aolserver
 # lighttpd
 # cherokee
 #

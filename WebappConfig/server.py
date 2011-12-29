@@ -324,16 +324,6 @@ class Lighttpd(Basic):
         self.vhost_server_uid = get_user('lighttpd')
         self.vhost_server_gid = get_group('lighttpd')
 
-class Aolserver(Basic):
-
-    name   = 'Aolserver'
-    desc   = 'supports installation on Aolserver'
-    dep    = 'www-servers/aolserver'
-
-    def set_server_user(self):
-        self.vhost_server_uid = get_user('aolserver')
-        self.vhost_server_gid = get_group('aolserver')
-
 class Cherokee(Basic):
 
     name   = 'Cherokee'
@@ -347,6 +337,5 @@ class Cherokee(Basic):
 def listservers():
 
     OUT.notice('\n'.join(['apache',
-                          'aolserver',
                           'lighttpd',
                           'cherokee']))

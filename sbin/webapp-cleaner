@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
+ATOM=
+CAT=
 PN=
 
 ACTION=
@@ -56,12 +58,12 @@ function sanity_checks() {
 		exit 1
 	fi
 
-	if [[ $(expr index "${PN}" "/") == "0" ]] ; then
+	if [[ "${CAT}x" == "x" || "${PN}x" == "x" ]]; then
 		eerror "Package name must be in the form CATEGORY/PN"
 		exit 1
 	fi
 
-	if [[ ! -d "${WEBAPP_DIR}/${PN}" ]]; then
+	if [[ ! -d "${WEBAPP_DIR}/${CAT}/${PN}" && ! -d  "${WEBAPP_DIR}/${PN}" ]]; then
 		eerror "${PN} not found"
 		exit 1
 	fi
@@ -133,12 +135,19 @@ function process_opts() {
 				ACTION="help"
 				;;
 			*)
-				PN="$1"
+				ATOM="${1}"
+				parse_atom
 				;;
 		esac
 
 		shift
 	done
+}
+
+parse_atom() {
+	local pos=$(expr index "${ATOM}" "/")
+	CAT=${ATOM:0:$pos - 1}
+	PN=${ATOM:$pos}
 }
 
 process_opts $@

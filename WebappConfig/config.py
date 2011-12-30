@@ -680,7 +680,7 @@ class Config:
         result = None
         try:
             result = PermissionMap(self.maybe_get(permission))
-        except Exception, e:
+        except Exception:
             OUT.die('You specified an invalid permission value for the'
                     ' variable "' + permission + "'")
         return result
@@ -689,7 +689,7 @@ class Config:
         result = None
         try:
             result = Perm.get_user(self.maybe_get(user))
-        except KeyError, e:
+        except KeyError:
             OUT.die('You specified an invalid user value for the'
                     ' variable "' + user + "'")
         return result
@@ -698,7 +698,7 @@ class Config:
         result = None
         try:
             result = Perm.get_group(self.maybe_get(group))
-        except KeyError, e:
+        except KeyError:
             OUT.die('You specified an invalid group value for the'
                     ' variable "' + group + "'")
         return result
@@ -1056,7 +1056,7 @@ class Config:
                 if not i in ['pn', 'pvr']:
                     try:
                         print i.upper() + '="' + self.config.get('USER', i) + '"'
-                    except InterpolationSyntaxError,e:
+                    except InterpolationSyntaxError:
                         print '# Failed to evaluate: ' + i.upper()
 
             sys.exit(0)

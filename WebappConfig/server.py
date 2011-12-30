@@ -57,7 +57,7 @@ class Basic:
 
         try:
             self.set_server_user()
-        except KeyError, e:
+        except KeyError:
             OUT.die('The user for the server type "' + self.name
                     + '" does not exist!')
 

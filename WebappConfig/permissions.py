@@ -206,7 +206,7 @@ def get_group(group):
     if type(group) != types.IntType:
         try:
             ngroup = int(group)
-        except ValueError, e:
+        except ValueError:
             ngroup = -1
     else:
         # The value is an integer
@@ -254,7 +254,7 @@ def get_user(user):
     if type(user) != types.IntType:
         try:
             nuser = int(user)
-        except ValueError, e:
+        except ValueError:
             nuser = -1
     else:
         # The value is an integer

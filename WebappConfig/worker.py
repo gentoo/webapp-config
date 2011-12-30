@@ -500,7 +500,7 @@ class WebappAdd:
 
                     my_contenttype = 'sym'
 
-                except Exception, e:
+                except Exception as e:
 
                     if self.__v:
                         OUT.warn('Failed to softlink (' + str(e) + ')')
@@ -515,7 +515,7 @@ class WebappAdd:
 
                     my_contenttype = 'sym'
 
-                except Exception, e:
+                except Exception as e:
 
                     if self.__v:
                         OUT.warn('Failed copy symlink (' + str(e) + ')')
@@ -530,7 +530,7 @@ class WebappAdd:
 
                     my_contenttype = 'file'
 
-                except Exception, e:
+                except Exception as e:
 
                     if self.__v:
                         OUT.warn('Failed to hardlink (' + str(e) + ')')

@@ -48,7 +48,7 @@ def config_protect(cat, pn, pvr, pm):
     if pm == "portage":
         try:
             import portage
-        except ImportError, e:
+        except ImportError as e:
             OUT.die("Portage libraries not found, quitting:\n%s" % e)
 
         return portage.settings['CONFIG_PROTECT']
@@ -90,7 +90,7 @@ def get_root(config):
     if config.config.get('USER', 'package_manager') == "portage":
         try:
             import portage
-        except ImportError, e:
+        except ImportError as e:
             OUT.die("Portage libraries not found, quitting:\n%s" % e)
 
         return portage.root
@@ -128,13 +128,13 @@ def package_installed(full_name, pm):
     if pm == "portage":
         try:
             import portage
-        except ImportError, e:
+        except ImportError as e:
             OUT.die("Portage libraries not found, quitting:\n%s" % e)
 
         try:
              t = portage.db[portage.root]["vartree"].dbapi.match(full_name)
         # catch the "ambiguous package" Exception
-        except ValueError, e:
+        except ValueError as e:
             if type(e[0]) == types.ListType:
                 t = []
                 for cp in e[0]:

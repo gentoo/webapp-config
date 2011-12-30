@@ -54,7 +54,7 @@ class BashConfigParser(ConfigParser.SafeConfigParser):
     def get(self, section, option):
         try:
             return ConfigParser.SafeConfigParser.get(self, section, option)
-        except Exception, e:
+        except Exception as e:
             error = '\nThere is a problem with your configuration file or' \
                 ' an environment variable.\n' \
                 'webapp-config tried to read the variable "' + str(option) \
@@ -760,7 +760,7 @@ class Config:
 
         try:
             self.config.read(self.__d['my_etcconfig'])
-        except Exception, e:
+        except Exception as e:
             OUT.die('The config file '
                     + self.config.get('USER', 'my_etcconfig') +
                     ' cannot be read by the configuration parser.'

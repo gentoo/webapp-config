@@ -304,7 +304,7 @@ class Contents:
                 os.write(fd, '\n'.join(values))
 
                 os.close(fd)
-            except Exception, e:
+            except Exception as e:
                 OUT.warn('Failed to write content file ' + dbpath + '!\n' 
                          + 'Error was: ' + str(e))
         else:

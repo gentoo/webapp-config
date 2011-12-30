@@ -217,14 +217,14 @@ def get_group(group):
         try:
             # Try to match the integer to a group id
             gid = grp.getgrgid(ngroup)[2]
-        except KeyError, e:
+        except KeyError as e:
             pass
 
     if gid == -1:
         # No success yet. Try to match to the group name
         try:
             gid = grp.getgrnam(str(group))[2]
-        except KeyError, e:
+        except KeyError as e:
             raise KeyError('The given group "' + str(group)
                            + '" does not exist!')
 
@@ -265,14 +265,14 @@ def get_user(user):
         try:
             # Try to match the integer to a user id
             uid = pwd.getpwuid(nuser)[2]
-        except KeyError, e:
+        except KeyError as e:
             pass
 
     if uid == -1:
         # No success yet. Try to match to the user name
         try:
             uid = pwd.getpwnam(str(user))[2]
-        except KeyError, e:
+        except KeyError as e:
             raise KeyError('The given user "' + str(user)
                            + '" does not exist!')
     return uid

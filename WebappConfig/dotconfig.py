@@ -260,7 +260,7 @@ class DotConfig:
                 os.write(fd, '\n'.join(info))
                 os.close(fd)
 
-            except Exception, e:
+            except Exception as e:
 
                 OUT.die('Unable to write to ' + self.__dot_config()
                         + '\nError was: ' + str(e))

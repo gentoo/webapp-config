@@ -96,7 +96,7 @@ class Sandbox:
         if not pid:
             try:
                 self._exec(command, self.env, fd_pipes)
-            except Exception, e:
+            except Exception as e:
                 # We need to catch _any_ exception so that it doesn't
                 # propagate out of this function and cause exiting
                 # with anything other than os._exit()

@@ -370,14 +370,14 @@ class WebappDB(AppHierarchy):
             OUT.die('No package specified!')
 
         if not self.__p and not os.path.isdir(os.path.dirname(dbpath)):
-            os.makedirs(os.path.dirname(dbpath), self.__dir_perm(0755))
+            os.makedirs(os.path.dirname(dbpath), self.__dir_perm(0o755))
 
         fd = None
 
         if not self.__p:
             fd = os.open(dbpath,
                          os.O_WRONLY | os.O_APPEND | os.O_CREAT,
-                         self.__file_perm(0600))
+                         self.__file_perm(0o600))
 
         entry = str(int(time.time())) + ' ' + str(user) + ' ' + str(group)\
             + ' ' + installdir + '\n'

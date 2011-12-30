@@ -375,7 +375,7 @@ class WebappAdd:
             OUT.debug('Creating directory', 8)
 
             if not self.__p:
-                os.makedirs(dst_dir, perm(0755))
+                os.makedirs(dst_dir, perm(0o755))
 
                 os.chown(dst_dir,
                          user,

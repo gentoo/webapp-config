@@ -255,7 +255,7 @@ class DotConfig:
 
                 fd = os.open(self.__dot_config(),
                              os.O_WRONLY | os.O_CREAT,
-                             self.__perm(0600))
+                             self.__perm(0o600))
 
                 os.write(fd, '\n'.join(info))
                 os.close(fd)

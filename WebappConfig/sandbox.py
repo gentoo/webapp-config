@@ -24,9 +24,7 @@ __version__ = "$Id: permissions.py 129 2005-11-06 12:46:31Z wrobel $"
 # Dependencies
 # ------------------------------------------------------------------------
 
-import os, os.path, string, time, sys
-
-from WebappConfig.debug     import OUT
+import os, os.path, string, sys
 
 # stolen from portage
 if os.path.isdir("/proc/%i/fd" % os.getpid()):
@@ -151,10 +149,6 @@ class Sandbox:
         @rtype: None
         @returns: Never returns (calls os.execve)
         """
-
-        # If the process we're creating hasn't been given a name
-        # assign it the name of the executable.
-        opt_name = os.path.basename(binary[0])
 
         # Set up the command's pipes.
         my_fds = {}

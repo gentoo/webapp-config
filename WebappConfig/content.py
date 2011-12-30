@@ -28,7 +28,6 @@ import md5, re, os, os.path
 
 from WebappConfig.debug       import OUT
 from WebappConfig.permissions import PermissionMap
-import WebappConfig.wrapper as wrapper
 
 # ========================================================================
 # Content handler

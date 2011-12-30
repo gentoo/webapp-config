@@ -22,7 +22,7 @@ __version__ = "$Id: filetype.py 245 2006-01-13 16:57:29Z wrobel $"
 # Dependencies
 # ------------------------------------------------------------------------
 
-import os.path, re
+import re
 
 from WebappConfig.debug     import OUT
 

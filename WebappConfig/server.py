@@ -19,7 +19,7 @@
 # Dependencies
 # ------------------------------------------------------------------------
 
-import sys, os, os.path, re
+import os, os.path
 
 from WebappConfig.debug        import OUT
 from WebappConfig.worker       import WebappRemove, WebappAdd

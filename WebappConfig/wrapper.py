@@ -26,7 +26,7 @@ __version__ = "$Id: wrapper.py 283 2006-04-20 22:53:04Z wrobel $"
 # Dependencies
 # ------------------------------------------------------------------------
 
-import sys, os, types, string
+import os, types, string
 
 from WebappConfig.debug       import OUT
 
@@ -59,7 +59,6 @@ def config_protect(cat, pn, pvr, pm):
         fi, fo, fe = os.popen3(cmd)
         fi.close()
         result_lines = fo.readlines()
-        error_lines  = fe.readlines()
         fo.close()
         fe.close()
 
@@ -105,7 +104,6 @@ def get_root(config):
             fi, fo, fe = os.popen3(cmd)
             fi.close()
             result_lines = fo.readlines()
-            error_lines  = fe.readlines()
             fo.close()
             fe.close()
 

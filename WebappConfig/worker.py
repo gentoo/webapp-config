@@ -26,7 +26,6 @@ __version__ = "$Id: worker.py 245 2006-01-13 16:57:29Z wrobel $"
 import sys, os, os.path, shutil, stat, re
 
 from WebappConfig.debug    import OUT
-import WebappConfig.wrapper as wrapper
 
 # ========================================================================
 # Helper functions

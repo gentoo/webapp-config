@@ -19,9 +19,9 @@
 # Dependencies
 # ------------------------------------------------------------------------
 
-import sys, os, os.path, optparse, ConfigParser, re, shlex, socket, time
+import sys, os, os.path, ConfigParser, re, socket, time
 
-from ConfigParser import MAX_INTERPOLATION_DEPTH, DEFAULTSECT,           \
+from ConfigParser import MAX_INTERPOLATION_DEPTH,                        \
                          ParsingError, InterpolationMissingOptionError,  \
                          InterpolationSyntaxError,                       \
                          InterpolationDepthError

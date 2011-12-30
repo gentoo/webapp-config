@@ -797,11 +797,11 @@ class Config:
         # Handle -E
         envmap = []
 
-        if (options.__dict__.has_key('envall') and 
+        if ('envall' in options.__dict__ and 
             options.__dict__['envall']):
             envmap = 'all'
 
-        elif (options.__dict__.has_key('envvar') and 
+        elif ('envvar' in options.__dict__ and 
               options.__dict__['envvar']):
             envmap = [x.lower() for x in options.__dict__['envvar']]
 
@@ -818,7 +818,7 @@ class Config:
                                     key.lower(),
                                     value)
 
-        if (options.__dict__.has_key('define') and
+        if ('define' in options.__dict__ and
               options.__dict__['define']):
             for i in options.__dict__['define']:
                 if '=' in i:
@@ -827,7 +827,7 @@ class Config:
                                     i.split('=')[1])
 
         # Indicate that --dir was found
-        if options.__dict__.has_key('dir'):
+        if 'dir' in options.__dict__:
             self.flag_dir = True
 
         # Map command line options into the configuration
@@ -845,12 +845,12 @@ class Config:
                             'bug_report'   : 'g_bugreport'}
 
         for i in option_to_config.keys():
-            if options.__dict__.has_key(i) and options.__dict__[i]:
+            if i in options.__dict__ and options.__dict__[i]:
                 self.config.set('USER', option_to_config[i],
                                 str(options.__dict__[i]))
 
         # handle verbosity
-        if (options.__dict__.has_key('pretend')
+        if ('pretend' in options.__dict__
             and options.__dict__['pretend']):
 
             self.config.set('USER', 'g_verbose', 'True')

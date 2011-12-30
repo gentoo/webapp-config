@@ -163,7 +163,7 @@ class DotConfig:
 
         self.read()
 
-        if self.__data.has_key('WEB_CATEGORY'):
+        if 'WEB_CATEGORY' in self.__data:
             OUT.notice(self.__data['WEB_CATEGORY'] + ' ' +
                    self.__data['WEB_PN'] + ' ' +
                    self.__data['WEB_PVR'])

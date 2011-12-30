@@ -169,26 +169,26 @@ class Message:
 
     def cli_handle(self, options):
 
-        if (options.__dict__.has_key('debug')
+        if ('debug' in options.__dict__
             and options.__dict__['debug']):
             self.debug_on()
         else:
             self.debug_off()
             return
 
-        if (options.__dict__.has_key('debug_class_vars')
+        if ('debug_class_vars' in options.__dict__
             and options.__dict__['debug_class_vars']):
             self.class_variables_on()
         else:
             self.class_variables_off()
 
-        if (options.__dict__.has_key('debug_nocolor')
+        if ('debug_nocolor' in options.__dict__
             and options.__dict__['debug_nocolor']):
             self.color_off()
         else:
             self.color_on()
 
-        if (options.__dict__.has_key('debug_level') and
+        if ('debug_level' in options.__dict__ and
             options.__dict__['debug_level']):
             dbglvl = int(options.__dict__['debug_level'])
             if dbglvl < 0:
@@ -197,7 +197,7 @@ class Message:
                 dbglvl = 10
             self.set_debug_level(dbglvl)
 
-        if (options.__dict__.has_key('debug_verbose') and
+        if ('debug_verbose' in options.__dict__ and
             options.__dict__['debug_verbose']):
             dbgvrb = int(options.__dict__['debug_verbose'])
             if dbgvrb < 1:
@@ -210,7 +210,7 @@ class Message:
                   ('debug_classes',   self.set_debug_classes),
                   ('debug_variables', self.set_debug_variables),]:
 
-            if (options.__dict__.has_key(i[0]) and
+            if (i[0] in options.__dict__ and
                 options.__dict__[i[0]]):
                 i[1](options.__dict__[i[0]])
 

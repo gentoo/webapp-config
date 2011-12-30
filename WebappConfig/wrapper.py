@@ -26,7 +26,7 @@ __version__ = "$Id: wrapper.py 283 2006-04-20 22:53:04Z wrobel $"
 # Dependencies
 # ------------------------------------------------------------------------
 
-import os, types, string
+import os, string
 
 from WebappConfig.debug       import OUT
 
@@ -133,7 +133,7 @@ def package_installed(full_name, pm):
              t = portage.db[portage.root]["vartree"].dbapi.match(full_name)
         # catch the "ambiguous package" Exception
         except ValueError as e:
-            if type(e[0]) == types.ListType:
+            if isinstance(e[0], list):
                 t = []
                 for cp in e[0]:
                     t += portage.db[portage.root]["vartree"].dbapi.match(cp)

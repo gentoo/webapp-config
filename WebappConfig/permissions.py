@@ -25,7 +25,7 @@ __version__ = "$Id: permissions.py 129 2005-11-06 12:46:31Z wrobel $"
 # Dependencies
 # ------------------------------------------------------------------------
 
-import re, types, grp, pwd
+import re, grp, pwd
 
 # ========================================================================
 # Permission Helper
@@ -203,7 +203,7 @@ def get_group(group):
     ngroup = -1
 
     # Can we transform the value to an integer?
-    if type(group) != types.IntType:
+    if not isinstance(group, int):
         try:
             ngroup = int(group)
         except ValueError:
@@ -251,7 +251,7 @@ def get_user(user):
     nuser = -1
 
     # Can we transform the value to an integer?
-    if type(user) != types.IntType:
+    if not isinstance(user, int):
         try:
             nuser = int(user)
         except ValueError:

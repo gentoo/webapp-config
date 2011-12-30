@@ -119,6 +119,10 @@ class DotConfig:
     def __getitem__(self, key):
         if key in self.__data.keys():
             return self.__data[key]
+        # this key didn't exist in old versions, but new versions
+        # expect it. fix bug 355295
+        elif key == 'WEB_CATEGORY':
+            return ''
 
     def __dot_config(self):
         ''' Returns the full path to the dot config file.'''

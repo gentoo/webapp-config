@@ -67,6 +67,9 @@ vhost_hostname="localhost"
 # apache
 # lighttpd
 # cherokee
+# nginx
+# gatling
+
 #
 # you can override this setting by using the -s switch to webapp-config
 

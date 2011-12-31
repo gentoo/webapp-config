@@ -334,8 +334,30 @@ class Cherokee(Basic):
         self.vhost_server_uid = get_user('cherokee')
         self.vhost_server_gid = get_group('cherokee')
 
+class Nginx(Basic):
+
+    name   = 'Nginx'
+    desc   = 'supports installation on Nginx'
+    dep    = 'www-servers/nginx'
+
+    def set_server_user(self):          
+        self.vhost_server_uid = get_user('nginx')
+        self.vhost_server_gid = get_group('nginx')
+
+class Gatling(Basic):
+
+    name   = 'Gatling'
+    desc   = 'supports installation on Gatling'
+    dep    = 'www-servers/gatling'
+
+    def set_server_user(self):          
+        self.vhost_server_uid = get_user('gatling')
+        self.vhost_server_gid = get_group('gatling')
+
 def listservers():
 
     OUT.notice('\n'.join(['apache',
                           'lighttpd',
-                          'cherokee']))
+                          'cherokee',
+                          'nginx',
+                          'gatling']))

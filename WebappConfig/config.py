@@ -1434,8 +1434,10 @@ class Config:
 
         allowed_servers = {'apache'   : WebappConfig.server.Apache,
                            'lighttpd' : WebappConfig.server.Lighttpd,
-                           'aolserver': WebappConfig.server.Aolserver,
-                           'cherokee' : WebappConfig.server.Cherokee}
+                           'cherokee' : WebappConfig.server.Cherokee,
+                           'nginx'    : WebappConfig.server.Nginx,
+                           'gatling'  : WebappConfig.server.Gatling}
+
 
         server = self.config.get('USER', 'vhost_server')
 

@@ -24,7 +24,7 @@ __version__ = "$Id: permissions.py 129 2005-11-06 12:46:31Z wrobel $"
 # Dependencies
 # ------------------------------------------------------------------------
 
-import os, os.path, string, sys
+import os, os.path, sys
 
 # stolen from portage
 if os.path.isdir("/proc/%i/fd" % os.getpid()):
@@ -55,7 +55,7 @@ class Sandbox:
 
     def get_write(self):
         '''Return write paths.'''
-        return string.join ( map ( self.get_config, self.__write ), ':' ) \
+        return ':'.join ( map ( self.get_config, self.__write ) ) \
                 + self.__syswrite
 
     def get_config(self, option):

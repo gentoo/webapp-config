@@ -26,7 +26,7 @@ __version__ = "$Id: wrapper.py 283 2006-04-20 22:53:04Z wrobel $"
 # Dependencies
 # ------------------------------------------------------------------------
 
-import os, string
+import os
 
 from WebappConfig.debug       import OUT
 
@@ -62,7 +62,7 @@ def config_protect(cat, pn, pvr, pm):
         fo.close()
         fe.close()
 
-        return string.join(result_lines, ' ').strip()
+        return ' '.join(result_lines).strip()
     else:
         OUT.die("Unknown package manager: " + pm)
 
@@ -156,7 +156,7 @@ def package_installed(full_name, pm):
             for i in error_lines:
                 OUT.warn(i)
 
-        return string.join(result_lines, ' ')
+        return ' '.join(result_lines)
 
     else:
         OUT.die("Unknown package manager: " + pm)

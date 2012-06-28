@@ -17,8 +17,6 @@
 MAN_PAGES = webapp-config.8 webapp-config.5 webapp-eclass.5
 HTML_PAGES = webapp-config.8.html webapp-config.5.html webapp-eclass.5.html
 
-TMPFILE=./webapp-config.man
-
 all: man html
 
 html: $(HTML_PAGES)
@@ -31,13 +29,10 @@ clean:
 
 %.html: %.xml
 	@echo HTML $@
-	@xmlto html-nochunks $<
+	@xmlto html-nochunks $< 2>/dev/null
 
 %: %.xml
 	@echo MAN $@
-	@xmlto man $<
-#
-# fix up the blank lines that docbook leaves behind
-#
-	@cat $@ | sed -e 's/$$/.fred/g;' | tr -d '\n' | sed -e 's/.fred.fred\./.fred./g;' | sed -e 's/.fred/\n/g;' > $(TMPFILE)
-	@mv $(TMPFILE) $@
+	@xmlto man $< 2>/dev/null
+	@cat $@ | sed -e 's/$$/.fred/g;' | tr -d '\n' | sed -e 's/.fred.fred\./.fred./g;' | sed -e 's/.fred/\n/g;' > $@.temp
+	@mv $@.temp $@

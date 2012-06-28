@@ -14,8 +14,8 @@
 #
 # ========================================================================
 
-MAN_PAGES = webapp-config.8 webapp-config.5 webapp.eclass.5
-HTML_PAGES = webapp-config.8.html webapp-config.5.html webapp.eclass.5.html
+MAN_PAGES = webapp-config.8 webapp-config.5 webapp-eclass.5
+HTML_PAGES = webapp-config.8.html webapp-config.5.html webapp-eclass.5.html
 
 TMPFILE=./webapp-config.man
 

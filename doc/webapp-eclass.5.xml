@@ -3,7 +3,7 @@
  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 <article>
   <articleinfo>
-    <title>webapp.eclass</title>
+    <title>webapp-eclass</title>
 
     <authorgroup>
       <author>
@@ -43,16 +43,16 @@
 
     <refentry>
       <refentryinfo>
-        <title>webapp.eclass</title>
+        <title>webapp-eclass</title>
 	<date>January 2006</date>
 	<productname>Gentoo Linux</productname>
       </refentryinfo>
       <refmeta>
-        <refentrytitle>webapp.eclass</refentrytitle>
+        <refentrytitle>webapp-eclass</refentrytitle>
 	<manvolnum>5</manvolnum>
       </refmeta>
       <refnamediv>
-        <refname>webapp.eclass</refname>
+        <refname>webapp-eclass</refname>
 	<refpurpose>standardised approach to writing ebuilds for web-based applications</refpurpose>
       </refnamediv>
 
@@ -70,47 +70,47 @@
 	  <title>Support For Virtual Hosts</title>
 	  <para>Many web servers today have to be able to host more than one website at a time.  This is normally done through <glossterm>name-based virtual hosting</glossterm>.  See the Apache documentation for more details about how this works.</para>
 	  <para>Traditional package installers only install a single copy of a package.  Many webservers need to make the same package available as part of different virtual hosts.  The administrator normally ends up installing and upgrading each of these packages by hand.  This makes for more work for the administrator.</para>
-	  <para><userinput>webapp.eclass</userinput> overcomes this problem by installing packages, and associated metadata, in a format and location understood by <citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>8</manvolnum></citerefentry>.  The administrator then uses <command>webapp-config</command> to install and upgrade however many copies of the package as he needs.</para>
+	  <para><userinput>webapp-eclass</userinput> overcomes this problem by installing packages, and associated metadata, in a format and location understood by <citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>8</manvolnum></citerefentry>.  The administrator then uses <command>webapp-config</command> to install and upgrade however many copies of the package as he needs.</para>
 	</refsect2>
 	<refsect2>
 	  <title>Installing Into The Correct Directory</title>
 	  <para>Virtual hosts are normally stored on disk in their own directories.  The location of these directories can vary from computer to computer.  It is not unusual for each administrator to have his own preferred location for putting virtual hosts.</para>
 	  <para>Traditional packagers always install a single copy of the package, normally into <filename>/home/httpd/htdocs/&lt;package-name&gt;/</filename>.   If the administrator changes the DocumentRoot of their preferred web server to point to a different directory, traditional packagers are unable to detect this and adjust accordingly.  They also are unable to detect any attempt to install a package into a virtual host.</para>
-	  <para><userinput>webapp.eclass</userinput> overcomes this problem because it makes no attempt to install packages into the webserver's DocumentRoot. Instead, it installs the files of the package into the <filename>/usr/share/webapps</filename> hierarchy - which is never directly used by any webserver.  The administrator then uses <command>webapp-config</command> to complete the installation to the directory of his choice.</para>
+	  <para><userinput>webapp-eclass</userinput> overcomes this problem because it makes no attempt to install packages into the webserver's DocumentRoot. Instead, it installs the files of the package into the <filename>/usr/share/webapps</filename> hierarchy - which is never directly used by any webserver.  The administrator then uses <command>webapp-config</command> to complete the installation to the directory of his choice.</para>
 	</refsect2>
 	<refsect2>
 	  <title>Installing With The Correct File Ownerships</title>
 	  <para>Web-based applications are made up of files and directories that need to be owned by more than one user.  Any files or directories that the web server needs to write to - these need to be owned by whatever user the web server runs as.  Configuration files need to be owned by the non-root user who owns the website.  The rest of the files and directories need to be owned by root, to ensure that they cannot be tampered with by other users.</para>
 	  <para>Traditional packagers have no way to understand which user the web server runs as, or which user needs to own the configuration files.  Some packages assume that the user is running the Apache web server, and hard-code the information into their installation scripts.  Unfortunately, any packages that do this will not work if the user chooses to use an alternative web server.</para>
-	  <para><userinput>webapp.eclass</userinput> overcomes this problem because it provides a number of functions which the ebuild can use to indicate who needs to own what.  When the administrator completes the install using <command>webapp-config</command>, he can tell <command>webapp-config</command> which web server the package will be running under, and which user needs to own the configuration files.</para>
+	  <para><userinput>webapp-eclass</userinput> overcomes this problem because it provides a number of functions which the ebuild can use to indicate who needs to own what.  When the administrator completes the install using <command>webapp-config</command>, he can tell <command>webapp-config</command> which web server the package will be running under, and which user needs to own the configuration files.</para>
 	</refsect2>
 	<refsect2>
 	  <title>Apache Modules vs CGI Scripts</title>
 	  <para>Most web-based applications are written in scripting languages such as PHP, Python, or Perl.  Most scripting languages are available either as Apache modules and as stand-alone CGI scripting engines.  Sometimes, it makes more sense to install scripting languages as CGI scripting engines.  Although CGI engines run much slower than Apache modules, the advantage is that it allows a single computer to run multiple versions of the same language - something that sometimes is necessary.</para>
 	  <para>It's also worth pointing out that the administrator has a choice of web servers - and not all scripting languages run as compiled-in modules in all web servers.</para>
 	  <para>It is difficult-to-impossible for a traditional package manager to provide a single package that can cope with all of the possible permutations.</para>
-	  <para><userinput>webapp.eclass</userinput> provides a function for ebuilds to indicate which script files need to be run by which scripting engine.  <command>webapp-config</command> can, if necessary, modify these script files to use the correct CGI engine when installing into a virtual host.</para>
+	  <para><userinput>webapp-eclass</userinput> provides a function for ebuilds to indicate which script files need to be run by which scripting engine.  <command>webapp-config</command> can, if necessary, modify these script files to use the correct CGI engine when installing into a virtual host.</para>
 	</refsect2>
 	<refsect2>
 	  <title>Overwriting Configuration Files</title>
 	  <para>When packages are upgraded, new configuration files are installed.  Different package managers handle this in different ways.  Portage can prevent files being overwritten on a per-directory basis.  Web-based applications normally have configuration files installed in the same directories as the scripts themselves.  Packages for Portage, therefore, normally end up overwriting the configuration file because the alternative is having to wade through pages of <command>etc-update</command> output.</para>
-	  <para><userinput>webapp.eclass</userinput> avoids this problem by allowing ebuilds to indicate which files are configuration files.  <command>webapp-config</command> uses this information to ensure that configuration files are not overwritten.  The administrator can then use <command>etc-update</command> as normal to complete the upgrade.</para>
+	  <para><userinput>webapp-eclass</userinput> avoids this problem by allowing ebuilds to indicate which files are configuration files.  <command>webapp-config</command> uses this information to ensure that configuration files are not overwritten.  The administrator can then use <command>etc-update</command> as normal to complete the upgrade.</para>
 	</refsect2>
 	<refsect2>
 	  <title>Handling Web Server Configuration Files</title>
 	  <para>There are some web-based applications that will not work without installing configuration files for the webserver.  Deciding which webserver to install configuration files for, and where to install these configuration files, is problematic at best.</para>
-	  <para><userinput>webapp.eclass</userinput> addresses this in two ways.  Firstly, ebuilds are encouraged to supply configuration files for <emphasis>all</emphasis> supported webservers.  <command>webapp-config</command> will then install the correct configuration files for the selected webserver when the virtual copy of the application is installed.</para>
+	  <para><userinput>webapp-eclass</userinput> addresses this in two ways.  Firstly, ebuilds are encouraged to supply configuration files for <emphasis>all</emphasis> supported webservers.  <command>webapp-config</command> will then install the correct configuration files for the selected webserver when the virtual copy of the application is installed.</para>
 	</refsect2>
 	<refsect2>
 	  <title>Handling SQL Databases</title>
 	  <para>Many web-based applications store their data in sql-based databases.  Installing these databases is enough of a pain; upgrading them is something that's often left to the administrator to struggle through.</para>
-	  <para><userinput>webapp.eclass</userinput> does not provide a full solution today to this problem.  Ebuilds can indicate which files are SQL scripts, and which database engine the scripts are for.  A future version of <userinput>webapp.eclass</userinput> will (hopefully) provide a tool to automatically generate an upgrade script to help the administrator.</para>
+	  <para><userinput>webapp-eclass</userinput> does not provide a full solution today to this problem.  Ebuilds can indicate which files are SQL scripts, and which database engine the scripts are for.  A future version of <userinput>webapp-eclass</userinput> will (hopefully) provide a tool to automatically generate an upgrade script to help the administrator.</para>
 	</refsect2>
       </refsect1>
 
       <refsect1>
         <title>Installation Directories</title>
-	<para><glossterm>webapp.eclass</glossterm> creates an intermediate install of a package, so that the computer's administrator can then perform multiple installations using <citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+	<para><glossterm>webapp-eclass</glossterm> creates an intermediate install of a package, so that the computer's administrator can then perform multiple installations using <citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
 	<para>The intermediate install (known as the <glossterm>master copy</glossterm>) is never used by, or accessed via, the web server.</para>
 	<para>The intermediate install goes into the <filename>/usr/share/webapps</filename> directory structure:</para>
 	<screen>
@@ -428,7 +428,7 @@
 	  <varlistentry>
 	    <term><filename>/etc/vhosts/webapp-config</filename></term>
 	    <listitem>
-	      <para>Configuration file, holding the defaults for <command>webapp-config</command> and the <userinput>webapp.eclass</userinput> eclass.</para>
+	      <para>Configuration file, holding the defaults for <command>webapp-config</command> and the <userinput>webapp-eclass</userinput> eclass.</para>
 	    </listitem>
 	  </varlistentry>
 	</variablelist>
@@ -437,7 +437,7 @@
       <refsect1>
         <title>See Also</title>
 	<para><citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>5</manvolnum></citerefentry>, <citerefentry><refentrytitle>webapp-config</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>emerge</refentrytitle><manvolnum>1</manvolnum></citerefentry></para>
-	<para>The <userinput>webapp.eclass</userinput> is part of the <command>webapp-config</command> package.  <command>webapp-config</command> is based on the design for an installer for web-based applications first discussed in <ulink url="http://www.gentoo.org/proj/en/glep/glep-0011.html">GLEP #11</ulink> for the Gentoo Linux project.</para>
+	<para>The <userinput>webapp-eclass</userinput> is part of the <command>webapp-config</command> package.  <command>webapp-config</command> is based on the design for an installer for web-based applications first discussed in <ulink url="http://www.gentoo.org/proj/en/glep/glep-0011.html">GLEP #11</ulink> for the Gentoo Linux project.</para>
       </refsect1>
     </refentry>
   </section>

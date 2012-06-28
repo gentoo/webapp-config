@@ -49,7 +49,7 @@ class Basic:
                  pm):
 
         if self.dep and not self.supported(pm):
-            print self.dep
+            print(self.dep)
             OUT.die('Your configuration file sets the server type "' + self.name
                     + '"\nbut the corresponding package does not seem to be '
                     'installed!\nPlease "emerge ' + self.dep + '" or correct '

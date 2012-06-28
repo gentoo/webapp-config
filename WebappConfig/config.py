@@ -1055,9 +1055,9 @@ class Config:
             for i in self.config.options('USER'):
                 if not i in ['pn', 'pvr']:
                     try:
-                        print i.upper() + '="' + self.config.get('USER', i) + '"'
+                        print(i.upper() + '="' + self.config.get('USER', i) + '"')
                     except InterpolationSyntaxError:
-                        print '# Failed to evaluate: ' + i.upper()
+                        print('# Failed to evaluate: ' + i.upper())
 
             sys.exit(0)
 

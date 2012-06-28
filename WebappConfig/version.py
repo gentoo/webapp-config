@@ -16,4 +16,4 @@
 WCVERSION = '1.50.18'
 
 if __name__ == '__main__':
-    print WCVERSION
+    print(WCVERSION)

@@ -5,6 +5,7 @@
 # Copyright 2005 Gunnar Wrobel
 # Distributed under the terms of the GNU General Public License v2
 
+from __future__ import print_function
 __version__ = "$Id: debug.py 159 2005-11-10 09:48:25Z wrobel $"
 
 #################################################################################
@@ -294,7 +295,7 @@ class Message:
     ## Output Functions
 
     def notice (self, note):
-        print note
+        print(note)
 
     def info (self, info, level = 4):
 
@@ -304,7 +305,7 @@ class Message:
             return
 
         for i in info.split('\n'):
-            print self.maybe_color('green', '* ') + i
+            print(self.maybe_color('green', '* ') + i)
 
     def status (self, message, status, info = 'ignored'):
 
@@ -316,7 +317,7 @@ class Message:
             return
 
         for i in lines[0:-1]:
-            print self.maybe_color('green', '* ') + i
+            print(self.maybe_color('green', '* ') + i)
 
         i = lines[-1]
 
@@ -330,8 +331,8 @@ class Message:
         else:
             result = '[' + self.maybe_color('yellow', info) + ']'
 
-        print self.maybe_color('green', '* ') + i + ' ' + '.' * (58 - len(i))  \
-              + ' ' + result
+        print(self.maybe_color('green', '* ') + i + ' ' + '.' * (58 - len(i))  \
+              + ' ' + result)
 
     def warn (self, warn, level = 4):
 
@@ -341,14 +342,14 @@ class Message:
             return
 
         for i in warn.split('\n'):
-            print self.maybe_color('yellow', '* ') + i
+            print(self.maybe_color('yellow', '* ') + i)
 
     def error (self, error):
 
         error = str(error)
 
         for i in error.split('\n'):
-            print >> self.error_out, self.maybe_color('red', '* ') + i
+            print(self.maybe_color('red', '* ') + i, file=self.error_out)
         self.has_error = True
 
     def die (self, error):
@@ -429,11 +430,11 @@ class Message:
             if lines > 0:
                 for j in range(lines):
                     ## Print line with continuation marker
-                    print >> self.debug_out, ls + '// ' + x[0:60] + ' \\'
+                    print(ls + '// ' + x[0:60] + ' \\', file=self.debug_out)
                     ## Remove printed characters from output
                     x = x[60:]
             ## Print final line
-            print >> self.debug_out, ls + '// ' + x 
+            print(ls + '// ' + x, file=self.debug_out) 
 
         if self.debug_vrb == 1:
             # Top line indicates class and method
@@ -442,60 +443,60 @@ class Message:
                 c += 'Class: ' + str(callerobject.__class__.__name__) + ' | '
             if callermethod:
                 c += 'Method: ' + str(callermethod)
-            print >> self.debug_out, '// ' + c
+            print('// ' + c, file=self.debug_out)
             # Selected variables follow
             if callerlocals:
                 for i,j in callerlocals.items():
-                    print >> self.debug_out, '// '                              \
-                          + self.maybe_color('turquoise', str(i)) + ':' + str(j)
+                    print('// '                              \
+                          + self.maybe_color('turquoise', str(i)) + ':' + str(j), file=self.debug_out)
             # Finally the message
-            print >> self.debug_out, self.maybe_color('yellow', message)
+            print(self.maybe_color('yellow', message), file=self.debug_out)
             return
 
         if self.debug_vrb == 3:
-            print >> self.debug_out, ls + '/////////////////////////////////' + \
-                  '////////////////////////////////'
+            print(ls + '/////////////////////////////////' + \
+                  '////////////////////////////////', file=self.debug_out)
 
             # General information about what is being debugged
             #(module name or similar)
-            print >> self.debug_out, ls + '// ' + self.debug_env
-        print >> self.debug_out, ls + '//-----------------------------------' + \
-              '----------------------------'
+            print(ls + '// ' + self.debug_env, file=self.debug_out)
+        print(ls + '//-----------------------------------' + \
+              '----------------------------', file=self.debug_out)
 
         ## If the caller is a class print the name here
         if callerobject:
-            print >> self.debug_out, ls +                                       \
-                  '// Object Class: ' + str(callerobject.__class__.__name__)
+            print(ls +                                       \
+                  '// Object Class: ' + str(callerobject.__class__.__name__), file=self.debug_out)
 
         ## If the method has been extracted print it here
         if callermethod:
-            print >> self.debug_out, ls + '// '                                 \
-                  + self.maybe_color('green', 'Method: ') + str(callermethod)
+            print(ls + '// '                                 \
+                  + self.maybe_color('green', 'Method: ') + str(callermethod), file=self.debug_out)
             if self.debug_vrb == 3:
-                print >> self.debug_out, ls + '//---------------------------' + \
-                      '------------------------------------'
+                print(ls + '//---------------------------' + \
+                      '------------------------------------', file=self.debug_out)
 
         ## Print the information on all available local variables
         if callerlocals:
             if self.debug_vrb == 3:
-                print >> self.debug_out, ls + '//'
-                print >> self.debug_out, ls + '// VALUES '
+                print(ls + '//', file=self.debug_out)
+                print(ls + '// VALUES ', file=self.debug_out)
             for i,j in callerlocals.items():
-                print >> self.debug_out, ls + '// ------------------> '         \
-                      + self.maybe_color('turquoise', str(i)) + ':'
+                print(ls + '// ------------------> '         \
+                      + self.maybe_color('turquoise', str(i)) + ':', file=self.debug_out)
                 breaklines(str(j))
             if self.debug_vrb == 3:
-                print >> self.debug_out, ls + '//------------------------------'\
-                      '---------------------------------'
+                print(ls + '//------------------------------'\
+                      '---------------------------------', file=self.debug_out)
 
         # Finally print the message
         breaklines(self.maybe_color('yellow', message))
 
         if self.debug_vrb == 3:
-            print >> self.debug_out, ls + '//-------------------------------' + \
-                  '--------------------------------'
-            print >> self.debug_out, ls + '/////////////////////////////////' + \
-                  '////////////////////////////////'
+            print(ls + '//-------------------------------' + \
+                  '--------------------------------', file=self.debug_out)
+            print(ls + '/////////////////////////////////' + \
+                  '////////////////////////////////', file=self.debug_out)
 
 ## gloabal message handler
 OUT = Message('webapp-config')

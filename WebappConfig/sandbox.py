@@ -27,9 +27,14 @@ __version__ = "$Id: permissions.py 129 2005-11-06 12:46:31Z wrobel $"
 import os, os.path, sys
 
 # stolen from portage
+try:
+    import resource
+    max_fd_limit = resource.getrlimit(resource.RLIMIT_NOFILE)[0]
+except ImportError:
+    max_fd_limit = 256
 if os.path.isdir("/proc/%i/fd" % os.getpid()):
     def get_open_fds():
-        return map(int, [fd for fd in os.listdir("/proc/%i/fd" % os.getpid()) if fd.isdigit()])
+        return (int(fd) for fd in os.listdir("/proc/%i/fd" % os.getpid()) if fd.isdigit())
 else:
     def get_open_fds():
         return range(max_fd_limit)

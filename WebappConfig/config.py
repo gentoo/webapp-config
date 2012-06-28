@@ -19,12 +19,19 @@
 # Dependencies
 # ------------------------------------------------------------------------
 
-import sys, os, os.path, ConfigParser, re, socket, time
+import sys, os, os.path, re, socket, time
 
-from ConfigParser import MAX_INTERPOLATION_DEPTH,                        \
-                         ParsingError, InterpolationMissingOptionError,  \
-                         InterpolationSyntaxError,                       \
-                         InterpolationDepthError
+try:
+    # Python 3
+    import configparser
+    if sys.version_info >= (3, 2):
+        from configparser import ConfigParser as configparser_ConfigParser
+    else:
+        from configparser import SafeConfigParser as configparser_ConfigParser
+except ImportError:
+    # Python 2
+    import ConfigParser as configparser
+    from ConfigParser import SafeConfigParser as configparser_ConfigParser
 
 import WebappConfig.server
 import WebappConfig.permissions as Perm
@@ -40,20 +47,20 @@ from WebappConfig.permissions import PermissionMap
 # BashParser class
 # ------------------------------------------------------------------------
 
-class BashConfigParser(ConfigParser.SafeConfigParser):
+class BashConfigParser(configparser_ConfigParser):
 
     _interpvar_match = re.compile(r"(%\(([^)]+)\)s|\$\{([^}]+)\})").match
 
     def __init__(self, defaults=None):
         self.error_action = 1
-        ConfigParser.SafeConfigParser.__init__(self, defaults)
+        configparser_ConfigParser.__init__(self, defaults)
 
     def on_error(self, action = 0):
         self.error_action = action
 
     def get(self, section, option):
         try:
-            return ConfigParser.SafeConfigParser.get(self, section, option)
+            return configparser_ConfigParser.get(self, section, option)
         except Exception as e:
             error = '\nThere is a problem with your configuration file or' \
                 ' an environment variable.\n' \
@@ -69,8 +76,8 @@ class BashConfigParser(ConfigParser.SafeConfigParser):
             return ''
 
     def _interpolate_some(self, option, accum, rest, section, map, depth):
-        if depth > MAX_INTERPOLATION_DEPTH:
-            raise InterpolationDepthError(option, section, rest)
+        if depth > configparser.MAX_INTERPOLATION_DEPTH:
+            raise configparser.InterpolationDepthError(option, section, rest)
         while rest:
             p = rest.find("%")
             if p < 0:
@@ -92,7 +99,7 @@ class BashConfigParser(ConfigParser.SafeConfigParser):
             elif c == "(" or c == "{":
                 m = self._interpvar_match(rest)
                 if m is None:
-                    raise InterpolationSyntaxError(option, section,
+                    raise configparser.InterpolationSyntaxError(option, section,
                         "bad interpolation variable reference %r" % rest)
                 var = m.group(2)
                 if not var:
@@ -102,7 +109,7 @@ class BashConfigParser(ConfigParser.SafeConfigParser):
                 try:
                     v = map[var]
                 except KeyError:
-                    raise InterpolationMissingOptionError(
+                    raise configparser.InterpolationMissingOptionError(
                         option, section, rest, var)
                 if "%" in v or "$" in v:
                     self._interpolate_some(option, accum, v,
@@ -110,7 +117,7 @@ class BashConfigParser(ConfigParser.SafeConfigParser):
                 else:
                     accum.append(v)
             else:
-                raise InterpolationSyntaxError(
+                raise configparser.InterpolationSyntaxError(
                     option, section,
                     "'" + c + "' must be followed by '" + c + "', '{', or '(', found: %r" % (rest,))
 
@@ -187,7 +194,7 @@ class BashConfigParser(ConfigParser.SafeConfigParser):
                     # raised at the end of the file and will contain a
                     # list of all bogus lines
                     if not e:
-                        e = ParsingError(fpname)
+                        e = configparser.ParsingError(fpname)
                     e.append(lineno, repr(line))
         # if any parsing errors occurred, raise an exception
         if e:
@@ -1056,7 +1063,7 @@ class Config:
                 if not i in ['pn', 'pvr']:
                     try:
                         print(i.upper() + '="' + self.config.get('USER', i) + '"')
-                    except InterpolationSyntaxError:
+                    except configparser.InterpolationSyntaxError:
                         print('# Failed to evaluate: ' + i.upper())
 
             sys.exit(0)

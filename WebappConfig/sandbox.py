@@ -32,7 +32,7 @@ if os.path.isdir("/proc/%i/fd" % os.getpid()):
         return map(int, [fd for fd in os.listdir("/proc/%i/fd" % os.getpid()) if fd.isdigit()])
 else:
     def get_open_fds():
-        return xrange(max_fd_limit)
+        return range(max_fd_limit)
 
 
 class Sandbox:

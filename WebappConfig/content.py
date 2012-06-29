@@ -18,8 +18,6 @@
 location.  This file records all files and directories of the
 installation.  '''
 
-__version__ = "$Id: content.py 245 2006-01-13 16:57:29Z wrobel $"
-
 # ========================================================================
 # Dependencies
 # ------------------------------------------------------------------------

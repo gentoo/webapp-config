@@ -18,8 +18,6 @@
 upgrade, and remove web-based applications in a virtual-hosting
 environment.  '''
 
-__version__ = "$Id: webapp-config 126 2005-11-05 23:26:48Z wrobel $"
-
 # ========================================================================
 # Dependencies
 # ------------------------------------------------------------------------

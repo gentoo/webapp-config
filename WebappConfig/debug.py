@@ -6,7 +6,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
 from __future__ import print_function
-__version__ = "$Id: debug.py 159 2005-11-10 09:48:25Z wrobel $"
 
 #################################################################################
 ##

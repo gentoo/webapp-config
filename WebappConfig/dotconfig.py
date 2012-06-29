@@ -17,8 +17,6 @@
 ''' Handles the information stored within the virtual install location
 about the type of package installed.  '''
 
-__version__ = "$Id: dotconfig.py 219 2006-01-04 20:13:38Z wrobel $"
-
 # ========================================================================
 # Dependencies
 # ------------------------------------------------------------------------

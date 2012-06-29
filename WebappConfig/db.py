@@ -17,8 +17,6 @@
 ''' This module provides handlers for the web application database as
 well as the database of virtual installs.  '''
 
-__version__ = "$Id: db.py 264 2006-02-28 14:07:26Z wrobel $"
-
 # ========================================================================
 # Dependencies
 # ------------------------------------------------------------------------

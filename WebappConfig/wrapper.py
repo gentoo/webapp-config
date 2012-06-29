@@ -20,8 +20,6 @@ specific features used by webapp-config. This might make it easier
 to use the tool on other distributions.
 '''
 
-__version__ = "$Id: wrapper.py 283 2006-04-20 22:53:04Z wrobel $"
-
 # ========================================================================
 # Dependencies
 # ------------------------------------------------------------------------

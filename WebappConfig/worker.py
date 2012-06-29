@@ -17,8 +17,6 @@
 ''' This module provides the classes for actually adding or removing
 files of a virtual install location.  '''
 
-__version__ = "$Id: worker.py 245 2006-01-13 16:57:29Z wrobel $"
-
 # ========================================================================
 # Dependencies
 # ------------------------------------------------------------------------

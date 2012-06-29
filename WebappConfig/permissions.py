@@ -19,8 +19,6 @@ webapp-config needs a permission handling that allows to combine original
 file permission settings with values supplied by the user.
 '''
 
-__version__ = "$Id: permissions.py 129 2005-11-06 12:46:31Z wrobel $"
-
 # ========================================================================
 # Dependencies
 # ------------------------------------------------------------------------

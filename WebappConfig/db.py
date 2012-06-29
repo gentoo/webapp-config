@@ -202,7 +202,7 @@ class WebappDB(AppHierarchy):
      varies whith your code location)
 
     >>> sb = [i[1] for i in b.list_locations().items()]
-    >>> sb.sort(lambda x,y: cmp(x[0]+x[1]+x[2],y[0]+y[1]+y[2]))
+    >>> sb.sort(key=lambda x: x[0]+x[1]+x[2])
     >>> sb
     [['', 'gallery', '1.4.4_p6'], ['', 'gallery', '2.0_rc2'], ['', 'horde', '3.0.5'], ['', 'phpldapadmin', '0.9.7_alpha4']]
 

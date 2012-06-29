@@ -548,19 +548,8 @@ class Contents:
         ''' Get a list of files. This is returned as a list sorted according
         to length, so that files lower in the hierarchy can be removed
         first.'''
-        def lencmp(x, y):
-            zx = len(x)
-            zy = len(y)
-            if zx > zy:
-                return -1
-            if zy > zx:
-                return 1
-            return cmp(x, y)
-
         installed = self.__content.keys()
-        installed.sort(lencmp)
-
-        return installed
+        return sorted(installed, key=lambda x: (-len(x), x))
 
     def get_directories(self):
         ''' Get only the directories as a sorted list.'''

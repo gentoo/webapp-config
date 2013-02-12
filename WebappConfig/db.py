@@ -340,6 +340,8 @@ class WebappDB(AppHierarchy):
         if not self.__p:
             installs = open(dbpath, 'w')
             installs.write('\n'.join(newentries) + '\n')
+            if not self.has_installs():
+                os.unlink(dbpath)
         else:
             OUT.info('Pretended to remove installation ' + installdir)
             OUT.info('Final DB content:\n' + '\n'.join(newentries) + '\n')

@@ -275,7 +275,7 @@ class Ebuild:
 
         v_root = self.get_config('vhost_root')
         v_cgi  = self.get_config('g_cgibindir')
-        v_conf = v_root + '/'
+        v_conf = self.get_config('vhost_config_dir')
         v_err  = v_root + '/' + self.get_config('my_errorsbase')
         v_icon = v_root + '/' + self.get_config('my_iconsbase')
 

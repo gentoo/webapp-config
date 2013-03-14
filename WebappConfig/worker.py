@@ -288,6 +288,8 @@ class WebappAdd:
 
         self.config_protected_dirs = []
 
+        os.umask(0)
+
     def mkdirs(self, directory = ''):
         '''
         Create a set of directories

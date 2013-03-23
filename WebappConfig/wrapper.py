@@ -90,7 +90,7 @@ def get_root(config):
         except ImportError as e:
             OUT.die("Portage libraries not found, quitting:\n%s" % e)
 
-        return portage.root
+        return portage.settings['ROOT']
 
     elif config.config.get('USER', 'package_manager') == "paludis":
         cat = config.maybe_get('cat')

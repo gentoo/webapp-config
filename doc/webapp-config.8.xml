@@ -478,6 +478,7 @@
 	    <listitem>
 	      <para>Use this option to create the virtual copy by copying the files from the <filename>/usr/share/webapps/</filename> directories.</para>
 	      <para>This option is useful if you want to copy the files directly from <filename>/usr/share/webapps/</filename> to your virtual host in /var/www without the use of softlinks, or hardlinks. Be aware that because this is a direct copying of files it will prove to take up more space on your filesystem as opposed to the other two options since you are duplicating the webapp.</para>
+	    </listitem>
 	  </varlistentry>
 
 	  <varlistentry>

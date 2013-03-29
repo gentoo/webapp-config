@@ -68,6 +68,7 @@
 	  <arg choice="opt">
 	    <option>-dghusDE</option>
 	    <option>--soft</option>
+	    <option>--copy</option>
 	    <option>--secure</option>
 	  </arg>
 	  <arg choice="req">
@@ -217,14 +218,15 @@
 	</refsect2>
 
 	<refsect2>
-	  <title>Hard Linking vs Soft Linking</title>
+	  <title>File Copying Options</title>
 	  <para>A <glossterm>virtual copy</glossterm> is built mostly by creating hard links to files under <filename>/usr/share/webapps</filename>.  If a hard link cannot be created, the file is copied from <filename>/usr/share/webapps</filename> instead.</para>
 	  <para>Hard links can only be created to files on the same filesystem.  If you keep <filename>/usr/share/webapps</filename> and <filename>/var/www</filename> on different filesystems, <command>webapp-config</command> cannot use hard links, and will be forced to copy the files instead.</para>
-	  <para>There are two ways to get around the hard link problem.</para>
+	  <para>There are three ways to get around the hard link problem.</para>
 	  <para>The easiest way is to make <filename>/usr/share/webapps</filename> a symlink to a directory under <filename>/var/www</filename>.  For most people, this will ensure that everything is on the same filesystem.</para>
 	  <para>However, if you keep the websites you host on separate filesystems (like I do), then <command>webapp-config</command> is never going to be able to hard-link files for you.</para>
-	  <para>You can choose to use the <option>--soft</option> command-line switch instead.  This switch tells <command>webapp-config</command> to create symbolic links instead of hard links.  Symbolic links work across filesystems.</para>
+	  <para>As an alternative you can choose to use the <option>--soft</option> command-line switch.  This switch tells <command>webapp-config</command> to create symbolic links instead of hard links.  Symbolic links work across filesystems.</para>
 	  <para>The problem with using symbolic links is that some packages do not work when the virtual copy is made from symbolic links.  Many users - and system administrators alas - have also complained that they find directories full of symbolic links confusing.  For these reasons, symbolic links are not used by default in <command>webapp-config</command> any more.</para>
+          <para>You may also choose the <option>--copy</option> command-line switch.  This particular switch tells <command>webapp-config</command> to directly copy the files from <filename>/usr/share/webapps/</filename> instead of hard links.  Copying directly works across filesystems with the drawback of using more space but if you are going to use it across file systems you may want this instead of symbolic links, as this means that the files in <filename>/usr/share/webapps/</filename> will not be touched when the files in the location of your virtualhost are altered.</para>
 	</refsect2>
 
         <refsect2>
@@ -465,9 +467,17 @@
 	  <varlistentry>
 	    <term><option>--soft</option></term>
 	    <listitem>
-	      <para>Use this option to create the virtual copy using symbolic links instead of hard links.</para>
+	      <para>Use this option to create the virtual copy using symbolic links.</para>
 	      <para>You may find this option useful if <filename>/usr/share/webapps</filename> is on a different filesystem to your htdocs directories.  However, it has been discovered that some packages do not work with this option, which is why it is no longer the default behaviour.  You are always better off making <filename>/usr/share/webapps</filename> a symlink to a directory on the same filesystem as your htdocs directories.</para>
 	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--cp</option></term>
+	    <term><option>--copy</option></term>
+	    <listitem>
+	      <para>Use this option to create the virtual copy by copying the files from the <filename>/usr/share/webapps/</filename> directories.</para>
+	      <para>This option is useful if you want to copy the files directly from <filename>/usr/share/webapps/</filename> to your virtual host in /var/www without the use of softlinks, or hardlinks. Be aware that because this is a direct copying of files it will prove to take up more space on your filesystem as opposed to the other two options since you are duplicating the webapp.</para>
 	  </varlistentry>
 
 	  <varlistentry>

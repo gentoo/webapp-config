@@ -490,6 +490,13 @@ class Config:
                          ' when creating virtual files. <NOTE>: some pack'
                          'ages will not work if you use this option')
 
+        group.add_option('--cp',
+                         '--copy',
+                         action='store_true',
+                         help = 'Directly copy the webapp files from'
+             ' the /usr/share/webapps/ directory when installing'
+             ' the webapp.')
+
         group.add_option('--virtual-files',
                          '--vf',
                          type = 'choice',
@@ -845,6 +852,7 @@ class Config:
                             'user'         : 'vhost_config_uid',
                             'group'        : 'vhost_config_gid',
                             'soft'         : 'g_soft',
+                            'copy'         : 'g_copy',
                             'virtual_files': 'vhost_config_virtual_files',
                             'default_dirs' : 'vhost_config_default_dirs',
                             'pretend'      : 'g_pretend',
@@ -990,6 +998,14 @@ class Config:
             OUT.debug('Selecting soft links' , 7)
 
             self.config.set('USER', 'g_link_type', 'soft')
+
+        elif (self.config.has_option('USER', 'g_copy') and
+              self.config.getboolean('USER', 'g_copy')):
+
+            OUT.debug('Selecting copying of links', 7)
+
+            self.config.set('USER', 'g_link_type', 'clone')
+
         else:
 
             OUT.debug('Selecting hard links' , 7)

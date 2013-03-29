@@ -495,6 +495,10 @@ class WebappAdd:
                     OUT.debug('Trying to softlink', 8)
 
                     if not self.__p:
+                        if self.__v:
+                            print("\n>>> SOFTLINKING FILE: ")
+                            print(">>> Source: " + src_name +
+                                  "\n>>> Destination: " + dst_name + "\n")
                         os.symlink(src_name, dst_name)
 
                     my_contenttype = 'sym'
@@ -504,12 +508,35 @@ class WebappAdd:
                     if self.__v:
                         OUT.warn('Failed to softlink (' + str(e) + ')')
 
+            elif self.__link_type == 'clone':
+                try:
+
+                    OUT.debug('Trying to copy files directly', 8)
+
+                    if not self.__p:
+                        if self.__v:
+                            print("\n>>> COPYING FILE: ")
+                            print(">>> Source: " + src_name +
+                                  "\n>>> Destination: " + dst_name + "\n")
+                        shutil.copy(src_name, dst_name)
+
+                    my_contenttype = 'file'
+
+                except Exception as e:
+
+                    if self.__v:
+                        OUT.warn('Failed to copy (' + str(e) + ')')
+
             elif os.path.islink(src_name):
                 try:
 
                     OUT.debug('Trying to copy symlink', 8)
 
                     if not self.__p:
+                        if self.__v:
+                            print("\n>>> SYMLINK COPY: ")
+                            print(">>> Source: " + src_name +
+                                  "\n>>> Destination: " + dst_name + "\n")
                         os.symlink(os.readlink(src_name), dst_name)
 
                     my_contenttype = 'sym'
@@ -525,6 +552,10 @@ class WebappAdd:
                     OUT.debug('Trying to hardlink', 8)
 
                     if not self.__p:
+                        if self.__v:
+                            print("\n>>> HARDLINKING FILE: ")
+                            print(">>> Source: " + src_name +
+                                  "\n>>> Destination: " + dst_name + "\n")
                         os.link(src_name, dst_name)
 
                     my_contenttype = 'file'
@@ -535,7 +566,12 @@ class WebappAdd:
                         OUT.warn('Failed to hardlink (' + str(e) + ')')
 
         if not my_contenttype:
+
             if not self.__p:
+                if self.__v:
+                    print("\n>>> COPYING FILE: ")
+                    print(">>> Source: " + src_name +
+                          "\n>>> Destination: " + dst_name + "\n")
                 shutil.copy(src_name, dst_name)
             my_contenttype = 'file'
 

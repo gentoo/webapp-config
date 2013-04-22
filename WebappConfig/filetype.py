@@ -141,13 +141,13 @@ class FileType:
 
                 OUT.debug('Adding config-server-owned file', 8)
 
-                self.__cache[self.__fix(i).strip()] = 'config-server-owned'
+                self.__cache[self.__fix(i)] = 'config-server-owned'
 
             else:
 
                 OUT.debug('Adding server-owned file', 8)
 
-                self.__cache[self.__fix(i).strip()] = 'server-owned'
+                self.__cache[self.__fix(i)] = 'server-owned'
 
 
     def filetype(self, filename):
@@ -158,11 +158,12 @@ class FileType:
 
         returns one of these:
 
-          server-owned  - file needs to be owned by the webserver user
-                          (and needs to be a local copy)
-          config-owned  - file needs to be owned by the config user
-                          (and needs to be a local copy)
-          virtual       - we do not need a local copy of the file
+          server-owned         - file needs to be owned by the webserver user
+                                 (and needs to be a local copy)
+          config-owned         - file needs to be owned by the config user
+                                 (and needs to be a local copy)
+          config-server-owned  - Both the previous cases at the same time
+          virtual              - we do not need a local copy of the file
 
         NOTE:
           Use get_dirtype(directory) for directories
@@ -190,9 +191,10 @@ class FileType:
 
         returns one of these:
 
-          server-owned  - dir needs to be owned by the webserver user
-          config-owned  - dir needs to be owned by the config user
-          default-owned - we need a local copy, owned by root
+          server-owned         - dir needs to be owned by the webserver user
+          config-owned         - dir needs to be owned by the config user
+          config-server-owned  - Both the previous cases at the same time
+          default-owned        - we need a local copy, owned by root
 
         NOTE:
           Use get_filetype(filename) for files

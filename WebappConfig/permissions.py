@@ -179,6 +179,12 @@ class PermissionMap:
             self.__permissions = splitted_permissions
             self.__absolute    = False
 
+    def __str__(self):
+      if self.__absolute:
+        return 'Absolute: {}'.format(oct(self.__permissions))
+      else:
+        return 'Relative: {}'.format(self.__permissions)
+
 def get_group(group):
     '''
     Specify a group id either as integer, as string that can

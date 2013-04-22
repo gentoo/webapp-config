@@ -551,7 +551,7 @@ class WebappSource(AppHierarchy):
             flist = open(self.appdir() + '/' + server_owned)
             server_files = flist.readlines()
 
-            OUT.debug('Identified config-protected files.', 7)
+            OUT.debug('Identified server-owned files.', 7)
 
             flist.close()
 

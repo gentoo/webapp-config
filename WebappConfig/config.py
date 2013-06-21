@@ -937,12 +937,16 @@ class Config:
             self.parser.print_help()
             OUT.die('You need to specify at least the application you'
                     ' would like to handle!')
+        else:
+	    return self.config.get('USER', 'pn')
 
     def check_version_set(self):
         if not self.config.has_option('USER', 'pvr'):
             OUT.die('You did not specify which version to handle.\n Use "'
                     + self.config.get('USER','g_myname') +
                     ' --help" for usage')
+        else:
+            return self.config.get('USER', 'pvr')
 
     def split_hostname(self):
 
@@ -1225,9 +1229,11 @@ class Config:
 
             self.__r = wrapper.get_root(self)
             wrapper.want_category(self)
-            self.check_package_set()
-            self.check_version_set()
+            package = self.check_package_set()
+            version = self.check_version_set()
             self.set_vars()
+
+            webapp = package + ' ' + version
 
             # special case
             #
@@ -1259,6 +1265,13 @@ class Config:
             self.config.set('USER', 'cat',  old['WEB_CATEGORY'])
             self.config.set('USER', 'pn',  old['WEB_PN'])
             self.config.set('USER', 'pvr', old['WEB_PVR'])
+
+            old_webapp = old['WEB_PN'] + ' ' + old['WEB_PVR']
+
+            if not webapp == old_webapp:
+                OUT.die(webapp + ' does not match ' +
+                        old_webapp + ' found in .webapp file at ' +
+                        self.installdir() + '.')
 
             # we don't want to read the .webapp file if we're upgrading,
             # because we've just written the *new* app's details into the file!!

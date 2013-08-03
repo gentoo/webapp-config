@@ -708,10 +708,34 @@ class Config:
                     ' variable "' + user + "'")
         return result
 
+    def maybe_get_user(self, user):
+        result = None
+        input_user = self.maybe_get(user)
+        if not input_user:
+            return result
+        try:
+            result = Perm.get_user(input_user)
+        except KeyError:
+            OUT.die('You specified an invalid user value for the'
+                    ' variable "' + user + "'")
+        return result
+
     def get_group(self, group):
         result = None
         try:
             result = Perm.get_group(self.maybe_get(group))
+        except KeyError:
+            OUT.die('You specified an invalid group value for the'
+                    ' variable "' + group + "'")
+        return result
+
+    def maybe_get_group(self, group):
+        result = None
+        input_group = self.maybe_get(group)
+        if not input_group:
+            return result
+        try:
+            result = Perm.get_group(input_group)
         except KeyError:
             OUT.die('You specified an invalid group value for the'
                     ' variable "' + group + "'")
@@ -1514,27 +1538,27 @@ class Config:
                                             self.get_group('vhost_default_gid'),
                                             self.get_perm('vhost_perms_virtualowned_file')],
                           # These will be re-set by the servers
-                          'server-owned' : [None,
-                                            None,
+                          'server-owned' : [self.maybe_get_user('vhost_server_uid'),
+                                            self.maybe_get_group('vhost_server_gid'),
                                             self.get_perm('vhost_perms_serverowned_file')],
                           'config-owned' : [self.get_user('vhost_config_uid'),
                                             self.get_group('vhost_config_gid'),
                                             self.get_perm('vhost_perms_configowned_file')],
                           'config-server-owned' : [self.get_user('vhost_config_uid'),
-                                                   None,
+                                                   self.maybe_get_group('vhost_server_gid'),
                                                    self.get_perm('vhost_perms_serverowned_file')],},
                 'dir' :  {'default-owned' :[self.get_user('vhost_default_uid'),
                                             self.get_group('vhost_default_gid'),
                                             self.get_perm('vhost_perms_defaultowned_dir')],
                           # These will be re-set by the servers
-                          'server-owned' : [None,
-                                            None,
+                          'server-owned' : [self.maybe_get_user('vhost_server_uid'),
+                                            self.maybe_get_group('vhost_server_gid'),
                                             self.get_perm('vhost_perms_serverowned_dir')],
                           'config-owned' : [self.get_user('vhost_config_uid'),
                                             self.get_group('vhost_config_gid'),
                                             self.get_perm('vhost_perms_configowned_dir')],
                           'config-server-owned' : [self.get_user('vhost_config_uid'),
-                                                  None,
+                                                  self.maybe_get_group('vhost_server_gid'),
                                                   self.get_perm('vhost_perms_serverowned_dir')],
                           'install-owned': [self.get_user('vhost_default_uid'),
                                             self.get_group('vhost_default_gid'),

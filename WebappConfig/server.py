@@ -67,15 +67,17 @@ class Basic:
         self.__vhostroot = directories['vhostroot']
 
         # + server owned
-        permissions['file']['server-owned'][0] = self.vhost_server_uid
-        permissions['file']['server-owned'][1] = self.vhost_server_gid
-        permissions['dir']['server-owned'][0]  = self.vhost_server_uid
-        permissions['dir']['server-owned'][1]  = self.vhost_server_gid
-        # and config owned directories have server gid
-        permissions['dir']['config-owned'][1]  = self.vhost_server_gid
-        # allows server and config owned
-        permissions['file']['config-server-owned'][1] = self.vhost_server_gid
-        permissions['dir']['config-server-owned'][1]  = self.vhost_server_gid
+        if permissions['file']['server-owned'][0] == 0:
+            permissions['file']['server-owned'][0] = self.vhost_server_uid
+            permissions['dir']['server-owned'][0]  = self.vhost_server_uid
+        if permissions['file']['server-owned'][1] == 0:
+            permissions['file']['server-owned'][1] = self.vhost_server_gid
+            permissions['dir']['server-owned'][1]  = self.vhost_server_gid
+            # and config owned directories have server gid
+            permissions['dir']['config-owned'][1]  = self.vhost_server_gid
+            # allows server and config owned
+            permissions['file']['config-server-owned'][1] = self.vhost_server_gid
+            permissions['dir']['config-server-owned'][1]  = self.vhost_server_gid
 
         self.__perm      = permissions
         self.__handler   = handler

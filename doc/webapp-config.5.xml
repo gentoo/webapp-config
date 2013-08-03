@@ -118,6 +118,26 @@
 	  </varlistentry>
 
 	  <varlistentry>
+	    <term>vhost_server_uid</term>
+	    <listitem>
+	      <para>Overiding parameter for the server-dependant hardcoded uid which specifies the user to own all files and directories that are server-owned.</para>
+	      <para>Warning: <command>webapp-config</command>'s <option>-s</option> switch does not overide this parameter.</para>
+	      <para>By default, this is disabled.</para>
+	      <para>This can be <emphasis>either</emphasis> the name of a user or their numerical user id.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>vhost_server_gid</term>
+	    <listitem>
+	      <para>Overiding parameter for the server-dependant hardcoded gid which specifies the group to own all files and directories that are server-owned.</para>
+	      <para>Warning: <command>webapp-config</command>'s <option>-s</option> switch does not overide this parameter.</para>
+	      <para>By default, this is disabled.</para>
+	      <para>This can be <emphasis>either</emphasis> the name of a group or their numerical group id.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
 	    <term>vhost_config_uid</term>
 	    <listitem>
 	      <para>Default value when <command>webapp-config</command>'s <option>-u</option> switch hasn't been used.</para>

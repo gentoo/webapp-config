@@ -22,7 +22,7 @@ installation.  '''
 # Dependencies
 # ------------------------------------------------------------------------
 
-import md5, re, os, os.path
+import hashlib, re, os, os.path
 
 from WebappConfig.debug       import OUT
 from WebappConfig.permissions import PermissionMap
@@ -531,7 +531,7 @@ class Contents:
 
     def file_md5(self, filename):
         ''' Return the md5 hash for the file content.'''
-        return str(md5.md5(open(filename).read()).hexdigest())
+        return str(hashlib.md5(open(filename).read()).hexdigest())
 
     def file_time(self, filename):
         ''' Return the last modification time.'''

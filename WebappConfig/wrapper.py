@@ -52,7 +52,7 @@ def config_protect(cat, pn, pvr, pm):
         return portage.settings['CONFIG_PROTECT']
 
     elif pm == "paludis":
-        cmd="paludis --log-level silent --no-color --environment-variable %s/%s CONFIG_PROTECT" % (cat,pn)
+        cmd="cave print-id-environment-variable -b --format '%%v\n' --variable-name CONFIG_PROTECT %s/%s" % (cat,pn)
 
         fi, fo, fe = os.popen3(cmd)
         fi.close()
@@ -97,7 +97,7 @@ def get_root(config):
         pn  = config.maybe_get('pn')
 
         if cat and pn:
-            cmd="paludis --log-level silent --no-color --environment-variable %s/%s ROOT" % (cat,pn)
+            cmd="cave print-id-environment-variable -b --format '%%v\n' --variable-name ROOT %s/%s" % (cat,pn)
 
             fi, fo, fe = os.popen3(cmd)
             fi.close()
@@ -141,7 +141,7 @@ def package_installed(full_name, pm):
 
     elif pm == "paludis":
 
-        cmd="paludis --best-version %s" % (full_name)
+        cmd="cave print-best-version '%s'" % (full_name)
 
         fi, fo, fe = os.popen3(cmd)
         fi.close()

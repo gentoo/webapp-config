@@ -962,7 +962,7 @@ class Config:
             OUT.die('You need to specify at least the application you'
                     ' would like to handle!')
         else:
-	    return self.config.get('USER', 'pn')
+            return self.config.get('USER', 'pn')
 
     def check_version_set(self):
         if not self.config.has_option('USER', 'pvr'):

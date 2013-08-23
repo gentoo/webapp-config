@@ -473,7 +473,6 @@
 	  </varlistentry>
 
 	  <varlistentry>
-	    <term><option>--cp</option></term>
 	    <term><option>--copy</option></term>
 	    <listitem>
 	      <para>Use this option to create the virtual copy by copying the files from the <filename>/usr/share/webapps/</filename> directories.</para>

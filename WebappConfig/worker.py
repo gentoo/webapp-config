@@ -508,7 +508,7 @@ class WebappAdd:
                     if self.__v:
                         OUT.warn('Failed to softlink (' + str(e) + ')')
 
-            elif self.__link_type == 'clone':
+            elif self.__link_type == 'copy':
                 try:
 
                     OUT.debug('Trying to copy files directly', 8)

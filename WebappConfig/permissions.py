@@ -161,7 +161,7 @@ class PermissionMap:
 
         if re.compile('[0-7]{4}').match(permissions):
             self.__absolute    = True
-            self.__permissions = eval(permissions)
+            self.__permissions = eval("0o"+permissions)
 
         else:
             # Split on commas first

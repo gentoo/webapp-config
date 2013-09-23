@@ -26,7 +26,7 @@ import hashlib, re, os, os.path
 
 from WebappConfig.debug       import OUT
 from WebappConfig.permissions import PermissionMap
-
+from WebappConfig.compat      import create_md5
 # ========================================================================
 # Content handler
 # ------------------------------------------------------------------------
@@ -531,7 +531,7 @@ class Contents:
 
     def file_md5(self, filename):
         ''' Return the md5 hash for the file content.'''
-        return str(hashlib.md5(open(filename).read()).hexdigest())
+	create_md5(filename)
 
     def file_time(self, filename):
         ''' Return the last modification time.'''

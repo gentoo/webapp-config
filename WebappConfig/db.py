@@ -441,7 +441,7 @@ class WebappDB(AppHierarchy):
         if not loc and self.__v:
             OUT.die('No virtual installs found!')
 
-        keys = loc.keys()
+        keys = list(loc.keys())
         keys.sort()
 
         for j in keys:

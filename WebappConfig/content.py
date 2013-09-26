@@ -531,7 +531,7 @@ class Contents:
 
     def file_md5(self, filename):
         ''' Return the md5 hash for the file content.'''
-        create_md5(filename)
+        return create_md5(filename)
 
     def file_time(self, filename):
         ''' Return the last modification time.'''

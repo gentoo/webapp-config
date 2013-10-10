@@ -385,7 +385,7 @@ class WebappDB(AppHierarchy):
         OUT.debug('New record', 7)
 
         if not self.__p:
-            os.write(fd, entry)
+            os.write(fd, (entry).encode('utf-8'))
             os.close(fd)
         else:
             OUT.info('Pretended to append installation ' + installdir)

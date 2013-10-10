@@ -298,7 +298,7 @@ class Contents:
                 fd = os.open(self.appdb(), os.O_WRONLY | os.O_CREAT,
                              self.__perm(0o600))
 
-                os.write(fd, '\n'.join(values))
+                os.write(fd, ('\n'.join(values)).encode('utf-8'))
 
                 os.close(fd)
             except Exception as e:

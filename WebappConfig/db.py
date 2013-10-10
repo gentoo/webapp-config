@@ -673,7 +673,7 @@ class WebappSource(AppHierarchy):
         if not packages:
             OUT.die('No packages found!')
 
-        keys = packages.keys()
+        keys = list(packages.keys())
         keys.sort()
 
         OUT.debug('Check for unused web applications', 7)

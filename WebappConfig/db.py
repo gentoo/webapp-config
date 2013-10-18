@@ -441,8 +441,7 @@ class WebappDB(AppHierarchy):
         if not loc and self.__v:
             OUT.die('No virtual installs found!')
 
-        keys = list(loc.keys())
-        keys.sort()
+        keys = sorted(loc)
 
         for j in keys:
             # The verbose output is meant to be readable for the user
@@ -673,8 +672,9 @@ class WebappSource(AppHierarchy):
         if not packages:
             OUT.die('No packages found!')
 
-        keys = list(packages.keys())
-        keys.sort()
+<<<<<<< HEAD
+        keys = sorted(packages)
+>>>>>>> f5855ed... WebappConfig/db.py converts keys dictionary to sorted list.
 
         OUT.debug('Check for unused web applications', 7)
 

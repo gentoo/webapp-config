@@ -58,9 +58,9 @@ class BashConfigParser(configparser_ConfigParser):
     def on_error(self, action = 0):
         self.error_action = action
 
-    def get(self, section, option):
+    def get(self, section, option, *args, **kwargs):
         try:
-            return configparser_ConfigParser.get(self, section, option)
+            return configparser_ConfigParser.get(self, section, option, *args, **kwargs)
         except Exception as e:
             error = '\nThere is a problem with your configuration file or' \
                 ' an environment variable.\n' \

@@ -26,6 +26,7 @@ try:
     import configparser
     if sys.version_info >= (3, 2):
         from configparser import ConfigParser as configparser_ConfigParser
+        from configparser import ExtendedInterpolation
     else:
         from configparser import SafeConfigParser as configparser_ConfigParser
 except ImportError:
@@ -53,7 +54,10 @@ class BashConfigParser(configparser_ConfigParser):
 
     def __init__(self, defaults=None):
         self.error_action = 1
-        configparser_ConfigParser.__init__(self, defaults)
+        if sys.hexversion >= 0x3000000:
+            configparser_ConfigParser.__init__(self, defaults, interpolation=ExtendedInterpolation())
+        else:
+            configparser_ConfigParser.__init__(self, defaults)
 
     def on_error(self, action = 0):
         self.error_action = action
@@ -244,7 +248,7 @@ class Config:
             'vhost_config_uid'             : str(os.getuid()),
             'vhost_config_virtual_files'   : 'virtual',
             'vhost_config_default_dirs'    : 'default-owned',
-            'vhost_config_dir'             : '%(vhost_root)s/conf',
+            'vhost_config_dir'             : '${vhost_root}/conf',
             'vhost_htdocs_insecure'        : 'htdocs',
             'vhost_htdocs_secure'          : 'htdocs-secure',
             'vhost_perms_serverowned_dir'  : '0775',
@@ -266,16 +270,16 @@ class Config:
             'vhost_server_gid'  : 'root',
             'my_persistroot'    : '/var/db/webapps',
             'wa_installsbase'   : 'installs',
-            'vhost_root'        : '/var/www/%(vhost_hostname)s',
-            'g_htdocsdir'       : '%(vhost_root)s/%(my_htdocsbase)s',
-            'my_appdir'         : '%(my_approot)s/%(my_appsuffix)s',
-            'my_htdocsdir'      : '%(my_appdir)s/htdocs',
-            'my_persistdir'     : '%(my_persistroot)s/%(my_appsuffix)s',
-            'my_hostrootdir'    : '%(my_appdir)s/%(my_hostrootbase)s',
-            'my_cgibindir'      : '%(my_hostrootdir)s/%(my_cgibinbase)s',
-            'my_iconsdir'       : '%(my_hostrootdir)s/%(my_iconsbase)s',
-            'my_errorsdir'      : '%(my_hostrootdir)s/%(my_errorsbase)s',
-            'g_cgibindir'      : '%(vhost_root)s/%(my_cgibinbase)s',
+            'vhost_root'        : '/var/www/${vhost_hostname}',
+            'g_htdocsdir'       : '${vhost_root}/${my_htdocsbase}',
+            'my_appdir'         : '${my_approot}/${my_appsuffix}',
+            'my_htdocsdir'      : '${my_appdir}/htdocs',
+            'my_persistdir'     : '${my_persistroot}/${my_appsuffix}',
+            'my_hostrootdir'    : '${my_appdir}/${my_hostrootbase}',
+            'my_cgibindir'      : '${my_hostrootdir}/${my_cgibinbase}',
+            'my_iconsdir'       : '${my_hostrootdir}/${my_iconsbase}',
+            'my_errorsdir'      : '${my_hostrootdir}/${my_errorsbase}',
+            'g_cgibindir'      : '${vhost_root}/${my_cgibinbase}',
             'my_approot'        : '/usr/share/webapps',
             'package_manager'   : 'portage',
             'allow_absolute'    : 'no',
@@ -283,15 +287,15 @@ class Config:
             'my_cgibinbase'     : 'cgi-bin',
             'my_iconsbase'      : 'icons',
             'my_errorsbase'     : 'error',
-            'my_sqlscriptsdir'  : '%(my_appdir)s/sqlscripts',
-            'my_hookscriptsdir' : '%(my_appdir)s/hooks',
-            'my_serverconfigdir': '%(my_appdir)s/conf',
-            'wa_configlist'     : '%(my_appdir)s/config-files',
-            'wa_solist'         : '%(my_appdir)s/server-owned-files',
-            'wa_virtuallist'    : '%(my_appdir)s/virtuals',
-            'wa_installs'       : '%(my_persistdir)s/%(wa_installsbase)s',
+            'my_sqlscriptsdir'  : '${my_appdir}/sqlscripts',
+            'my_hookscriptsdir' : '${my_appdir}/hooks',
+            'my_serverconfigdir': '${my_appdir}/conf',
+            'wa_configlist'     : '${my_appdir}/config-files',
+            'wa_solist'         : '${my_appdir}/server-owned-files',
+            'wa_virtuallist'    : '${my_appdir}/virtuals',
+            'wa_installs'       : '${my_persistdir}/${wa_installsbase}',
             'wa_postinstallinfo':
-            '%(my_appdir)s/post-install-instructions.txt',
+            '${my_appdir}/post-install-instructions.txt',
             }
 
         # Setup basic defaults
@@ -338,9 +342,9 @@ class Config:
             self.config.set('USER', 'persist_suffix', '/'.join([cat,pn,pvr]))
 
             if os.path.isdir(new_layout):
-                self.config.set('USER', 'my_appsuffix', '%(cat)s/%(pn)s/%(pvr)s')
+                self.config.set('USER', 'my_appsuffix', '${cat}/${pn}/${pvr}')
             elif os.path.isdir(old_layout):
-                self.config.set('USER', 'my_appsuffix', '%(pn)s/%(pvr)s')
+                self.config.set('USER', 'my_appsuffix', '${pn}/${pvr}')
                 self.config.set('USER', 'cat', '')
             else:
                 OUT.die('Unable to determine location of master copy')
@@ -349,7 +353,7 @@ class Config:
             OUT.debug('Checking for old layout', 7)
 
             if os.path.isdir(old_layout):
-                self.config.set('USER', 'my_appsuffix', '%(pn)s/%(pvr)s')
+                self.config.set('USER', 'my_appsuffix', '${pn}/${pvr}')
                 self.config.set('USER', 'cat', '')
                 # no category info at all is available, so drop it from persist_suffix
                 self.config.set('USER', 'persist_suffix', '/'.join([pn,pvr]))
@@ -920,10 +924,10 @@ class Config:
             if (self.config.has_option('USER', 'g_secure') and
                 self.config.getboolean('USER', 'g_secure')):
                 self.config.set('USER', 'my_htdocsbase',
-                                '%(vhost_htdocs_secure)s')
+                                '${vhost_htdocs_secure}')
             else:
                 self.config.set('USER', 'my_htdocsbase',
-                                '%(vhost_htdocs_insecure)s')
+                                '${vhost_htdocs_insecure}')
 
         # set the action to be performed
         work = ['install', 'clean', 'upgrade', 'list_installs',

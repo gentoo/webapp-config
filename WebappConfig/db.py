@@ -672,9 +672,7 @@ class WebappSource(AppHierarchy):
         if not packages:
             OUT.die('No packages found!')
 
-<<<<<<< HEAD
         keys = sorted(packages)
->>>>>>> f5855ed... WebappConfig/db.py converts keys dictionary to sorted list.
 
         OUT.debug('Check for unused web applications', 7)
 

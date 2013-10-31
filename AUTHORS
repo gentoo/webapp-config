@@ -5,16 +5,16 @@ Original design came from GLEP 11:
 
 	http://glep.gentoo.org/
 
-Original code authors:
-
-	Stuart Herbert		<stuart@stuartherbert.com>
-	Renat Lumpau		<rl03@gentoo.org>
-	Gunnar Wrobel		<wrobel@gentoo.org>
-
-Current maintainers:
+Current code maintainers:
 
 	Anthony G. Basile	<blueness@gentoo.org>
-	Devan Franchini		<twitch153@hotmail.com>
+	Devan Franchini		<twitch153@gentoo.org>
+
+Original code authors:
+
+	Stuart Herbert
+	Renat Lumpau
+	Gunnar Wrobel
 
 Significant contributors (testing, review, design suggestions):
 	

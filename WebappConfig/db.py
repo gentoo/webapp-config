@@ -424,6 +424,43 @@ class WebappDB(AppHierarchy):
 
         return result
 
+    def prune_db(self):
+        '''
+        Prunes the installs files to ensure no webapp
+        is incorrectly listed as installed.
+        '''
+
+        loc = self.read_db()
+
+        if not loc and self.__v:
+            OUT.die('No virtual installs found!')
+
+        files = self.list_locations()
+        keys = sorted(loc)
+
+        for j in keys:
+            for i in loc[j]:
+                appdir = i[3].strip()
+                # We check to see if the webapp is installed.
+                if not os.path.exists(appdir+'/.webapp'):
+                    if self.__v:
+                       OUT.warn('No .webapp file found in dir: ')
+                       OUT.warn(appdir)
+                       OUT.warn('Assuming webapp is no longer installed.')
+                       OUT.warn('Pruning entry from database.')
+
+                    for installs in files.keys():
+                        contents = open(installs).readlines()
+                        new_entries = ''
+                        for entry in contents:
+                            # Grab all the other entries but the one that
+                            # isn't installed.
+                            if not re.search('.* ' + appdir +'\\n', entry):
+                                new_entries += entry
+                        f = open(installs, 'w')
+                        f.write(new_entries)
+                        f.close()
+
     def has_installs(self):
         ''' Return True in case there are any virtual install locations 
         listed in the db file '''

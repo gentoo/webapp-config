@@ -565,7 +565,7 @@ class Config:
 
         group.add_option('-V',
                          '--verbose',
-                         action='store_true',
+			 action='store_true',
                          help = 'Output even more information than normal'
                          )
 
@@ -592,6 +592,14 @@ class Config:
                          're not used. Optionally, provide a package and/'
                          'or version number as arguments to restrict the '
                          'listing.')
+
+        group.add_option('--prune-database',
+                         '--pd',
+                         type = 'choice',
+                         choices = ['pretend',
+                                    'clean'],
+                         help = 'This will list all outdated entries in '
+                         'the webapp-config "database".')
 
         group.add_option('--show-installed',
                          '--si',
@@ -932,13 +940,16 @@ class Config:
         # set the action to be performed
         work = ['install', 'clean', 'upgrade', 'list_installs',
                 'list_servers', 'list_unused_installs',
-                'show_installed', 'show_postinst',
+                'prune_database', 'show_installed', 'show_postinst',
                 'show_postupgrade', 'check_config', 'query']
 
         for i in work:
             if options.__dict__.get(i):
                 self.work = i
                 break
+
+        if options.__dict__.get('prune_database'):
+            self.prune_action = options.__dict__.get('prune_database')
 
         OUT.debug('Checking command line arguments', 1)
 
@@ -1134,6 +1145,15 @@ class Config:
             self.create_webapp_db(  self.maybe_get('cat'),
                                     self.maybe_get('pn'),
                                     self.maybe_get('pvr')).listinstalls()
+        if self.work == 'prune_database':
+            # Get the handler for the virtual install db. If the action is equal
+            # to clean, then it'll simply prune the "db" of outdated entries.
+            # If it's not set to clean, then it'll list the outdated entries
+            # in the db to be cleaned out.
+            self.__r = wrapper.get_root(self)
+            self.create_webapp_db(  self.maybe_get('cat'),
+                                    self.maybe_get('pn'),
+                                    self.maybe_get('pvr')).prune_database(self.prune_action)
 
         if self.work == 'show_installed':
 

@@ -424,42 +424,49 @@ class WebappDB(AppHierarchy):
 
         return result
 
-    def prune_db(self):
+    def prune_database(self, action):
         '''
         Prunes the installs files to ensure no webapp
         is incorrectly listed as installed.
         '''
 
         loc = self.read_db()
-
+        
+        print(action)
         if not loc and self.__v:
             OUT.die('No virtual installs found!')
 
         files = self.list_locations()
         keys = sorted(loc)
 
+        if action != 'clean':
+            OUT.warn('This is a list of all outdated entries that would be removed: ')
         for j in keys:
             for i in loc[j]:
                 appdir = i[3].strip()
                 # We check to see if the webapp is installed.
+                # TODO: Fix algorithm to see if this is an outdated
+                # entry.
                 if not os.path.exists(appdir+'/.webapp'):
                     if self.__v:
                        OUT.warn('No .webapp file found in dir: ')
                        OUT.warn(appdir)
                        OUT.warn('Assuming webapp is no longer installed.')
                        OUT.warn('Pruning entry from database.')
-
-                    for installs in files.keys():
-                        contents = open(installs).readlines()
-                        new_entries = ''
-                        for entry in contents:
-                            # Grab all the other entries but the one that
-                            # isn't installed.
-                            if not re.search('.* ' + appdir +'\\n', entry):
-                                new_entries += entry
-                        f = open(installs, 'w')
-                        f.write(new_entries)
-                        f.close()
+                    if action == 'clean':
+                        for installs in files.keys():
+                            contents = open(installs).readlines()
+                            new_entries = ''
+                            for entry in contents:
+                                # Grab all the other entries but the one that
+                                # isn't installed.
+                                if not re.search('.* ' + appdir +'\\n', entry):
+                                    new_entries += entry
+                            f = open(installs, 'w')
+                            f.write(new_entries)
+                            f.close()
+                    else:
+                        OUT.warn(appdir)
 
     def has_installs(self):
         ''' Return True in case there are any virtual install locations 

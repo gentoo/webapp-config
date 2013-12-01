@@ -565,7 +565,7 @@ class Config:
 
         group.add_option('-V',
                          '--verbose',
-			 action='store_true',
+                         action='store_true',
                          help = 'Output even more information than normal'
                          )
 

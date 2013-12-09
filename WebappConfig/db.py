@@ -432,7 +432,6 @@ class WebappDB(AppHierarchy):
 
         loc = self.read_db()
         
-        print(action)
         if not loc and self.__v:
             OUT.die('No virtual installs found!')
 

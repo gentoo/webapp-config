@@ -75,6 +75,8 @@ class BashConfigParser(configparser_ConfigParser):
                 'ures.'
             if self.error_action == 0:
                 OUT.die(error)
+            elif self.error_action == 1 and re.search('^vhost_subdomain_\d+', option):
+                pass
             elif self.error_action == 1:
                 OUT.warn(error)
             return ''
@@ -994,7 +996,8 @@ class Config:
 
         j = len(subdomains)
         for i in subdomains:
-            self.config.set('USER', 'vhost_subdomain_' + str(j), i)
+            if not self.config.get('USER', 'vhost_subdomain_' + str(j)):
+                self.config.set('USER', 'vhost_subdomain_' + str(j), i)
 
             OUT.debug('Storing subdomain name', 8)
 

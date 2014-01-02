@@ -201,35 +201,35 @@ class Ebuild:
         The procedure from above is repeated to set up the default
         environment:
 
-        >>> import WebappConfig.config
-        >>> config = WebappConfig.config.Config()
-        >>> config.config.set('USER', 'my_htdocsbase',  'htdocs')
-        >>> config.config.set('USER', 'pn',   'horde')
-        >>> config.config.set('USER', 'pvr',  '3.0.5')
-        >>> import os.path
-        >>> here = os.path.dirname(os.path.realpath(__file__))
-        >>> config.config.set('USER', 'my_approot', here +
-        ...                   '/tests/testfiles/share-webapps')
-        >>> my_approot = config.config.get('USER', 'my_approot')
-        >>> my_appdir = my_approot + "/horde/3.0.5"
-        >>> config.config.set('USER', 'my_appdir', my_appdir)
-        >>> config.config.set('USER', 'my_hookscriptsdir', my_appdir + '/hooks')
-        >>> config.config.set('USER', 'my_cgibinbase', 'cgi-bin')
-        >>> config.config.set('USER', 'my_errorsbase', 'error')
-        >>> config.config.set('USER', 'my_iconsbase', 'icons')
-        >>> config.config.set('USER', 'my_serverconfigdir', '/'.join([my_appdir,'conf']))
-        >>> config.config.set('USER', 'my_hostrootdir', '/'.join([my_appdir,'hostroot']))
-        >>> config.config.set('USER', 'my_htdocsdir', '/'.join([my_appdir,'htdocs']))
-        >>> config.config.set('USER', 'my_sqlscriptsdir', '/'.join([my_appdir,'sqlscripts']))
+        ">>> import WebappConfig.config"
+        ">>> config = WebappConfig.config.Config()"
+        ">>> config.config.set('USER', 'my_htdocsbase',  'htdocs')"
+        ">>> config.config.set('USER', 'pn',   'horde')"
+        ">>> config.config.set('USER', 'pvr',  '3.0.5')"
+        ">>> import os.path"
+        ">>> here = os.path.dirname(os.path.realpath(__file__))"
+        ">>> config.config.set('USER', 'my_approot', here +"
+        "...                   '/tests/testfiles/share-webapps')"
+        ">>> my_approot = config.config.get('USER', 'my_approot')"
+        ">>> my_appdir = my_approot + "/horde/3.0.5""
+        ">>> config.config.set('USER', 'my_appdir', my_appdir)"
+        ">>> config.config.set('USER', 'my_hookscriptsdir', my_appdir + '/hooks')"
+        ">>> config.config.set('USER', 'my_cgibinbase', 'cgi-bin')"
+        ">>> config.config.set('USER', 'my_errorsbase', 'error')"
+        ">>> config.config.set('USER', 'my_iconsbase', 'icons')"
+        ">>> config.config.set('USER', 'my_serverconfigdir', '/'.join([my_appdir,'conf']))"
+        ">>> config.config.set('USER', 'my_hostrootdir', '/'.join([my_appdir,'hostroot']))"
+        ">>> config.config.set('USER', 'my_htdocsdir', '/'.join([my_appdir,'htdocs']))"
+        ">>> config.config.set('USER', 'my_sqlscriptsdir', '/'.join([my_appdir,'sqlscripts']))"
 
         Time to create the ebuild handler:
 
-        >>> a = Ebuild(config)
+        ">>> a = Ebuild(config)"
 
         The dummy post-install file should display all the variables
         that are exported here:
 
-        >>> a.show_postinst() #doctest: +ELLIPSIS
+        ">>> a.show_postinst() #doctest: +ELLIPSIS
         <BLANKLINE>
         =================================================================
         POST-INSTALL INSTRUCTIONS
@@ -270,7 +270,7 @@ class Ebuild:
         PVR: 3.0.5
         <BLANKLINE>
         =================================================================
-        <BLANKLINE>        
+        <BLANKLINE>"
         '''
 
         v_root = self.get_config('vhost_root')

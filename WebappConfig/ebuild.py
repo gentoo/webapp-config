@@ -235,27 +235,27 @@ class Ebuild:
         POST-INSTALL INSTRUCTIONS
         =================================================================
         <BLANKLINE>
-        MY_HOSTROOTDIR: /var/tmp/portage/app-admin/webapp-config-9999/work/webapp-config-9999/WebappConfig/tests/testfiles/share-webapps/horde/3.0.5/hostroot
-        MY_HTDOCSDIR: /var/tmp/portage/app-admin/webapp-config-9999/work/webapp-config-9999/WebappConfig/tests/testfiles/share-webapps/horde/3.0.5/htdocs
-        MY_CGIBINDIR: /var/tmp/portage/app-admin/webapp-config-9999/work/webapp-config-9999/WebappConfig/tests/testfiles/share-webapps/horde/3.0.5/hostroot/cgi-bin
+        MY_HOSTROOTDIR: .../tests/testfiles/share-webapps/horde/3.0.5/hostroot
+        MY_HTDOCSDIR: .../tests/testfiles/share-webapps/horde/3.0.5/htdocs
+        MY_CGIBINDIR: .../tests/testfiles/share-webapps/horde/3.0.5/hostroot/cgi-bin
         MY_INSTALLDIR: /
-        MY_ICONSDIR: /var/tmp/portage/app-admin/webapp-config-9999/work/webapp-config-9999/WebappConfig/tests/testfiles/share-webapps/horde/3.0.5/hostroot/icons
-        MY_SERVERCONFIGDIR: /var/tmp/portage/app-admin/webapp-config-9999/work/webapp-config-9999/WebappConfig/tests/testfiles/share-webapps/horde/3.0.5/conf
-        MY_ERRORSDIR: /var/tmp/portage/app-admin/webapp-config-9999/work/webapp-config-9999/WebappConfig/tests/testfiles/share-webapps/horde/3.0.5/hostroot/error
-        MY_SQLSCRIPTSDIR: /var/tmp/portage/app-admin/webapp-config-9999/work/webapp-config-9999/WebappConfig/tests/testfiles/share-webapps/horde/3.0.5/sqlscripts
-        VHOST_ROOT: /var/www/66-152-109-110.tvc-ip.com
-        VHOST_HTDOCSDIR: /var/www/66-152-109-110.tvc-ip.com/htdocs
-        VHOST_CGIBINDIR: /var/www/66-152-109-110.tvc-ip.com/cgi-bin
-        VHOST_CONFDIR: /var/www/66-152-109-110.tvc-ip.com/conf
-        VHOST_ERRORSDIR: /var/www/66-152-109-110.tvc-ip.com/error
-        VHOST_ICONSDIR: /var/www/66-152-109-110.tvc-ip.com/icons
-        VHOST_HOSTNAME: 66-152-109-110.tvc-ip.com
+        MY_ICONSDIR: .../tests/testfiles/share-webapps/horde/3.0.5/hostroot/icons
+        MY_SERVERCONFIGDIR: .../tests/testfiles/share-webapps/horde/3.0.5/conf
+        MY_ERRORSDIR: .../tests/testfiles/share-webapps/horde/3.0.5/hostroot/error
+        MY_SQLSCRIPTSDIR: .../tests/testfiles/share-webapps/horde/3.0.5/sqlscripts
+        VHOST_ROOT: /var/www/...
+        VHOST_HTDOCSDIR: /var/www/.../htdocs
+        VHOST_CGIBINDIR: /var/www/.../cgi-bin
+        VHOST_CONFDIR: /var/www/.../
+        VHOST_ERRORSDIR: /var/www/.../error
+        VHOST_ICONSDIR: /var/www/.../icons
+        VHOST_HOSTNAME: ...
         VHOST_SERVER: apache
         VHOST_APPDIR: /
-        VHOST_CONFIG_UID: 250
-        VHOST_CONFIG_GID: 250
-        VHOST_SERVER_UID: root
-        VHOST_SERVER_GID: root
+        VHOST_CONFIG_UID: ...
+        VHOST_CONFIG_GID: ...
+        VHOST_SERVER_UID: ...
+        VHOST_SERVER_GID: ...
         VHOST_DEFAULT_UID: 0
         VHOST_DEFAULT_GID: 0
         VHOST_PERMS_SERVEROWNED_DIR: 0775

@@ -379,71 +379,71 @@ class Contents:
                         (and this is important for md5)
           relative    - 1 for storing a relative filename, 0 otherwise
 
-        >>> OUT.color_off()
-        >>> import os.path
-        >>> here = os.path.dirname(os.path.realpath(__file__))
+        OUT.color_off()
+        import os.path
+        here = os.path.dirname(os.path.realpath(__file__))
 
         One for pretending:
 
-        >>> a = Contents(here + '/tests/testfiles/contents/app/',
+        a = Contents(here + '/tests/testfiles/contents/app/',
         ...              package = 'test', version = '1.0',
         ...              pretend = True)
 
         And this one is for real:
 
-        >>> b = Contents(here + '/tests/testfiles/contents/app/',
+        b = Contents(here + '/tests/testfiles/contents/app/',
         ...              package = 'test', version = '1.0')
 
         Pretend to add a file:
 
-        >>> a.add('file', 'config-owned',
+        a.add('file', 'config-owned',
         ...       destination = here + '/tests/testfiles/contents/app/',
         ...       path = '/test1', relative = True)
         *     pretending to add: file 1 config-owned "test1"
 
         Lets not pretend this time:
 
-        >>> b.add('file', 'config-owned',
+        b.add('file', 'config-owned',
         ...       destination = here + '/tests/testfiles/contents/app/',
         ...       path = '/test1', relative = True)
-        >>> b.entry(here + '/tests/testfiles/contents/app/test1') #doctest: +ELLIPSIS
+        b.entry(here + '/tests/testfiles/contents/app/test1') #doctest: +ELLIPSIS
         'file 1 config-owned "test1" ... d8e8fca2dc0f896fd7cb4cb0031ba249 '
 
         Lets produce an error with a file that does not exist:
 
-        >>> b.add('file', 'config-owned',
+        b.add('file', 'config-owned',
         ...       destination = here + '/tests/testfiles/contents/app/',
         ...       path = '/nothere', relative = True) #doctest: +ELLIPSIS
         * Cannot access file .../tests/testfiles/contents/app/nothere to add it as installation content. This should not happen!
 
         Other file types:
 
-        >>> b.add('hardlink', 'config-owned',
+        b.add('hardlink', 'config-owned',
         ...       destination = here + '/tests/testfiles/contents/app/',
         ...       path = '/test2', relative = True)
-        >>> b.entry(here + '/tests/testfiles/contents/app/test2') #doctest: +ELLIPSIS
+        b.entry(here + '/tests/testfiles/contents/app/test2') #doctest: +ELLIPSIS
         'file 1 config-owned "test2" ... d8e8fca2dc0f896fd7cb4cb0031ba249 '
-        >>> b.add('dir', 'default-owned',
+        b.add('dir', 'default-owned',
         ...       destination = here + '/tests/testfiles/contents/app/',
         ...       path = '/dir1', relative = True)
-        >>> b.entry(here + '/tests/testfiles/contents/app/dir1') #doctest: +ELLIPSIS
+        b.entry(here + '/tests/testfiles/contents/app/dir1') #doctest: +ELLIPSIS
         'dir 1 default-owned "dir1" ... 0 '
-        >>> b.add('dir', 'default-owned', destination = here + '/tests/testfiles/contents/app',
+        b.add('dir', 'default-owned', destination = here + '/tests/testfiles/contents/app',
         ...       path = '/dir1',
         ...       relative = False)
-        >>> b.entry(here + '/tests/testfiles/contents/app/dir1') #doctest: +ELLIPSIS
+        b.entry(here + '/tests/testfiles/contents/app/dir1') #doctest: +ELLIPSIS
         'dir 0 default-owned ".../tests/testfiles/contents/app/dir1" ... 0 '
 
         Q: Is the full link to the target what we want?
         A: Yes, since the link will still be ok even if we move the directory.
 
-        >>> b.add('sym', 'virtual',
+        b.add('sym', 'virtual',
         ...       destination = here + '/tests/testfiles/contents/app/',
         ...       path = '/test3', relative = True)
-        >>> b.entry(here + '/tests/testfiles/contents/app/test3') #doctest: +ELLIPSIS
+        b.entry(here + '/tests/testfiles/contents/app/test3') #doctest: +ELLIPSIS
         'sym 1 virtual "test3" ... 0 .../tests/testfiles/contents/app/test1'
 
-        >>> b.db_print() #doctest: +ELLIPSIS
+        b.db_print() #doctest: +ELLIPSIS
         file 1 config-owned "test1" ... d8e8fca2dc0f896fd7cb4cb0031ba249 
         file 1 config-owned "test2" ... d8e8fca2dc0f896fd7cb4cb0031ba249 
         sym 1 virtual "test3" ... 0 .../tests/testfiles/contents/app/test1

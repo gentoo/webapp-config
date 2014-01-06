@@ -89,6 +89,9 @@
 	  </arg>
 	  <arg choice="opt">
 	    <option>-dghusDE</option>
+	    <option>--soft</option>
+	    <option>--copy</option>
+	    <option>--secure</option>
 	  </arg>
 	  <arg choice="req">
 	    <replaceable>app-name</replaceable>
@@ -109,6 +112,15 @@
 	  <arg choice="req">
 	    <option>-d</option>
 	    <replaceable>directory</replaceable>
+	  </arg>
+	  <arg choice="opt">
+	    <replaceable>--secure</replaceable>
+	  </arg>
+	  <arg choice="req">
+	    <replaceable>app-name</replaceable>
+	  </arg>
+	  <arg choice="req">
+	    <replaceable>app-version</replaceable>
 	  </arg>
 	</cmdsynopsis>
 

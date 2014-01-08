@@ -444,9 +444,7 @@ class WebappDB(AppHierarchy):
             for i in loc[j]:
                 appdir = i[3].strip()
                 # We check to see if the webapp is installed.
-                # TODO: Fix algorithm to see if this is an outdated
-                # entry.
-                if not os.path.exists(appdir+'/.webapp'):
+                if not os.path.exists(appdir+'/.webapp-'+j):
                     if self.__v:
                        OUT.warn('No .webapp file found in dir: ')
                        OUT.warn(appdir)

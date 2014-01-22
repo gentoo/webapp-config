@@ -389,7 +389,7 @@ class Config:
 
         group = OptionGroup(self.parser, 'APPLICATION VERSION',
                             'The name and version number of the web appli'
-                            'cation to install e.g. phpmyadmin 2.5.4. The'
+                            'cation to install e.g. phpmyadmin 2.5.4. The '
                             'APPLICATION must have already been installed'
                             ' into the '
                             + self.config.get('USER', 'my_approot') +

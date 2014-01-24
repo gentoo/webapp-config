@@ -340,6 +340,7 @@ class WebappDB(AppHierarchy):
         if not self.__p:
             installs = open(dbpath, 'w')
             installs.write('\n'.join(newentries) + '\n')
+            installs.close()
             if not self.has_installs():
                 os.unlink(dbpath)
         else:

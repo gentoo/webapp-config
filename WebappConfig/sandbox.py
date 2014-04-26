@@ -35,7 +35,7 @@ if os.path.isdir("/proc/%i/fd" % os.getpid()):
         return (int(fd) for fd in os.listdir("/proc/%i/fd" % os.getpid()) if fd.isdigit())
 else:
     def get_open_fds():
-        return range(max_fd_limit)
+        return list(range(max_fd_limit))
 
 
 class Sandbox:
@@ -88,7 +88,7 @@ class Sandbox:
 
         # merge full_env (w-c variables) with env (write path)
         self.env.update(full_env)
-        for a in self.env.keys():
+        for a in list(self.env.keys()):
             if not self.env[a]:
                 self.env[a] = ''
 

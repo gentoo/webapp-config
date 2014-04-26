@@ -857,7 +857,7 @@ class Config:
         OUT.debug('Trying to import environment variables', 7)
 
         if envmap:
-            for (key, value) in os.environ.items():
+            for (key, value) in list(os.environ.items()):
 
                 if envmap == 'all' or key.lower() in envmap:
 
@@ -894,7 +894,7 @@ class Config:
                             'verbose'      : 'g_verbose',
                             'bug_report'   : 'g_bugreport'}
 
-        for i in option_to_config.keys():
+        for i in list(option_to_config.keys()):
             if i in options.__dict__ and options.__dict__[i]:
                 self.config.set('USER', option_to_config[i],
                                 str(options.__dict__[i]))

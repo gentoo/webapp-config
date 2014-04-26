@@ -137,7 +137,7 @@ class FileType:
 
         for i in server_owned:
 
-            if self.__fix(i) in self.__cache.keys():
+            if self.__fix(i) in list(self.__cache.keys()):
 
                 OUT.debug('Adding config-server-owned file', 8)
 
@@ -177,7 +177,7 @@ class FileType:
         filename = self.__fix(filename)
 
         # look for config-protected files in the cache
-        if filename in self.__cache.keys():
+        if filename in list(self.__cache.keys()):
             return self.__cache[filename]
 
         # unspecified file (and thus virtual)
@@ -208,7 +208,7 @@ class FileType:
         directory = self.__fix(directory)
 
         # check the cache
-        if directory in self.__cache.keys():
+        if directory in list(self.__cache.keys()):
             return self.__cache[directory]
 
         # unspecified directories are default-owned

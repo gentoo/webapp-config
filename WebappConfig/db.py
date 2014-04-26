@@ -405,7 +405,7 @@ class WebappDB(AppHierarchy):
 
         result = {}
 
-        for j in files.keys():
+        for j in list(files.keys()):
 
             if files[j][0]:
                 p = files[j][0] + '/' + files[j][1] + '-' + files[j][2]
@@ -452,7 +452,7 @@ class WebappDB(AppHierarchy):
                        OUT.warn('Assuming webapp is no longer installed.')
                        OUT.warn('Pruning entry from database.')
                     if action == 'clean':
-                        for installs in files.keys():
+                        for installs in list(files.keys()):
                             contents = open(installs).readlines()
                             new_entries = ''
                             for entry in contents:

@@ -291,7 +291,7 @@ class Contents:
 
         self.check_installdir()
 
-        values = [' '.join(i) for i in self.__content.values()]
+        values = [' '.join(i) for i in list(self.__content.values())]
 
         if not self.__p:
             try:
@@ -481,7 +481,7 @@ class Contents:
             'sym'     : [  'sym', self.file_zero, self.file_link ],
             }
 
-        if not dsttype in allowed_types.keys():
+        if not dsttype in list(allowed_types.keys()):
             OUT.die('Oops, webapp-config bug. "dsttype" is ' + dsttype)
 
         # Generate handler for file attributes
@@ -548,7 +548,7 @@ class Contents:
         ''' Get a list of files. This is returned as a list sorted according
         to length, so that files lower in the hierarchy can be removed
         first.'''
-        installed = self.__content.keys()
+        installed = list(self.__content.keys())
         return sorted(installed, key=lambda x: (-len(x), x))
 
     def get_directories(self):
@@ -675,7 +675,7 @@ class Contents:
 
     def entry(self, entry):
         ''' Return a complete entry.'''
-        if entry in self.__content.keys():
+        if entry in list(self.__content.keys()):
             return ' '.join(self.__content[entry])
         else:
             raise Exception('Unknown file "' + entry + '"')
@@ -684,7 +684,7 @@ class Contents:
         '''
         Returns the entry type.
         '''
-        if entry in self.__content.keys():
+        if entry in list(self.__content.keys()):
             return self.__content[entry][0]
         else:
             raise Exception('Unknown file "' + entry + '"')
@@ -693,7 +693,7 @@ class Contents:
         '''
         Returns if the entry is relative or not.
         '''
-        if entry in self.__content.keys():
+        if entry in list(self.__content.keys()):
             return bool(int(self.__content[entry][1]))
         else:
             raise Exception('Unknown file "' + entry + '"')
@@ -702,7 +702,7 @@ class Contents:
         '''
         Returns the owner of the entry.
         '''
-        if entry in self.__content.keys():
+        if entry in list(self.__content.keys()):
             return self.__content[entry][2]
         else:
             raise Exception('Unknown file "' + entry + '"')
@@ -711,7 +711,7 @@ class Contents:
         '''
         Returns the (possibly relative) path of the entry.
         '''
-        if entry in self.__content.keys():
+        if entry in list(self.__content.keys()):
             msg = self.__content[entry][3]
             if msg[0] == "/":
                 msg = self.__root + msg
@@ -724,7 +724,7 @@ class Contents:
         '''
         Returns the recorded modification time of the entry.
         '''
-        if entry in self.__content.keys():
+        if entry in list(self.__content.keys()):
             return self.__content[entry][4]
         else:
             raise Exception('Unknown file "' + entry + '"')
@@ -733,7 +733,7 @@ class Contents:
         '''
         Returns the recorded md5 hash of the entry.
         '''
-        if entry in self.__content.keys():
+        if entry in list(self.__content.keys()):
             return self.__content[entry][5]
         else:
             raise Exception('Unknown file "' + entry + '"')
@@ -742,7 +742,7 @@ class Contents:
         '''
         Returns the recorded target of the link.
         '''
-        if entry in self.__content.keys():
+        if entry in list(self.__content.keys()):
             return self.__content[entry][6]
         else:
             raise Exception('Unknown file "' + entry + '"')

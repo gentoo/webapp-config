@@ -395,7 +395,7 @@ class Message:
         callerlocals = inspect.getargvalues(caller[0])[3]
 
         ## Is the caller an obejct? If so he provides 'self'
-        if 'self' in callerlocals.keys():
+        if 'self' in list(callerlocals.keys()):
             callerobject = callerlocals['self']
             del callerlocals['self']
             if self.show_class_variables:
@@ -407,7 +407,7 @@ class Message:
 
         # Remove variables not requested
         if not '*' in self.debug_var:
-            callerlocals = dict([i for i in callerlocals.items()
+            callerlocals = dict([i for i in list(callerlocals.items())
                                  if i[0] in self.debug_var])
 
         ## Is the object among the list of objects to debug?
@@ -445,7 +445,7 @@ class Message:
             print('// ' + c, file=self.debug_out)
             # Selected variables follow
             if callerlocals:
-                for i,j in callerlocals.items():
+                for i,j in list(callerlocals.items()):
                     print('// '                              \
                           + self.maybe_color('turquoise', str(i)) + ':' + str(j), file=self.debug_out)
             # Finally the message
@@ -480,7 +480,7 @@ class Message:
             if self.debug_vrb == 3:
                 print(ls + '//', file=self.debug_out)
                 print(ls + '// VALUES ', file=self.debug_out)
-            for i,j in callerlocals.items():
+            for i,j in list(callerlocals.items()):
                 print(ls + '// ------------------> '         \
                       + self.maybe_color('turquoise', str(i)) + ':', file=self.debug_out)
                 breaklines(str(j))

@@ -115,7 +115,7 @@ class DotConfig:
                           'WEB_INSTALLDIR']
 
     def __getitem__(self, key):
-        if key in self.__data.keys():
+        if key in list(self.__data.keys()):
             return self.__data[key]
         # this key didn't exist in old versions, but new versions
         # expect it. fix bug 355295
@@ -180,8 +180,8 @@ class DotConfig:
 
         OUT.debug('Trying to retrieve package name', 6)
 
-        if 'WEB_PN' in self.__data.keys() and 'WEB_PVR' in self.__data.keys():
-            if 'WEB_CATEGORY' in self.__data.keys():
+        if 'WEB_PN' in list(self.__data.keys()) and 'WEB_PVR' in list(self.__data.keys()):
+            if 'WEB_CATEGORY' in list(self.__data.keys()):
                 return self.__data['WEB_CATEGORY'] + '/' + \
                     self.__data['WEB_PN'] + '-' + self.__data['WEB_PVR']
             else:

@@ -326,7 +326,7 @@ class Ebuild:
                       'PVR': None}
 
         result = {}
-        for i in export_map.keys():
+        for i in list(export_map.keys()):
 
             value = export_map[i]
 

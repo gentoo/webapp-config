@@ -502,8 +502,34 @@
 	  </varlistentry>
 
 	  <varlistentry>
-	    <term><option>--default-dirs</option> <replaceable>type</replaceable></term>
-	    <term><option>--vd</option> <replaceable>type</replaceable></term>
+	    <term><option>--default-dirs</option></term>
+	    <term><option>--dd</option></term>
+	    <listitem>
+	      <para><replaceable>type</replaceable> must be one of:</para>
+	      <variablelist>
+	        <varlistentry>
+	          <term>server-owned</term>
+		  <listitem>
+		    <para>Directories are owned by the user that the web server runs as.  Use the <option>-s</option> switch to specify which web server to use.</para>
+		  </listitem>
+		</varlistentry>
+		<varlistentry>
+		  <term>config-owned</term>
+		  <listitem>
+		    <para>Directories are owned by the user and group specified with the <option>-u</option> and <option>-g</option> switches.</para>
+		  </listitem>
+		</varlistentry>
+		<varlistentry>
+		  <term>virtual</term>
+		  <listitem>
+		    <para>Directories are shared; no local copy is created.</para>
+		  </listitem>
+		</varlistentry>
+	    </variablelist>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
 	    <term><option>--virtual-files</option> <replaceable>type</replaceable></term>
 	    <term><option>--vf</option> <replaceable>type</replaceable></term>
 	    <listitem>
@@ -512,19 +538,19 @@
 	        <varlistentry>
 		  <term>server-owned</term>
 		  <listitem>
-		    <para>Directories or files are owned by the user that the web server runs as.  Use the <option>-s</option> switch to specify which web server to use.</para>
+		    <para>Files are owned by the user that the web server runs as.  Use the <option>-s</option> switch to specify which web server to use.</para>
 		  </listitem>
 		</varlistentry>
 		<varlistentry>
 		  <term>config-owned</term>
 		  <listitem>
-		    <para>Directories or files are owned by the user and group specified with the <option>-u</option> and <option>-g</option> switches.</para>
+		    <para>Files are owned by the user and group specified with the <option>-u</option> and <option>-g</option> switches.</para>
 		  </listitem>
 		</varlistentry>
 		<varlistentry>
 		  <term>virtual</term>
 		  <listitem>
-		    <para>Directories or files are shared; no local copy is created.</para>
+		    <para>Files are shared; no local copy is created.</para>
 		  </listitem>
 		</varlistentry>
 	      </variablelist>

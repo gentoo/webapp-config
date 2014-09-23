@@ -846,18 +846,18 @@ class Config:
         # Handle -E
         envmap = []
 
-        if ('envall' in options.__dict__ and 
-            options.__dict__['envall']):
+        if ('envall' in options and 
+            options['envall']):
             envmap = 'all'
 
-        elif ('envvar' in options.__dict__ and 
-              options.__dict__['envvar']):
-            envmap = [x.lower() for x in options.__dict__['envvar']]
+        elif ('envvar' in options and 
+              options['envvar']):
+            envmap = [x.lower() for x in options['envvar']]
 
         OUT.debug('Trying to import environment variables', 7)
 
         if envmap:
-            for (key, value) in list(os.environ.items()):
+            for (key, value) in os.environ.items():
 
                 if envmap == 'all' or key.lower() in envmap:
 
@@ -867,16 +867,16 @@ class Config:
                                     key.lower(),
                                     value)
 
-        if ('define' in options.__dict__ and
-              options.__dict__['define']):
-            for i in options.__dict__['define']:
+        if ('define' in options and
+              options['define']):
+            for i in options['define']:
                 if '=' in i:
                     self.config.set('USER', 
                                     i.split('=')[0].lower(),
                                     i.split('=')[1])
 
         # Indicate that --dir was found
-        if 'dir' in options.__dict__:
+        if 'dir' in options:
             self.flag_dir = True
 
         # Map command line options into the configuration
@@ -894,14 +894,14 @@ class Config:
                             'verbose'      : 'g_verbose',
                             'bug_report'   : 'g_bugreport'}
 
-        for i in list(option_to_config.keys()):
-            if i in options.__dict__ and options.__dict__[i]:
+        for i in option_to_config.keys():
+            if i in options and options[i]:
                 self.config.set('USER', option_to_config[i],
-                                str(options.__dict__[i]))
+                                str(options[i]))
 
         # handle verbosity
-        if ('pretend' in options.__dict__
-            and options.__dict__['pretend']):
+        if ('pretend' in options
+            and options['pretend']):
 
             self.config.set('USER', 'g_verbose', 'True')
 
@@ -944,12 +944,12 @@ class Config:
                 'show_postupgrade', 'check_config', 'query']
 
         for i in work:
-            if options.__dict__.get(i):
+            if options.get(i):
                 self.work = i
                 break
 
-        if options.__dict__.get('prune_database'):
-            self.prune_action = options.__dict__.get('prune_database')
+        if options.get('prune_database'):
+            self.prune_action = options.get('prune_database')
 
         OUT.debug('Checking command line arguments', 1)
 

@@ -169,37 +169,37 @@ class Message:
 
     def cli_handle(self, options):
 
-        if ('debug' in options.__dict__
-            and options.__dict__['debug']):
+        if ('debug' in options
+            and options['debug']):
             self.debug_on()
         else:
             self.debug_off()
             return
 
-        if ('debug_class_vars' in options.__dict__
-            and options.__dict__['debug_class_vars']):
+        if ('debug_class_vars' in options
+            and options['debug_class_vars']):
             self.class_variables_on()
         else:
             self.class_variables_off()
 
-        if ('debug_nocolor' in options.__dict__
-            and options.__dict__['debug_nocolor']):
+        if ('debug_nocolor' in options
+            and options['debug_nocolor']):
             self.color_off()
         else:
             self.color_on()
 
-        if ('debug_level' in options.__dict__ and
-            options.__dict__['debug_level']):
-            dbglvl = int(options.__dict__['debug_level'])
+        if ('debug_level' in options and
+            options['debug_level']):
+            dbglvl = int(options['debug_level'])
             if dbglvl < 0:
                 dbglvl = 0
             if dbglvl > 10:
                 dbglvl = 10
             self.set_debug_level(dbglvl)
 
-        if ('debug_verbose' in options.__dict__ and
-            options.__dict__['debug_verbose']):
-            dbgvrb = int(options.__dict__['debug_verbose'])
+        if ('debug_verbose' in options and
+            options['debug_verbose']):
+            dbgvrb = int(options['debug_verbose'])
             if dbgvrb < 1:
                 dbgvrb = 1
             if dbgvrb > 3:
@@ -210,9 +210,9 @@ class Message:
                   ('debug_classes',   self.set_debug_classes),
                   ('debug_variables', self.set_debug_variables),]:
 
-            if (i[0] in options.__dict__ and
-                options.__dict__[i[0]]):
-                i[1](options.__dict__[i[0]])
+            if (i[0] in options and
+                options[i[0]]):
+                i[1](options[i[0]])
 
 
     #############################################################################
@@ -395,7 +395,7 @@ class Message:
         callerlocals = inspect.getargvalues(caller[0])[3]
 
         ## Is the caller an obejct? If so he provides 'self'
-        if 'self' in list(callerlocals.keys()):
+        if 'self' in callerlocals.keys():
             callerobject = callerlocals['self']
             del callerlocals['self']
             if self.show_class_variables:
@@ -407,7 +407,7 @@ class Message:
 
         # Remove variables not requested
         if not '*' in self.debug_var:
-            callerlocals = dict([i for i in list(callerlocals.items())
+            callerlocals = dict([i for i in callerlocals.items()
                                  if i[0] in self.debug_var])
 
         ## Is the object among the list of objects to debug?
@@ -445,7 +445,7 @@ class Message:
             print('// ' + c, file=self.debug_out)
             # Selected variables follow
             if callerlocals:
-                for i,j in list(callerlocals.items()):
+                for i,j in callerlocals.items():
                     print('// '                              \
                           + self.maybe_color('turquoise', str(i)) + ':' + str(j), file=self.debug_out)
             # Finally the message
@@ -480,7 +480,7 @@ class Message:
             if self.debug_vrb == 3:
                 print(ls + '//', file=self.debug_out)
                 print(ls + '// VALUES ', file=self.debug_out)
-            for i,j in list(callerlocals.items()):
+            for i,j in callerlocals.items():
                 print(ls + '// ------------------> '         \
                       + self.maybe_color('turquoise', str(i)) + ':', file=self.debug_out)
                 breaklines(str(j))

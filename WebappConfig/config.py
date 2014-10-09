@@ -873,9 +873,12 @@ class Config:
 
                     OUT.debug('Adding environment variable', 8)
 
-                    self.config.set('USER',
-                                    key.lower(),
-                                    value)
+                    try:
+                        self.config.set('USER',
+                                        key.lower(),
+                                        value)
+                    except ValueError:
+                        pass
 
         if ('define' in options and
               options['define']):

@@ -38,7 +38,7 @@ import WebappConfig.server
 import WebappConfig.permissions as Perm
 import WebappConfig.wrapper as wrapper
 
-from optparse             import OptionParser, OptionGroup
+from argparse             import ArgumentParser
 from WebappConfig.debug   import OUT
 from WebappConfig.version import WCVERSION
 
@@ -305,7 +305,7 @@ class Config:
         # Setup the command line parser
         self.setup_parser()
 
-        self.work = 'help'
+        self.work = ''
 
         self.flag_dir = False
 
@@ -379,291 +379,301 @@ class Config:
 
     def setup_parser(self):
 
-        self.parser = OptionParser(
-            usage   = '%prog [-ICU] [-dghus] <APPLICATION VERSION>',
-            version = self.config.get('USER', 'my_version'),
-            add_help_option = False)
+        self.parser  = ArgumentParser(
+            usage    = '%(prog)s [-ICU] [-dghus] <APPLICATION VERSION>',
+            add_help = False)
 
+        self.parser.add_argument('-v',
+                                 '--version',
+                                 action = 'version',
+                                 version = self.config.get('USER',
+                                 'my_version'))
         #-----------------------------------------------------------------
         # Usage
 
-        group = OptionGroup(self.parser, 'APPLICATION VERSION',
-                            'The name and version number of the web appli'
-                            'cation to install e.g. phpmyadmin 2.5.4. The '
-                            'APPLICATION must have already been installed'
-                            ' into the '
-                            + self.config.get('USER', 'my_approot') +
-                            ' directory tree using emerge')
-
-        self.parser.add_option_group(group)
+        app_ver = self.parser.add_argument_group('APPLICATION VERSION',
+                                                 'The name and version number '
+                                                 'of the web application to '
+                                                 'install. e.g. phpmyadmin 2.'
+                                                 '5.4. The APPLICATION must '
+                                                 'have already been installed '
+                                                 'into the %(approot)s direct'
+                                                 'ory tree using emerge'
+                                                 % {'approot':
+                                                    self.config.get('USER',
+                                                    'my_approot')})
 
         #-----------------------------------------------------------------
         # Main Options
 
-        group = OptionGroup(self.parser, '<Main Options>')
+        main_opts = self.parser.add_argument_group('<Main Options>')
 
-        group.add_option('-I',
-                         '--install',
-                         action = 'store_true',
-                         help   = 'Install a web application')
+        main_opts.add_argument('-I',
+                               '--install',
+                               nargs = 2,
+                               help   = 'Install a web application')
 
-        group.add_option('-C',
-                         '--clean',
-                         action = 'store_true',
-                         help   = 'Remove a web application')
+        main_opts.add_argument('-C',
+                               '--clean',
+                               nargs = 2,
+                               help   = 'Remove a web application')
 
-        group.add_option('-U',
-                         '--upgrade',
-                         action = 'store_true',
-                         help   = 'Upgrade a web application')
-
-        self.parser.add_option_group(group)
+        main_opts.add_argument('-U',
+                               '--upgrade',
+                               nargs = 2,
+                               help   = 'Upgrade a web application')
 
         #-----------------------------------------------------------------
         # Path Options
 
-        group = OptionGroup(self.parser, '<Installation Location>')
+        inst_locs = self.parser.add_argument_group('<Installation Location>')
 
-        group.add_option('-h',
-                         '--host',
-                         help = 'The hostname to configure this applicati'
-                         'on to serve.  Also affects where some files go.'
-                         ' If you get this setting wrong, you may need to'
-                         ' re-install the application to correct the pro'
-                         'blem! Default is HOST = '
-                         + self.config.get('USER', 'vhost_hostname') +
-                         '. To change the default, change the value of "v'
-                         'host_hostname" in '
-                         + self.config.get('USER', 'my_etcconfig') +
-                         ' <NOTE>: if the default value is currently "loc'
-                         'alhost", that probably means that this computer'
-                         '\'s /etc/hosts file is not correctly configured'
-                         )
+        inst_locs.add_argument('-d',
+                               '--dir',
+                               nargs = 1,
+                               help = 'Install <application> into DIR under the'
+                               ' htdocs dir. The default is '
+                               + self.config.get('USER', 'g_installdir'))
 
-        group.add_option('-d', '--dir',
-                         help = 'Install <application> into DIR under the'
-                         ' htdocs dir. The default is '
-                         + self.config.get('USER', 'g_installdir'))
+        inst_locs.add_argument('-h',
+                               '--host',
+                               nargs = 1,
+                               help = 'The hostname to configure this applicati'
+                               'on to serve.  Also affects where some files go.'
+                               ' If you get this setting wrong, you may need to'
+                               ' re-install the application to correct the pro'
+                               'blem! Default is HOST = '
+                               + self.config.get('USER', 'vhost_hostname') +
+                               '. To change the default, change the value of "v'
+                               'host_hostname" in '
+                               + self.config.get('USER', 'my_etcconfig') +
+                               ' <NOTE>: if the default value is currently "loc'
+                               'alhost", that probably means that this computer'
+                               '\'s /etc/hosts file is not correctly configured'
+                              )
 
-        group.add_option('-s', '--server',
-                         help = 'Specify which web SERVER to install the '
-                         'application to run under. Use webapp-config --l'
-                         'ist-servers to see supported web servers. The d'
-                         'efault is -s '
-                         + self.config.get('USER', 'vhost_server') +
-                         '. To change the default, change the value of VH'
-                         'OST_SERVER in '
-                         + self.config.get('USER', 'my_etcconfig'))
+        inst_locs.add_argument('-S',
+                               '--secure', action='store_true',
+                               help = 'Install, upgrade, or clean files in htdo'
+                               'cs-secure rather than in the htdocs directory.')
 
-        group.add_option('--secure', action='store_true',
-                         help = 'Install, upgrade, or clean files in htdo'
-                         'cs-secure rather than in the htdocs directory.')
+        inst_locs.add_argument('-s',
+                               '--server',
+                               nargs = 1,
+                               help = 'Specify which web SERVER to install the '
+                               'application to run under. Use webapp-config --l'
+                               'ist-servers to see supported web servers. The d'
+                               'efault is -s '
+                               + self.config.get('USER', 'vhost_server') +
+                               '. To change the default, change the value of VH'
+                               'OST_SERVER in '
+                               + self.config.get('USER', 'my_etcconfig'))
 
-        self.parser.add_option_group(group)
 
         #-----------------------------------------------------------------
         # Installation Options
 
-        group = OptionGroup(self.parser, '<Installation Options>')
+        inst_opts = self.parser.add_argument_group('<Installation Options>')
 
-        group.add_option('-u',
-                         '--user',
-                         help = 'Install config files so that they can be'
-                         ' edited by USER. USER can be a username.Numeric'
-                         'al user ids are NOT supported. Default is USER '
-                         '= '
-                         + self.config.get('USER', 'vhost_config_uid') +
-                         ' To change the default, change the value of VHO'
-                         'ST_CONFIG_UID in '
-                         + self.config.get('USER', 'my_etcconfig'))
+        inst_opts.add_argument('-c',
+                               '--copy',
+                               action='store_true',
+                               help = 'Directly copy the webapp files from'
+                               ' the /usr/share/webapps/ directory when installing'
+                               ' the webapp.')
 
-        group.add_option('-g',
-                         '--group',
-                         help = 'Install config files so that they can be'
-                         ' edited by GROUP. GROUP can be a group name. Nu'
-                         'merical group ids are NOT supported.Default is '
-                         'GROUP = '
-                         + self.config.get('USER', 'vhost_config_gid') +
-                         'To change the default, change the value of VHOS'
-                         'T_CONFIG_GID in '
-                         + self.config.get('USER', 'my_etcconfig'))
+        inst_opts.add_argument('-sf',
+                               '--soft',
+                               action='store_true',
+                               help = 'Use symbolic links instead of hard links'
+                               ' when creating virtual files. <NOTE>: some pack'
+                               'ages will not work if you use this option')
 
-        group.add_option('--soft',
-                         action='store_true',
-                         help = 'Use symbolic links instead of hard links'
-                         ' when creating virtual files. <NOTE>: some pack'
-                         'ages will not work if you use this option')
+        inst_opts.add_argument('-g',
+                               '--group',
+                               nargs = 1,
+                               help = 'Install config files so that they can be'
+                               ' edited by GROUP. GROUP can be a group name. Nu'
+                               'merical group ids are NOT supported.Default is '
+                               'GROUP = '
+                               + self.config.get('USER', 'vhost_config_gid') +
+                               'To change the default, change the value of VHOS'
+                               'T_CONFIG_GID in '
+                               + self.config.get('USER', 'my_etcconfig'))
 
-        group.add_option('--copy',
-                         action='store_true',
-                         help = 'Directly copy the webapp files from'
-             ' the /usr/share/webapps/ directory when installing'
-             ' the webapp.')
+        inst_opts.add_argument('-u',
+                               '--user',
+                               nargs = 1,
+                               help = 'Install config files so that they can be'
+                               ' edited by USER. USER can be a username.Numeric'
+                               'al user ids are NOT supported. Default is USER '
+                               '= '
+                               + self.config.get('USER', 'vhost_config_uid') +
+                               ' To change the default, change the value of VHO'
+                               'ST_CONFIG_UID in '
+                               + self.config.get('USER', 'my_etcconfig'))
 
-        group.add_option('--virtual-files',
-                         '--vf',
-                         type = 'choice',
-                         choices = ['server-owned',
-                                    'config-owned',
-                                    'virtual'],
-                         help = 'Decide what happens when we\'re installi'
-                         'ng a file that could be shared (ie, one we woul'
-                         'dn\'t normally create a local copy of). VIRTUAL'
-                         '_FILES must be one of: "server-owned" [files ar'
-                         'e owned by the user and group thatthe web-serve'
-                         'r runs under], "config-owned" [files are owned '
-                         'by the user and group specified by the -u and -'
-                         'g switches to this script],"virtual" [files are'
-                         ' shared; a local copy is not created]. Default '
-                         'is '
-                         + self.config.get('USER',
-                                           'vhost_config_virtual_files') +
-                         '. To change these defaults, change the value of'
-                         ' VHOST_CONFIG_VIRTUAL_FILES in '
-                         + self.config.get('USER', 'my_etcconfig') +
-                         ' <NOTE>: Some -s <server> options may not suppo'
-                         'rt all values of VIRTUAL_FILES and will report '
-                         'an error')
+        inst_opts.add_argument('-vf',
+                               '--virtual-files',
+                               choices = ['server-owned',
+                                          'config-owned',
+                                          'virtual'],
+                               help = 'Decide what happens when we\'re installi'
+                               'ng a file that could be shared (ie, one we woul'
+                               'dn\'t normally create a local copy of). VIRTUAL'
+                               '_FILES must be one of: "server-owned" [files ar'
+                               'e owned by the user and group thatthe web-serve'
+                               'r runs under], "config-owned" [files are owned '
+                               'by the user and group specified by the -u and -'
+                               'g switches to this script],"virtual" [files are'
+                               ' shared; a local copy is not created]. Default '
+                               'is '
+                               + self.config.get('USER',
+                                                 'vhost_config_virtual_files') +
+                               '. To change these defaults, change the value of'
+                               ' VHOST_CONFIG_VIRTUAL_FILES in '
+                               + self.config.get('USER', 'my_etcconfig') +
+                               ' <NOTE>: Some -s <server> options may not suppo'
+                               'rt all values of VIRTUAL_FILES and will report '
+                               'an error')
 
-        group.add_option('--default-dirs',
-                         '--dd',
-                         type = 'choice',
-                         choices = ['server-owned',
-                                    'config-owned',
-                                    'default-owned'],
-                         help = 'Decide what happens when we\'re installi'
-                         'ng a directory that could be shared (ie, one we'
-                         ' wouldn\'t normally create a local copy of). DE'
-                         'FAULT_DIRS must be one of: "server-owned" [dirs'
-                         ' are owned by the user and group thatthe web-se'
-                         'rver runs under], "config-owned" [dirs are owne'
-                         'd by the user and group specified by the -u and'
-                         ' -g switches to this script],"default-owned" [d'
-                         'irs are owned by the user specified in VHOST_DE'
-                         'FAULT_UID:VHOST_DEFAULT_GID]. Default is '
-                         + self.config.get('USER',
-                                           'vhost_config_default_dirs') +
-                         '. To change these defaults, change the value of'
-                         ' VHOST_CONFIG_DEFAULT_DIRS in '
-                         + self.config.get('USER', 'my_etcconfig') +
-                         ' <NOTE>: Some -s <server> options may not suppo'
-                         'rt all values of DEFAULT_DIRS and will report a'
-                         'n error')
+        inst_opts.add_argument('-dd',
+                               '--default-dirs',
+                               choices = ['server-owned',
+                                          'config-owned',
+                                          'default-owned'],
+                               help = 'Decide what happens when we\'re installi'
+                              'ng a directory that could be shared (ie, one we'
+                              ' wouldn\'t normally create a local copy of). DE'
+                              'FAULT_DIRS must be one of: "server-owned" [dirs'
+                              ' are owned by the user and group thatthe web-se'
+                              'rver runs under], "config-owned" [dirs are owne'
+                              'd by the user and group specified by the -u and'
+                              ' -g switches to this script],"default-owned" [d'
+                              'irs are owned by the user specified in VHOST_DE'
+                              'FAULT_UID:VHOST_DEFAULT_GID]. Default is '
+                              + self.config.get('USER',
+                                                'vhost_config_default_dirs') +
+                              '. To change these defaults, change the value of'
+                              ' VHOST_CONFIG_DEFAULT_DIRS in '
+                              + self.config.get('USER', 'my_etcconfig') +
+                              ' <NOTE>: Some -s <server> options may not suppo'
+                              'rt all values of DEFAULT_DIRS and will report a'
+                              'n error')
 
-        self.parser.add_option_group(group)
 
         #-----------------------------------------------------------------
         # Information Options
 
-        group = OptionGroup(self.parser, '<Information Options>')
+        info_opts = self.parser.add_argument_group('<Information Options>')
 
-        group.add_option('--pretend',
-                         action='store_true',
-                         help = 'Output information about what webapp-con'
-                         'fig would do, then quit without actually doing '
-                         'it')
+        info_opts.add_argument('-P',
+                               '--pretend',
+                               action='store_true',
+                               help = 'Output information about what webapp-con'
+                               'fig would do, then quit without actually doing '
+                               'it')
 
-        group.add_option('-V',
-                         '--verbose',
-                         action='store_true',
-                         help = 'Output even more information than normal'
-                         )
+        info_opts.add_argument('-V',
+                               '--verbose',
+                               action='store_true',
+                               help = 'Output even more information than normal'
+                               )
 
-        group.add_option('--list-servers',
-                         '--ls',
-                         action='store_true',
-                         help = 'List all web servers currently supported'
-                         ' by webapp-config')
+        info_opts.add_argument('-li',
+                               '--list-installs',
+                               action='store_true',
+                               help = 'List all current virtual installs for <a'
+                               'pplication>. Use * for the package name and/or '
+                               'version number to list more thanone package / v'
+                               'ersion of a package.  Remember to include the *'
+                               ' in single quotes to stop your shell from expan'
+                               'ding it first!!')
 
-        group.add_option('--list-installs',
-                         '--li',
-                         action='store_true',
-                         help = 'List all current virtual installs for <a'
-                         'pplication>. Use * for the package name and/or '
-                         'version number to list more thanone package / v'
-                         'ersion of a package.  Remember to include the *'
-                         ' in single quotes to stop your shell from expan'
-                         'ding it first!!')
+        info_opts.add_argument('-ls',
+                               '--list-servers',
+                               action='store_true',
+                               help = 'List all web servers currently supported'
+                               ' by webapp-config')
 
-        group.add_option('--list-unused-installs',
-                         '--lui',
-                         action='store_true',
-                         help = 'List all master images which currently a'
-                         're not used. Optionally, provide a package and/'
-                         'or version number as arguments to restrict the '
-                         'listing.')
+        info_opts.add_argument('-lui',
+                               '--list-unused-installs',
+                               action='store_true',
+                               help = 'List all master images which currently a'
+                               're not used. Optionally, provide a package and/'
+                               'or version number as arguments to restrict the '
+                               'listing.')
 
-        group.add_option('--prune-database',
-                         '--pd',
-                         type = 'choice',
-                         choices = ['pretend',
-                                    'clean'],
-                         help = 'This will list all outdated entries in '
-                         'the webapp-config "database".')
+        info_opts.add_argument('-pd',
+                               '--prune-database',
+                               choices = ['pretend',
+                                          'clean'],
+                               help = 'This will list all outdated entries in '
+                               'the webapp-config "database".')
 
-        group.add_option('--show-installed',
-                         '--si',
-                         action='store_true',
-                         help = 'Show what application is installed in DI'
-                         'R')
+        info_opts.add_argument('-si',
+                               '--show-installed',
+                               action='store_true',
+                               help = 'Show what application is installed in DI'
+                               'R')
 
-        group.add_option('--show-postinst',
-                         '--spi',
-                         action='store_true',
-                         help = 'Show the post-installation instructions '
-                         'for <application>. Very handy if you\'ve lost t'
-                         'he instructions when they were shown to you ;-)'
-                         )
+        info_opts.add_argument('-spi',
+                               '--show-postinst',
+                               nargs = 2,
+                               help = 'Show the post-installation instructions '
+                               'for <application>. Very handy if you\'ve lost t'
+                               'he instructions when they were shown to you ;-)'
+                               )
 
-        group.add_option('--show-postupgrade',
-                         '--spu',
-                         action='store_true')
+        info_opts.add_argument('-spu',
+                               '--show-postupgrade',
+                               nargs = 2,
+                               help = 'Show the post-upgrade instructions for '
+                               '<application>. Very handy if you\'ve lost the '
+                               'instructions when they were shown to you ;-)')
 
-        group.add_option('--query',
-                         action='store_true')
-
-        self.parser.add_option_group(group)
+        info_opts.add_argument('--query',
+                               action='store_true')
 
         #-----------------------------------------------------------------
         # Other Options
 
-        group = OptionGroup(self.parser, '<Other Options>')
+        alio_opts = self.parser.add_argument_group('<Other Options>')
 
-        group.add_option('-D',
-                         '--define',
-                         action='append',
-                         help = 'Allows to name a <KEY>=<VALUE> pair that'
-                         'will be imported into the configuration variabl'
-                         'es of webapp-config. This allows you to provide'
-                         ' customized variables which can be used in the '
-                         'configuration file. This can also be used to te'
-                         'mporarily overwrite variables from the configur'
-                         'ation file.'
-                         )
+        alio_opts.add_argument('-D',
+                               '--define',
+                               action = 'append',
+                               help = 'Allows to name a <KEY>=<VALUE> pair that'
+                               'will be imported into the configuration variabl'
+                               'es of webapp-config. This allows you to provide'
+                               ' customized variables which can be used in the '
+                               'configuration file. This can also be used to te'
+                               'mporarily overwrite variables from the configur'
+                               'ation file.')
 
-        group.add_option('-E',
-                         '--envvar',
-                         action='append',
-                         help = 'Allows to name single environment variab'
-                         'le that will be imported by webapp-config. Thi'
-                         's allows you to provide customized variables wh'
-                         'ich can be used in the configuration file. This'
-                         ' can also be used to temporarily overwrite vari'
-                         'ables from the configuration file.'
-                         )
+        alio_opts.add_argument('--envall',
+                               action='store_true',
+                               help = 'Imports all environment variables and ov'
+                               'erwrites configurations read from the configura'
+                               'tion file. Setting this switch is not recommend'
+                               'ed since you might have environment variables s'
+                               'et to values that cannot be parsed.')
 
-        group.add_option('--envall',
-                         action='store_true',
-                         help = 'Imports all environment variables and ov'
-                         'erwrites configurations read from the configura'
-                         'tion file. Setting this switch is not recommend'
-                         'ed since you might have environment variables s'
-                         'et to values that cannot be parsed.')
+        alio_opts.add_argument('-E',
+                               '--envvar',
+                               action='append',
+                               help = 'Allows to name single environment variab'
+                               'le that will be imported by webapp-config. This'
+                               ' allows you to provide customized variables whi'
+                               'ch can be used in the configuration file. This '
+                               'can also be used to temporarily overwrite varia'
+                               'bles from the configuration file.')
 
-        group.add_option('-?', '--help', action='help',
-                         help = 'Show this help')
+        alio_opts.add_argument('-?',
+                               '--help',
+                               action='help',
+                               help = 'Show this help')
 
-        self.parser.add_option_group(group)
 
         #-----------------------------------------------------------------
         # Debug Options
@@ -673,19 +683,19 @@ class Config:
         #-----------------------------------------------------------------
         # Bug Options
 
-        group = OptionGroup(self.parser,
-                            '<Reporting Bugs>',
-                            'To report bugs about webapp-config, please g'
-                            'o to '
-                            + self.config.get('USER', 'my_bugsurl')
-                            + '. Include the output of webapp-config --bu'
-                            'g-report <your parameters here> to help us t'
-                            'o help you')
+        bug_opts = self.parser.add_argument_group('<Reporting Bugs>',
+                                                  'To report bugs about webapp'
+                                                  '-config, please go to '
+                                                  + self.config.get('USER',
+                                                                  'my_bugsurl')
+                                                  + '. Include the output of w'
+                                                  'ebapp-config --bug-report <'
+                                                  'your parameters here> to he'
+                                                  'lp us to help you')
 
-        group.add_option('--bug-report',
-                         action='store_true')
+        bug_opts.add_argument('--bug-report',
+                              action='store_true')
 
-        self.parser.add_option_group(group)
 
     # --------------------------------------------------------------------
     # Variable functions
@@ -834,7 +844,7 @@ class Config:
         OUT.debug('Successfully parsed configuration file options', 7)
 
         # Parse the command line
-        (options, args) = self.parser.parse_args()
+        options = vars(self.parser.parse_args())
 
         OUT.debug('Successfully parsed command line options', 7)
 
@@ -857,7 +867,7 @@ class Config:
         OUT.debug('Trying to import environment variables', 7)
 
         if envmap:
-            for (key, value) in os.environ.items():
+            for (key, value) in list(os.environ.items()):
 
                 if envmap == 'all' or key.lower() in envmap:
 
@@ -894,10 +904,15 @@ class Config:
                             'verbose'      : 'g_verbose',
                             'bug_report'   : 'g_bugreport'}
 
-        for i in option_to_config.keys():
+        for i in list(option_to_config.keys()):
             if i in options and options[i]:
-                self.config.set('USER', option_to_config[i],
-                                str(options[i]))
+                # If it's a list, we're expecting only one value in the list.
+                if isinstance(options[i], list):
+                    self.config.set('USER', option_to_config[i],
+                                    str(options[i][0]))
+                else:
+                    self.config.set('USER', option_to_config[i],
+                                    str(options[i]))
 
         # handle verbosity
         if ('pretend' in options
@@ -943,6 +958,10 @@ class Config:
                 'prune_database', 'show_installed', 'show_postinst',
                 'show_postupgrade', 'check_config', 'query']
 
+        if len(sys.argv) ==  1:
+            self.parser.print_help()
+            sys.exit()
+
         for i in work:
             if options.get(i):
                 self.work = i
@@ -953,9 +972,13 @@ class Config:
 
         OUT.debug('Checking command line arguments', 1)
 
-        if len(args) > 0:
+        if self.work in ['install', 'clean', 'show_postinst',
+                         'show_postupgrade', 'upgrade']:
             # get cat / pn
+            args = options[self.work]
+
             m = args[0].split('/')
+
             if len(m) == 1:
                 self.config.set('USER', 'pn',  m[0])
             elif len(m) == 2:
@@ -964,8 +987,10 @@ class Config:
             else:
                 OUT.die('Invalid package name')
 
-        if len(args) > 1:
-            self.config.set('USER', 'pvr', args[-1])
+            try:
+                self.config.set('USER', 'pvr', str(float(args[1])))
+            except ValueError:
+                OUT.die('Invalid package version: %(pvr)s' % {'pvr': args[1]})
 
     # --------------------------------------------------------------------
     # Helper functions

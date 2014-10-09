@@ -15,8 +15,6 @@ from __future__ import print_function
 
 import sys, inspect
 
-from   optparse      import OptionGroup
-
 #################################################################################
 ##
 ## Color codes (taken from portage)
@@ -103,66 +101,66 @@ class Message:
 
     def cli_opts(self, parser):
 
-        group = OptionGroup(parser,
-                            '<Debugging options>',
-                            'Control the debugging features of '
-                            + self.debug_env)
+        debug_opts = parser.add_argument_group('<Debugging options>',
+                                               'Control the debugging features '
+                                               'of ' + self.debug_env + '.')
 
-        group.add_option('--debug',
-                         action = 'store_true',
-                         help = 'Activates debugging features.')
+        debug_opts.add_argument('--debug',
+                                action = 'store_true',
+                                help = 'Activates debugging features.')
 
-        group.add_option('--debug-level',
-                         action = 'store',
-                         type = 'int',
-                         help = 'A value between 0 and 10. 0 means no debugging '
-                         'messages will be selected, 10 selects all debugging me'
-                         'ssages. Default is "4".')
+        debug_opts.add_argument('--debug-classes',
+                                nargs = '+',
+                                help = 'Limits the classes that will return deb'
+                                'ugging output. Specify only the class name not'
+                                'including the modules in which the class is de'
+                                'fined (e.g. MyModule.main.Main should only be '
+                                'represented by "Main"). Several classes can be'
+                                'specified by seperating them with a comma. Def'
+                                'ault is "*" which specifies all classes.')
 
-        group.add_option('--debug-verbose',
-                         action = 'store',
-                         type = 'int',
-                         help = 'A value between 1 and 3. Lower values yield les'
-                         's verbose debugging output. Default is "2".')
+        debug_opts.add_argument('--debug-class-vars',
+                                action = 'store_true',
+                                help = 'In default mode the debugging code will'
+                                'only return information on the local variable '
+                                'which does not include the class variables. Us'
+                                'e this switch to add all values that are provi'
+                                'ded by "self".')
 
-        group.add_option('--debug-methods',
-                         action = 'store',
-                         help = 'Limits the methods that will return debugging o'
-                         'utput. The function name is sufficient and there is no'
-                         'difference between class methods or general functions.'
-                         ' Several methods can be specified by seperating them w'
-                         ' with a comma. Default is "*" which specifies all meth'
-                         'ods.')
+        debug_opts.add_argument('--debug-level',
+                                action = 'store',
+                                type = int,
+                                help = 'A value between 0 and 10. 0 means no de'
+                                'bugging messages will be selected, 10 selects '
+                                'all debugging messages. Default is "4".')
 
-        group.add_option('--debug-classes',
-                         action = 'store',
-                         help = 'Limits the classes that will return debugging o'
-                         'utput. Specify only the class name not including the m'
-                         'odules in which the class is defined (e.g. MyModule.ma'
-                         'in.Main should only be represented by "Main"). Several'
-                         'classes can be specified by seperating them with a com'
-                         'ma. Default is "*" which specifies all classes.')
+        debug_opts.add_argument('--debug-methods',
+                                nargs = '+',
+                                help = 'Limits the methods that will return deb'
+                                'ugging output. The function name is sufficient'
+                                ' and there is no difference between class meth'
+                                'ods or general functions. Several methods can '
+                                'be specified by seperating them with a comma. '
+                                'Default is "*" which specifies all methods.')
 
-        group.add_option('--debug-variables',
-                         action = 'store',
-                         help = 'Limits the variables that will return debugging'
-                         ' output. Several variables can be specified by seperat'
-                         'ing them with a comma. Default is "*" which specifies '
-                         'all variables.')
+        debug_opts.add_argument('--debug-nocolor',
+                                action = 'store_true',
+                                help = 'Deactivates colors in the debugging out'
+                                'put.')
 
-        group.add_option('--debug-class-vars',
-                         action = 'store_true',
-                         help = 'In default mode the debugging code will only re'
-                         'turn information on the local variable which does not '
-                         'include the class variables. Use this switch to add al'
-                         'l values that are provided by "self".')
+        debug_opts.add_argument('--debug-variables',
+                                nargs = '+',
+                                help = 'Limits the variables that will return d'
+                               'ebugging output. Several variables can be speci'
+                               'fied by seperating them with a comma. Default i'
+                               's "*" which specifies all variables.')
 
-        group.add_option('--debug-nocolor',
-                         action = 'store_true',
-                         help = 'Deactivates colors in the debugging output.')
-
-        parser.add_option_group(group)
-
+        debug_opts.add_argument('--debug-verbose',
+                                action = 'store',
+                                type = int,
+                                help = 'A value between 1 and 3. Lower values y'
+                                'ield less verbose debugging output. Default is'
+                                ' "2".')
 
     #############################################################################
     # Handle command line options
@@ -395,7 +393,7 @@ class Message:
         callerlocals = inspect.getargvalues(caller[0])[3]
 
         ## Is the caller an obejct? If so he provides 'self'
-        if 'self' in callerlocals.keys():
+        if 'self' in list(callerlocals.keys()):
             callerobject = callerlocals['self']
             del callerlocals['self']
             if self.show_class_variables:
@@ -407,7 +405,7 @@ class Message:
 
         # Remove variables not requested
         if not '*' in self.debug_var:
-            callerlocals = dict([i for i in callerlocals.items()
+            callerlocals = dict([i for i in list(callerlocals.items())
                                  if i[0] in self.debug_var])
 
         ## Is the object among the list of objects to debug?
@@ -445,7 +443,7 @@ class Message:
             print('// ' + c, file=self.debug_out)
             # Selected variables follow
             if callerlocals:
-                for i,j in callerlocals.items():
+                for i,j in list(callerlocals.items()):
                     print('// '                              \
                           + self.maybe_color('turquoise', str(i)) + ':' + str(j), file=self.debug_out)
             # Finally the message
@@ -480,7 +478,7 @@ class Message:
             if self.debug_vrb == 3:
                 print(ls + '//', file=self.debug_out)
                 print(ls + '// VALUES ', file=self.debug_out)
-            for i,j in callerlocals.items():
+            for i,j in list(callerlocals.items()):
                 print(ls + '// ------------------> '         \
                       + self.maybe_color('turquoise', str(i)) + ':', file=self.debug_out)
                 breaklines(str(j))

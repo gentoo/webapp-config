@@ -633,7 +633,7 @@ class Config:
                                'instructions when they were shown to you ;-)')
 
         info_opts.add_argument('--query',
-                               action='store_true')
+                               nargs=2)
 
         #-----------------------------------------------------------------
         # Other Options

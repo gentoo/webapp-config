@@ -582,7 +582,7 @@ class Config:
 
         info_opts.add_argument('-li',
                                '--list-installs',
-                               action='store_true',
+                               nargs = 2,
                                help = 'List all current virtual installs for <a'
                                'pplication>. Use * for the package name and/or '
                                'version number to list more than one package / '
@@ -966,7 +966,7 @@ class Config:
             sys.exit()
 
         for i in work:
-            if options.get(i):
+            if options.get(i) != None and options.get(i) != False:
                 self.work = i
                 break
 

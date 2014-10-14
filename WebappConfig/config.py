@@ -975,7 +975,7 @@ class Config:
 
         OUT.debug('Checking command line arguments', 1)
 
-        if self.work in ['install', 'clean', 'show_postinst',
+        if self.work in ['install', 'clean', 'query', 'show_postinst',
                          'show_postupgrade', 'upgrade']:
             # get cat / pn
             args = options[self.work]

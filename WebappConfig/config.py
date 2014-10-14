@@ -598,7 +598,7 @@ class Config:
 
         info_opts.add_argument('-lui',
                                '--list-unused-installs',
-                               action='store_true',
+                               nargs = '*',
                                help = 'List all master images which currently a'
                                're not used. Optionally, provide a package and/'
                                'or version number as arguments to restrict the '

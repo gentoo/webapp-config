@@ -585,10 +585,10 @@ class Config:
                                action='store_true',
                                help = 'List all current virtual installs for <a'
                                'pplication>. Use * for the package name and/or '
-                               'version number to list more thanone package / v'
-                               'ersion of a package.  Remember to include the *'
-                               ' in single quotes to stop your shell from expan'
-                               'ding it first!!')
+                               'version number to list more than one package / '
+                               'version of a package.  Remember to include the '
+                               '* in single quotes to stop your shell from expa'
+                               'nding it first!!')
 
         info_opts.add_argument('-ls',
                                '--list-servers',

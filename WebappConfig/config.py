@@ -1557,7 +1557,8 @@ class Config:
                            'lighttpd' : WebappConfig.server.Lighttpd,
                            'cherokee' : WebappConfig.server.Cherokee,
                            'nginx'    : WebappConfig.server.Nginx,
-                           'gatling'  : WebappConfig.server.Gatling}
+                           'gatling'  : WebappConfig.server.Gatling,
+                           'tracd'    : WebappConfig.server.Tracd,}
 
 
         server = self.config.get('USER', 'vhost_server')

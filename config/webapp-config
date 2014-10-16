@@ -69,6 +69,7 @@ vhost_hostname="localhost"
 # cherokee
 # nginx
 # gatling
+# tracd
 
 #
 # you can override this setting by using the -s switch to webapp-config

@@ -356,10 +356,21 @@ class Gatling(Basic):
         self.vhost_server_uid = get_user('gatling')
         self.vhost_server_gid = get_group('gatling')
 
+class Tracd(Basic):
+
+    name   = 'Tracd'
+    desc   = 'supports installation on Trac standalone server'
+    dep    = 'www-apps/trac'
+
+    def set_server_user(self):
+        self.vhost_server_uid = get_user('tracd')
+        self.vhost_server_gid = get_group('tracd')
+
 def listservers():
 
     OUT.notice('\n'.join(['apache',
                           'lighttpd',
                           'cherokee',
                           'nginx',
-                          'gatling']))
+                          'gatling',
+                          'tracd',]))

@@ -990,10 +990,17 @@ class Config:
             else:
                 OUT.die('Invalid package name')
 
-            try:
-                self.config.set('USER', 'pvr', str(float(args[1])))
-            except ValueError:
+            argsvr = args[1].split('.')
+            if len(argsvr) == 1:
                 OUT.die('Invalid package version: %(pvr)s' % {'pvr': args[1]})
+
+            pvr = ''
+            for i in range(0, len(argsvr)):
+                if not i == len(argsvr) - 1:
+                    pvr += argsvr[i] + '.'
+                else:
+                    pvr += argsvr[i]
+            self.config.set('USER', 'pvr', pvr)
 
     # --------------------------------------------------------------------
     # Helper functions

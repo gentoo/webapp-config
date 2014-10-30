@@ -131,58 +131,6 @@ class Contents:
     def read(self):
         '''
         Reads the contents database.
-
-        Some content files have been provided for test purposes:
-
-        >>> import os.path
-        >>> here = os.path.dirname(os.path.realpath(__file__))
-
-        This one should succeed:
-
-        >>> a = Contents(here + '/tests/testfiles/contents/',
-        ...              package = 'test', version = '1.0')
-        >>> a.read()
-        >>> a.db_print()
-        file 1 virtual util/icon_browser.php 1124612216 9ffb2ca9ccd2db656b97cd26a1b06010 
-        file 1 config-owned inc/prefs.php 1124612215 ffae752dba7092cd2d1553d04a0f0045 
-        file 1 virtual lib/prefs.php 1124612215 ffae752dba7092cd2d1553d04a0f0045 
-        file 1 virtual signup.php 1124612220 dc838bc375b3d02dafc414f8e71a2aec 
-        file 1 server-owned data.php 1117009618 0 
-        sym 1 virtual test 1124612220 dc838bc375b3d02dafc414f8e71a2aec /I link / to a very / strange location
-        dir 1 default-owned util 1117009618 0 
-        dir 1 config-owned inc 1117009618 0 
-        dir 1 default-owned lib 1117009618 0 
-        dir 0 default-owned /var/www/localhost/cgi-bin 1124577741 0 
-        dir 0 default-owned /var/www/localhost/error 1124577740 0 
-        dir 0 default-owned /var/www/localhost/icons 1124577741 0 
-        
-        >>> a.get_directories() #doctest: +ELLIPSIS
-        ['.../contents//util', '.../contents//inc', '.../contents//lib', '/var/www/localhost/cgi-bin', '/var/www/localhost/error', '/var/www/localhost/icons']
-
-        This is a corrupted file that checks all fail safes:
-
-        >>> OUT.color_off()
-        >>> a = Contents(here + '/tests/testfiles/contents/',
-        ...              package = 'test', version = '1.1')
-        >>> a.read() #doctest: +ELLIPSIS
-        * Invalid line in content file (dir 1 default-owned). Ignoring!
-        * Content file .../tests/testfiles/contents//.webapp-test-1.1 has an invalid line:
-        * dir 1 nobody-owned  1117009618 0
-        * Invalid owner: nobody-owned
-        * Invalid line in content file (dir 1 nobody-owned  1117009618 0). Ignoring!
-        * Content file .../tests/testfiles/contents//.webapp-test-1.1 has an invalid line:
-        * garbage 1 virtual  1124612215 ffae752dba7092cd2d1553d04a0f0045
-        * Invalid file type: garbage
-        * Invalid line in content file (garbage 1 virtual  1124612215 ffae752dba7092cd2d1553d04a0f0045). Ignoring!
-        * Invalid line in content file (file 1 virtual). Ignoring!
-        * Content file .../tests/testfiles/contents//.webapp-test-1.1 has an invalid line:
-        * file 1 virtual 
-        * Not enough entries.
-        * Invalid line in content file (file 1 virtual ). Ignoring!
-        * Content file .../tests/testfiles/contents//.webapp-test-1.1 has an invalid line:
-        * file 31 config-owned  1124612215 ffae752dba7092cd2d1553d04a0f0045
-        * Invalid relative flag: 31
-        * Invalid line in content file (file 31 config-owned  1124612215 ffae752dba7092cd2d1553d04a0f0045). Ignoring!
         '''
 
         dbpath = self.appdb()
@@ -270,18 +218,6 @@ class Contents:
     def write(self):
         '''
         Write the contents file.
-
-        A short test:
-
-        >>> import os.path
-        >>> here = os.path.dirname(os.path.realpath(__file__))
-        >>> a = Contents(here + '/tests/testfiles/contents/',
-        ...              package = 'test', version = '1.0',
-        ...              pretend = True)
-        >>> a.read()
-        >>> OUT.color_off()
-        >>> a.write() #doctest: +ELLIPSIS
-        * Would have written content file .../tests/testfiles/contents//.webapp-test-1.0!
         '''
 
         dbpath = self.appdb()
@@ -378,77 +314,6 @@ class Contents:
           real_path   - for config-protected files realpath =! path
                         (and this is important for md5)
           relative    - 1 for storing a relative filename, 0 otherwise
-
-        OUT.color_off()
-        import os.path
-        here = os.path.dirname(os.path.realpath(__file__))
-
-        One for pretending:
-
-        a = Contents(here + '/tests/testfiles/contents/app/',
-        ...              package = 'test', version = '1.0',
-        ...              pretend = True)
-
-        And this one is for real:
-
-        b = Contents(here + '/tests/testfiles/contents/app/',
-        ...              package = 'test', version = '1.0')
-
-        Pretend to add a file:
-
-        a.add('file', 'config-owned',
-        ...       destination = here + '/tests/testfiles/contents/app/',
-        ...       path = '/test1', relative = True)
-        *     pretending to add: file 1 config-owned "test1"
-
-        Lets not pretend this time:
-
-        b.add('file', 'config-owned',
-        ...       destination = here + '/tests/testfiles/contents/app/',
-        ...       path = '/test1', relative = True)
-        b.entry(here + '/tests/testfiles/contents/app/test1') #doctest: +ELLIPSIS
-        'file 1 config-owned "test1" ... d8e8fca2dc0f896fd7cb4cb0031ba249 '
-
-        Lets produce an error with a file that does not exist:
-
-        b.add('file', 'config-owned',
-        ...       destination = here + '/tests/testfiles/contents/app/',
-        ...       path = '/nothere', relative = True) #doctest: +ELLIPSIS
-        * Cannot access file .../tests/testfiles/contents/app/nothere to add it as installation content. This should not happen!
-
-        Other file types:
-
-        b.add('hardlink', 'config-owned',
-        ...       destination = here + '/tests/testfiles/contents/app/',
-        ...       path = '/test2', relative = True)
-        b.entry(here + '/tests/testfiles/contents/app/test2') #doctest: +ELLIPSIS
-        'file 1 config-owned "test2" ... d8e8fca2dc0f896fd7cb4cb0031ba249 '
-        b.add('dir', 'default-owned',
-        ...       destination = here + '/tests/testfiles/contents/app/',
-        ...       path = '/dir1', relative = True)
-        b.entry(here + '/tests/testfiles/contents/app/dir1') #doctest: +ELLIPSIS
-        'dir 1 default-owned "dir1" ... 0 '
-        b.add('dir', 'default-owned', destination = here + '/tests/testfiles/contents/app',
-        ...       path = '/dir1',
-        ...       relative = False)
-        b.entry(here + '/tests/testfiles/contents/app/dir1') #doctest: +ELLIPSIS
-        'dir 0 default-owned ".../tests/testfiles/contents/app/dir1" ... 0 '
-
-        Q: Is the full link to the target what we want?
-        A: Yes, since the link will still be ok even if we move the directory.
-
-        b.add('sym', 'virtual',
-        ...       destination = here + '/tests/testfiles/contents/app/',
-        ...       path = '/test3', relative = True)
-        b.entry(here + '/tests/testfiles/contents/app/test3') #doctest: +ELLIPSIS
-        'sym 1 virtual "test3" ... 0 .../tests/testfiles/contents/app/test1'
-
-        b.db_print() #doctest: +ELLIPSIS
-        file 1 config-owned "test1" ... d8e8fca2dc0f896fd7cb4cb0031ba249 
-        file 1 config-owned "test2" ... d8e8fca2dc0f896fd7cb4cb0031ba249 
-        sym 1 virtual "test3" ... 0 .../tests/testfiles/contents/app/test1
-        dir 0 default-owned ".../tests/testfiles/contents/app/dir1" ... 0 
-
         '''
 
         OUT.debug('Adding entry to content dictionary', 6)
@@ -574,32 +439,6 @@ class Contents:
 
         In case the entry can be removed nothing will be
         returned.
-
-        >>> import os.path
-        >>> here = os.path.dirname(os.path.realpath(__file__))
-
-        Trying to remove the contents:
-
-        >>> a = Contents(here + '/tests/testfiles/contents/app/',
-        ...              package = 'test', version = '1.0')
-        >>> a.read()
-        >>> a.ignore += ['.svn']
-        >>> for i in a.get_directories():
-        ...     a.get_canremove(i)
-        '!dir test7'
-        '!empty dir1'
-
-        >>> for i in a.get_files():
-        ...     a.get_canremove(i)
-        '!time test2'
-        '!time test4'
-        '!found test6'
-        '!sym dir3'
-        '!file dir4'
-
-        # Disabled 
-        #'!target test3'
-
         '''
 
         OUT.debug('Checking if the file can be removed', 6)
@@ -746,7 +585,3 @@ class Contents:
             return self.__content[entry][6]
         else:
             raise Exception('Unknown file "' + entry + '"')
-
-if __name__ == '__main__':
-    import doctest, sys
-    doctest.testmod(sys.modules[__name__])

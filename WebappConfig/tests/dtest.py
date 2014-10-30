@@ -8,7 +8,6 @@
 
 import unittest, doctest, sys
 
-import WebappConfig.content
 import WebappConfig.db
 import WebappConfig.dotconfig
 import WebappConfig.ebuild
@@ -18,7 +17,6 @@ import WebappConfig.worker
 
 def test_suite():
     return unittest.TestSuite((
-        doctest.DocTestSuite(WebappConfig.content),
         doctest.DocTestSuite(WebappConfig.db),
         doctest.DocTestSuite(WebappConfig.dotconfig),
         doctest.DocTestSuite(WebappConfig.ebuild),

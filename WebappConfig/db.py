@@ -162,100 +162,6 @@ class WebappDB(AppHierarchy):
     '''
     The DataBase class handles a file-oriented data base that stores
     information about virtual installs of web applications.
-
-    Some test files are needed to test the functionality. This localizes
-    the current position:
-
-    >>> import os.path
-    >>> here = os.path.dirname(os.path.realpath(__file__))
-
-    Deactivates color output which is bad for the doctest
-
-    >>> OUT.color_off()
-
-    Initialize the class:
-
-    >>> a = WebappDB(root = here + '/tests/testfiles/webapps')
-
-    This lists the database:
-    >>> a.listinstalls()
-    /var/www/localhost/htdocs/gallery
-    /var/www/localhost/htdocs/horde
-    /var/www/localhost/htdocs/phpldapadmin
-
-    Which is also possible in a more user friendly way:
-
-    >>> b = WebappDB(root = here + '/tests/testfiles/webapps', verbose = True)
-    >>> b.listinstalls()
-    * Installs for gallery-1.4.4_p6
-    *   /var/www/localhost/htdocs/gallery
-    * Installs for horde-3.0.5
-    *   /var/www/localhost/htdocs/horde
-    * Installs for phpldapadmin-0.9.7_alpha4
-    *   /var/www/localhost/htdocs/phpldapadmin
-
-    The function 'get_inst_files' handles the file locations within the
-    database. If no package has been specified while initializing
-    the database, the funtion will return all files available:
-
-    (code will only return package and varsion since the actual path
-     varies whith your code location)
-
-    >>> sb = [i[1] for i in b.list_locations().items()]
-    >>> sb.sort(key=lambda x: x[0]+x[1]+x[2])
-    >>> sb
-    [['', 'gallery', '1.4.4_p6'], ['', 'gallery', '2.0_rc2'], ['', 'horde', '3.0.5'], ['', 'phpldapadmin', '0.9.7_alpha4']]
-
-    >>> c = WebappDB(root = here + '/tests/testfiles/webapps',
-    ...              package = 'horde', version = '3.0.5')
-    >>> [i[1] for i in c.list_locations().items()]
-    [['', 'horde', '3.0.5']]
-
-    Package specifiers that do not map to an install file will yield
-    an empty result and a warning.
-
-    The warning is turned off for the example:
-    >>> OUT.warn_off()
-
-    >>> c = WebappDB(root = here + '/tests/testfiles/webapps',
-    ...              package = 'garbish', version = '3.0.5')
-    >>> [i[1] for i in c.list_locations().items()]
-    []
-
-    Package specifiers that do not map to an install file will yield
-    an empty result and a warning:
-    >>> c = WebappDB(root = here + '/tests/testfiles/webapps',
-    ...              package = 'horde', version = '8.1.1')
-    >>> [i[1] for i in c.list_locations().items()]
-    []
-
-    The warning is turned off for the example:
-    >>> OUT.warn_on()
-
-    Virtual installs can be added or removed using the corresponding
-    functions (the example will just pretend to write):
-
-    >>> d = WebappDB(root = here + '/tests/testfiles/webapps', pretend = True,
-    ...              package = 'horde', version = '3.0.5')
-    >>> d.add('/my/really/weird/hierarchy/for/horde', #doctest: +ELLIPSIS
-    ...       user = 'me', group = 'me')
-    * Pretended to append installation /my/really/weird/hierarchy/for/horde
-    * Entry:
-    * ... me me /my/really/weird/hierarchy/for/horde
-    * 
-    >>> d.remove('/var/www/localhost/htdocs/horde')
-    * Pretended to remove installation /var/www/localhost/htdocs/horde
-    * Final DB content:
-    * 
-    * 
-
-    >>> d.remove('/my/really/weird/hierarchy/for/horde')  #doctest: +ELLIPSIS
-    * Installation at "/my/really/weird/hierarchy/for/horde" could not be found in the database file. Check the entries in ".../tests/testfiles/webapps/horde/3.0.5/installs"!
-    * Pretended to remove installation /my/really/weird/hierarchy/for/horde
-    * Final DB content:
-    * 1124612110 root root /var/www/localhost/htdocs/horde
-    * 
-
     '''
 
     def __init__(self,
@@ -507,28 +413,6 @@ class WebappSource(AppHierarchy):
     '''
     The WebappSource class handles a web application hierarchy under
     /usr/share/webapps.
-
-    Some test files are needed to test the functionality. This localizes
-    the current position:
-
-    >>> import os.path
-    >>> here = os.path.dirname(os.path.realpath(__file__))
-
-    Initialize the class:
-
-    >>> a = WebappSource(root = here + '/tests/testfiles/share-webapps',)
-
-    A WebappDB class is needed to retrive information about installed
-    packages:
-    >>> b = WebappDB(root = here + '/tests/testfiles/webapps')
-
-    This lists the database:
-    >>> a.listunused(b)
-    share-webapps/horde-3.0.5
-    share-webapps/installtest-1.0
-    share-webapps/uninstalled-6.6.6
-
-
     '''
 
     def __init__(self,
@@ -561,19 +445,6 @@ class WebappSource(AppHierarchy):
              default_dirs  = 'default-owned'):
         '''
         Initialize the type cache.
-
-        >>> import os.path
-        >>> here = os.path.dirname(os.path.realpath(__file__))
-        >>> a = WebappSource(root=here + '/tests/testfiles/share-webapps',
-        ...             category='', package='horde', version='3.0.5')
-
-        >>> a.read()
-        >>> a.filetype('test1')
-        'config-owned'
-
-        >>> a.filetype('test2')
-        'server-owned'
-
         '''
         import WebappConfig.filetype
 
@@ -621,17 +492,6 @@ class WebappSource(AppHierarchy):
         '''
         Checks if the specified source directory exists within the
         application directory.
-
-        >>> import os.path
-        >>> here = os.path.dirname(os.path.realpath(__file__))
-        >>> a = WebappSource(root = here + '/tests/testfiles/share-webapps',
-        ...             category='', package='horde', version='3.0.5')
-
-        >>> a.source_exists('htdocs')
-        True
-
-        >>> a.source_exists('test')
-        False
         '''
         if self.appdir() and os.path.isdir(self.appdir()
                                             + '/' + directory):
@@ -642,14 +502,6 @@ class WebappSource(AppHierarchy):
         '''
         Lists the directories provided by the source directory
         'directory'
-
-        >>> import os.path
-        >>> here = os.path.dirname(os.path.realpath(__file__))
-        >>> a = WebappSource(root = here + '/tests/testfiles/share-webapps',
-        ...             category='', package='horde', version='3.0.5')
-        >>> d = a.get_source_directories('htdocs')
-        >>> [i for i in d if i != '.svn']
-        ['dir1', 'dir2']
         '''
         dirs = []
 
@@ -675,13 +527,6 @@ class WebappSource(AppHierarchy):
         '''
         Lists the files provided by the source directory
         'directory'
-
-        >>> import os.path
-        >>> here = os.path.dirname(os.path.realpath(__file__))
-        >>> a = WebappSource(root = here + '/tests/testfiles/share-webapps',
-        ...             category='', package='horde', version='3.0.5')
-        >>> a.get_source_files('htdocs')
-        ['test1', 'test2']
         '''
 
         files = []
@@ -743,20 +588,6 @@ class WebappSource(AppHierarchy):
             1       - package not found
             2       - no package to find
             3       - package isn't webapp-config compatible          '
-
-        >>> import os.path
-        >>> here = os.path.dirname(os.path.realpath(__file__))
-
-        Does not exist:
-
-        >>> a = WebappSource(root = here + '/tests/testfiles/share-webapps',
-        ...             category='www-apps',package='nothere', version='1',pm='portage')
-        >>> a.packageavail()
-        1
-
-        Incompatible cannot be tested since that would require a
-        oackage (including version number) that is installed on
-        all systems.
         '''
 
         OUT.debug('Verifying package ' + self.package_name(), 6)
@@ -768,7 +599,6 @@ class WebappSource(AppHierarchy):
             package = self.category + '/' + self.pn
 
         # not using self.package_name() here as we don't need pvr
-        if not wrapper.package_installed(package, self.pm):
             return 1
 
         # unfortunately, just because a package has been installed, it
@@ -802,7 +632,3 @@ class WebappSource(AppHierarchy):
             OUT.die('  ' + self.package_name() + ' is not compatible with '
                     'webapp-config.\nIf it should be, report this at '
                     + wrapper.bugs_link)
-
-if __name__ == '__main__':
-    import doctest, sys
-    doctest.testmod(sys.modules[__name__])

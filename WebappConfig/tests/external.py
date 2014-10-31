@@ -23,6 +23,7 @@ import unittest
 import sys
 
 from  WebappConfig.content import Contents
+from  WebappConfig.db      import WebappDB, WebappSource
 from  WebappConfig.debug   import OUT
 from  warnings             import filterwarnings, resetwarnings
 
@@ -130,6 +131,126 @@ class ContentsTest(unittest.TestCase):
                                                           'contents',
                                                           '.webapp-test-1.0!'))
         self.assertEqual(output[0], expected)
+
+class WebappDBTest(unittest.TestCase):
+    def test_list_installs(self):
+        OUT.color_off()
+        db = WebappDB(root = '/'.join((HERE, 'testfiles', 'webapps')))
+
+        db.listinstalls()
+        output = sys.stdout.getvalue().split('\n')
+        self.assertEqual(output[1], '/var/www/localhost/htdocs/horde')
+
+        # Now test the verbosity:
+        db = WebappDB(root = '/'.join((HERE, 'testfiles', 'webapps')),
+                      verbose = True)
+        db.listinstalls()
+        output = sys.stdout.getvalue().split('\n')
+        self.assertEqual(output[5], '* Installs for horde-3.0.5')
+
+    def test_list_locations(self):
+        OUT.color_off()
+        db = WebappDB(root = '/'.join((HERE, 'testfiles', 'webapps')))
+
+        sorted_db = [i[1] for i in db.list_locations().items()]
+        sorted_db.sort(key=lambda x: x[0]+x[1]+x[2])
+
+        self.assertEqual(sorted_db[1], ['', 'gallery', '2.0_rc2'])
+
+        # Now test with a specific package and version:
+        db = WebappDB(root = '/'.join((HERE, 'testfiles', 'webapps')),
+                      package = 'horde', version = '3.0.5')
+        sorted_db = [i[1] for i in db.list_locations().items()]
+        self.assertEqual(sorted_db, [['', 'horde', '3.0.5']])
+
+        # Now test with an install file that doesn't exist:
+        db = WebappDB(root = '/'.join((HERE, 'testfiles', 'webapps')),
+                      package = 'nihil', version = '3.0.5')
+        sorted_db = [i[1] for i in db.list_locations().items()]
+        self.assertEqual(sorted_db, [])
+        
+    def test_add_rm(self):
+        OUT.color_off()
+        db = WebappDB(root = '/'.join((HERE, 'testfiles', 'webapps')),
+                      pretend = True, package = 'horde', version = '3.0.5')
+        # Test adding:
+        db.add('/'.join(('/screwy', 'wonky', 'foobar', 'horde', 'hierarchy')),
+               user = 'me', group = 'me')
+        output = sys.stdout.getvalue().split('\n')
+        self.assertEqual(output[0], '* Pretended to append installation '\
+                                    '/screwy/wonky/foobar/horde/hierarchy')
+
+        # Test deleting a webapp that is actually in the database:
+        db.remove('/'.join(('/var', 'www', 'localhost', 'htdocs', 'horde')))
+        output = sys.stdout.getvalue().split('\n')
+        self.assertEqual(output[6], '* ')
+
+        # And now test deleting one that isn't:
+        db.remove('/'.join(('/screwy', 'wonky', 'foobar', 'horde', 'hierarchy')))
+        output = sys.stdout.getvalue().split('\n')
+        self.assertEqual(output[11], '* 1124612110 root root '\
+                                     '/var/www/localhost/htdocs/horde')
+
+
+class WebappSourceTest(unittest.TestCase):
+        SHARE = '/'.join((HERE, 'testfiles', 'share-webapps'))
+        def test_list_unused(self):
+            source = WebappSource(root = '/'.join((HERE,
+                                                  'testfiles',
+                                                  'share-webapps')))
+            db = WebappDB(root = '/'.join((HERE, 'testfiles', 'webapps')))
+            source.listunused(db)
+            output = sys.stdout.getvalue().split('\n')
+            self.assertEqual(output[2], 'share-webapps/uninstalled-6.6.6')
+
+        def test_read(self):
+            source = WebappSource(root = '/'.join((HERE,
+                                                   'testfiles',
+                                                   'share-webapps')),
+                                  category = '',
+                                  package = 'horde',
+                                  version = '3.0.5')
+
+            source.read()
+            self.assertEqual(source.filetype('test1'), 'config-owned')
+            self.assertEqual(source.filetype('test2'), 'server-owned')
+
+        def test_src_exists(self):
+            source = WebappSource(root = '/'.join((HERE, 'testfiles',
+                                                   'share-webapps')),
+                                  category = '',
+                                  package = 'horde',
+                                  version = '3.0.5')
+            self.assertTrue(source.source_exists('htdocs'))
+            self.assertFalse(source.source_exists('foobar'))
+
+        def test_get_src_dirs(self):
+            source = WebappSource(root = '/'.join((HERE, 'testfiles',
+                                                   'share-webapps')),
+                                  category = '',
+                                  package = 'horde',
+                                  version = '3.0.5')
+            dirs = source.get_source_directories('htdocs')
+            dirs = [i for i in dirs if i != '.svn']
+            self.assertEqual(dirs, ['dir1', 'dir2'])
+
+        def test_get_src_files(self):
+            source = WebappSource(root = '/'.join((HERE, 'testfiles',
+                                                   'share-webapps')),
+                                  category = '',
+                                  package = 'horde',
+                                  version = '3.0.5')
+            files = source.get_source_files('htdocs')
+            self.assertEqual(files, ['test1', 'test2'])
+
+        def test_pkg_avail(self):
+            source = WebappSource(root = '/'.join((HERE, 'testfiles',
+                                                   'share-webapps')),
+                                  category = '',
+                                  package = 'nihil',
+                                  version = '3.0.5',
+                                  pm = 'portage')
+            self.assertEqual(source.packageavail(), 1)
 
 
 if __name__ == '__main__':

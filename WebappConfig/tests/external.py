@@ -22,10 +22,11 @@ import os
 import unittest
 import sys
 
-from  WebappConfig.content import Contents
-from  WebappConfig.db      import WebappDB, WebappSource
-from  WebappConfig.debug   import OUT
-from  warnings             import filterwarnings, resetwarnings
+from  WebappConfig.content   import Contents
+from  WebappConfig.db        import WebappDB, WebappSource
+from  WebappConfig.debug     import OUT
+from  WebappConfig.dotconfig import DotConfig
+from  warnings               import filterwarnings, resetwarnings
 
 HERE = os.path.dirname(os.path.realpath(__file__))
 
@@ -251,6 +252,44 @@ class WebappSourceTest(unittest.TestCase):
                                   version = '3.0.5',
                                   pm = 'portage')
             self.assertEqual(source.packageavail(), 1)
+
+
+class DotConfigTest(unittest.TestCase):
+    def test_has_dotconfig(self):
+        dotconf = DotConfig('/'.join((HERE, 'testfiles', 'htdocs', 'horde')))
+        self.assertTrue(dotconf.has_dotconfig())
+
+        dotconf = DotConfig('/'.join((HERE, 'testfiles', 'htdocs', 'empty')))
+        self.assertFalse(dotconf.has_dotconfig())
+
+    def test_is_empty(self):
+        dotconf = DotConfig('/'.join((HERE, 'testfiles', 'htdocs', 'horde')))
+        self.assertEqual(dotconf.is_empty(), None)
+
+        dotconf = DotConfig('/'.join((HERE, 'testfiles', 'htdocs', 'complain')))
+        self.assertEqual(dotconf.is_empty(), '!morecontents .webapp-cool-1.1.1')
+
+    def test_show_installed(self):
+        dotconf = DotConfig('/'.join((HERE, 'testfiles', 'htdocs', 'horde')))
+        dotconf.show_installed()
+        output = sys.stdout.getvalue().split('\n')
+        self.assertEqual(output[0], 'horde 3.0.5')
+
+    def test_install(self):
+        dotconf = DotConfig('/nowhere', pretend=True)
+        dotconf.write('www-apps', 'horde', '5.5.5', 'localhost', '/horde3',
+                      'me:me')
+        output = sys.stdout.getvalue().split('\n')
+        self.assertEqual(output[14], '* WEB_INSTALLDIR="/horde3"')
+
+    def test_remove(self):
+        dotconf = DotConfig('/'.join((HERE, 'testfiles', 'htdocs', 'horde')),
+                            pretend=True)
+        self.assertTrue(dotconf.kill())
+        output = sys.stdout.getvalue().split('\n')
+        self.assertEqual(output[0], '* Would have removed ' +
+                         '/'.join((HERE, 'testfiles', 'htdocs', 'horde',
+                                   '.webapp')))
 
 
 if __name__ == '__main__':

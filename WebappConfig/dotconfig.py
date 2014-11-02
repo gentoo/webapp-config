@@ -35,63 +35,6 @@ class DotConfig:
     '''
     This class handles the dotconfig file that will be written to all
     virtual install locations.
-
-    A virtual install location has been prepared in the testfiles
-    directory:
-
-    >>> import os.path
-    >>> here = os.path.dirname(os.path.realpath(__file__))
-    >>> a = DotConfig(here + '/tests/testfiles/htdocs/horde')
-    >>> a.has_dotconfig()
-    True
-
-    This directory contains no virtual install:
-
-    >>> b = DotConfig(here + '/tests/testfiles/htdocs/empty')
-    >>> b.has_dotconfig()
-    False
-
-    The horde install directory is empty:
-
-    >>> a.is_empty()
-
-    This install location has another web application installed::
-
-    >>> b = DotConfig(here + '/tests/testfiles/htdocs/complain')
-    >>> b.is_empty()
-    '!morecontents .webapp-cool-1.1.1'
-
-    This prints what is installed in the horde directory (and
-    tests the read() function):
-
-    >>> a.show_installed()
-    horde 3.0.5
-
-    This will pretend to write a .webapp file (this test has too many ellipsis):
-
-    >>> OUT.color_off() 
-    >>> a = DotConfig('/nowhere', pretend = True)
-    >>> a.write('www-apps', 'horde', '5.5.5', 'localhost', '/horde3', 'me:me') #doctest: +ELLIPSIS
-    * Would have written the following information into /nowhere/.webapp:
-    * # .webapp
-    ...
-    * 
-    * WEB_CATEGORY="www-apps"
-    * WEB_PN="horde"
-    * WEB_PVR="5.5.5"
-    * WEB_INSTALLEDBY="..."
-    * WEB_INSTALLEDDATE="..."
-    * WEB_INSTALLEDFOR="me:me"
-    * WEB_HOSTNAME="localhost"
-    * WEB_INSTALLDIR="/horde3"
-
-    Delete the .webapp file if possible:
-
-    >>> a = DotConfig(here + '/tests/testfiles/htdocs/horde', pretend = True)
-    >>> a.kill() #doctest: +ELLIPSIS
-    * Would have removed .../tests/testfiles/htdocs/horde/.webapp
-    True
-
     '''
 
     def __init__(self,
@@ -290,7 +233,3 @@ class DotConfig:
         else:
             OUT.notice('--- ' + empty)
             return False
-
-if __name__ == '__main__':
-    import doctest, sys
-    doctest.testmod(sys.modules[__name__])

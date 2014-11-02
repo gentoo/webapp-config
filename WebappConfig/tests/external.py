@@ -28,6 +28,7 @@ from  WebappConfig.db        import WebappDB, WebappSource
 from  WebappConfig.debug     import OUT
 from  WebappConfig.dotconfig import DotConfig
 from  WebappConfig.ebuild    import Ebuild
+from  WebappConfig.filetype  import FileType
 from  WebappConfig.server    import Basic
 from  warnings               import filterwarnings, resetwarnings
 
@@ -327,6 +328,42 @@ class EbuildTest(unittest.TestCase):
                                                                  'horde',
                                                                  '3.0.5',
                                                                  'hostroot')))
+
+
+class FileTypeTest(unittest.TestCase):
+    def test_filetypes(self):
+        config_owned = ('a', 'a/b/c/d', '/e', '/f/', '/g/h/', 'i\\n')
+        server_owned = ('j', 'k/l/m/n', '/o', '/p/', '/q/r/', 's\\n')
+
+        types = FileType(config_owned, server_owned)
+
+        self.assertEqual(types.filetype('a'),       'config-owned')
+        self.assertEqual(types.filetype('a/b/c/d'), 'config-owned')
+        self.assertEqual(types.filetype('j'),       'server-owned')
+        self.assertEqual(types.filetype('/o'),      'server-owned')
+
+        # It will always remove leading spaces or whitespace:
+        self.assertEqual(types.filetype('\t s\\n'), 'server-owned')
+        # Unspecified files will be set as virtual:
+        self.assertEqual(types.filetype('foo.txt'), 'virtual')
+        # However, you can set what you want your virtual-files to be:
+        types = FileType(config_owned, server_owned,
+                         virtual_files='server-owned')
+        self.assertEqual(types.filetype('foo.txt'), 'server-owned')
+
+    def test_dirtypes(self):
+        config_owned = ('a', 'a/b/c/d', '/e', '/f/', '/g/h/', 'i\\n')
+        server_owned = ('j', 'k/l/m/n', '/o', '/p/', '/q/r/', 's\\n')
+
+        types = FileType(config_owned, server_owned)
+
+        self.assertEqual(types.dirtype('a'),       'config-owned')
+        self.assertEqual(types.dirtype('j'),       'server-owned')
+
+        # Same whitespace rules apply for dirtype():
+        self.assertEqual(types.dirtype('\t s\\n'), 'server-owned')
+        # Unspecified dirs will be set as default-owned:
+        self.assertEqual(types.dirtype('foo.txt'), 'default-owned')
 
 
 if __name__ == '__main__':

@@ -36,80 +36,6 @@ class FileType:
 
     - a list of all files and directories owned by the config user
     - a list of all files and directories owned by the server user
-
-    This creates such lists:
-
-    >>> config_owned = [ 'a', 'a/b/c/d', '/e', '/f/', '/g/h/', 'i\\n']
-    >>> server_owned = [ 'j', 'k/l/m/n', '/o', '/p/', '/q/r/', 's\\n']
-
-    The class is initialized with these two arrays:
-
-    >>> a = FileType(config_owned, server_owned)
-
-    This class provides three functions to retrieve information about
-    the file or directory type.
-
-    File types
-    ----------
-
-    >>> a.filetype('a')
-    'config-owned'
-    >>> a.filetype('a/b/c/d')
-    'config-owned'
-
-    >>> a.filetype('j')
-    'server-owned'
-    >>> a.filetype('/o')
-    'server-owned'
-
-    File names - whether specified as input in the
-    {config,server}_owned lists or as key for retrieving the type - may
-    have leading or trailing whitespace. It will be removed. Trailing
-
-    >>> a.filetype('\\n s')
-    'server-owned'
-    >>> a.filetype('/g/h\\n')
-    'config-owned'
-
-    Unspecified files will result in a virtual type:
-
-    >>> a.filetype('unspecified.txt')
-    'virtual'
-
-    This behaviour can be influenced by setting the 'virtual_files'
-    option for the class (which corresponds to the --virtual-files command
-    line option):
-
-    >>> b = FileType(config_owned, server_owned,
-    ...              virtual_files = 'server-owned')
-    >>> b.filetype('unspecified.txt')
-    'server-owned'
-
-    Directory types
-    ---------------
-
-    The class does not know if the given keys are files or directories.
-    This is specified using the correct function for them. So the same
-    keys that were used above can also be used here:
-
-    >>> a.dirtype('a')
-    'config-owned'
-    >>> a.dirtype('j')
-    'server-owned'
-
-    The same whitespace and trailing slash fixing rules apply for
-    directory names:
-
-    >>> a.dirtype('\\n s')
-    'server-owned'
-    >>> a.dirtype('/g/h\\n')
-    'config-owned'
-
-    Unspecified directories are 'default-owned' and not marked 'virtual':
-
-    >>> a.dirtype('unspecified.txt')
-    'default-owned'
-
     '''
 
     def __init__(self,
@@ -224,8 +150,3 @@ class FileType:
         filename = re.compile('/+').sub('/', filename) 
 
         return filename
-
-
-if __name__ == '__main__':
-    import doctest, sys
-    doctest.testmod(sys.modules[__name__])

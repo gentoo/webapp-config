@@ -35,69 +35,6 @@ class Ebuild:
     This class handles all ebuild related task. Currently this includes
     displaying the post install instruction as well as running hooks
     provided by the ebuild.
-
-    This creates the basic configuration defaults:
-
-    >>> import WebappConfig.config
-    >>> config = WebappConfig.config.Config()
-
-    This needs to be completed with some parameters
-    that would be usually provided when parsing the
-    commandline:
-
-    >>> config.config.set('USER', 'my_htdocsbase',  'htdocs')
-    >>> config.config.set('USER', 'pn',   'horde')
-    >>> config.config.set('USER', 'pvr',  '3.0.5')
-    >>> config.config.set('USER', 'vhost_server_uid', 'apache')
-    >>> config.config.set('USER', 'vhost_server_gid', 'apache')
-
-    And the application directory needs to be set
-    to the testfile reporitory
-
-    >>> import os.path
-    >>> here = os.path.dirname(os.path.realpath(__file__))
-    >>> config.config.set('USER', 'my_approot', here +
-    ...                   '/tests/testfiles/share-webapps')
-
-    Time to create the ebuild handler:
-
-    >>> my_approot = config.config.get('USER', 'my_approot')
-    >>> my_appdir = my_approot + "/horde/3.0.5"
-    >>> config.config.set('USER', 'my_appdir', my_appdir)
-    >>> config.config.set('USER', 'my_hookscriptsdir', my_appdir + '/hooks')
-    >>> config.config.set('USER', 'my_cgibinbase', 'cgi-bin')
-    >>> config.config.set('USER', 'my_errorsbase', 'error')
-    >>> config.config.set('USER', 'my_iconsbase', 'icons')
-    >>> config.config.set('USER', 'my_serverconfigdir', '/'.join([my_appdir,'conf']))
-    >>> config.config.set('USER', 'my_hostrootdir', '/'.join([my_appdir,'hostroot']))
-    >>> config.config.set('USER', 'my_htdocsdir', '/'.join([my_appdir,'htdocs']))
-    >>> config.config.set('USER', 'my_sqlscriptsdir', '/'.join([my_appdir,'sqlscripts']))
-    >>> a = Ebuild(config)
-
-    Run a hook script:
-
-    >>> from WebappConfig.server import Basic
-    >>> basic = Basic({'source': '', 'destination': '', 'hostroot': '', 'vhostroot':''},
-    ...               config.create_permissions(),
-    ...               {'source':'','content':'','protect':'','dotconfig':'','ebuild':'','db':''},
-    ...               {'verbose':False,'pretend':True}, 'portage')
-    >>> a.run_hooks('test', basic)
-
-    The same on a directory that misses a hook dir:
-
-    >>> config.config.set('USER', 'pn',   'empty')
-    >>> config.config.set('USER', 'pvr',  '1.0')
-    >>> a = Ebuild(config)
-    >>> a.run_hooks('test', basic)
-
-    This app has a hook dir but no script:
-
-    >>> config.config.set('USER', 'pn',   'uninstalled')
-    >>> config.config.set('USER', 'pvr',  '6.6.6')
-    >>> a = Ebuild(config)
-    >>> a.run_hooks('test', basic)
-
-
     '''
 
     def __init__(self, config):
@@ -197,80 +134,6 @@ class Ebuild:
         This function exports the necessary variables to the shell
         environment so that they are accessible within the shell scripts
         and/or files provided by the ebuild.
-
-        The procedure from above is repeated to set up the default
-        environment:
-
-        ">>> import WebappConfig.config"
-        ">>> config = WebappConfig.config.Config()"
-        ">>> config.config.set('USER', 'my_htdocsbase',  'htdocs')"
-        ">>> config.config.set('USER', 'pn',   'horde')"
-        ">>> config.config.set('USER', 'pvr',  '3.0.5')"
-        ">>> import os.path"
-        ">>> here = os.path.dirname(os.path.realpath(__file__))"
-        ">>> config.config.set('USER', 'my_approot', here +"
-        "...                   '/tests/testfiles/share-webapps')"
-        ">>> my_approot = config.config.get('USER', 'my_approot')"
-        ">>> my_appdir = my_approot + "/horde/3.0.5""
-        ">>> config.config.set('USER', 'my_appdir', my_appdir)"
-        ">>> config.config.set('USER', 'my_hookscriptsdir', my_appdir + '/hooks')"
-        ">>> config.config.set('USER', 'my_cgibinbase', 'cgi-bin')"
-        ">>> config.config.set('USER', 'my_errorsbase', 'error')"
-        ">>> config.config.set('USER', 'my_iconsbase', 'icons')"
-        ">>> config.config.set('USER', 'my_serverconfigdir', '/'.join([my_appdir,'conf']))"
-        ">>> config.config.set('USER', 'my_hostrootdir', '/'.join([my_appdir,'hostroot']))"
-        ">>> config.config.set('USER', 'my_htdocsdir', '/'.join([my_appdir,'htdocs']))"
-        ">>> config.config.set('USER', 'my_sqlscriptsdir', '/'.join([my_appdir,'sqlscripts']))"
-
-        Time to create the ebuild handler:
-
-        ">>> a = Ebuild(config)"
-
-        The dummy post-install file should display all the variables
-        that are exported here:
-
-        ">>> a.show_postinst() #doctest: +ELLIPSIS
-        <BLANKLINE>
-        =================================================================
-        POST-INSTALL INSTRUCTIONS
-        =================================================================
-        <BLANKLINE>
-        MY_HOSTROOTDIR: .../tests/testfiles/share-webapps/horde/3.0.5/hostroot
-        MY_HTDOCSDIR: .../tests/testfiles/share-webapps/horde/3.0.5/htdocs
-        MY_CGIBINDIR: .../tests/testfiles/share-webapps/horde/3.0.5/hostroot/cgi-bin
-        MY_INSTALLDIR: /
-        MY_ICONSDIR: .../tests/testfiles/share-webapps/horde/3.0.5/hostroot/icons
-        MY_SERVERCONFIGDIR: .../tests/testfiles/share-webapps/horde/3.0.5/conf
-        MY_ERRORSDIR: .../tests/testfiles/share-webapps/horde/3.0.5/hostroot/error
-        MY_SQLSCRIPTSDIR: .../tests/testfiles/share-webapps/horde/3.0.5/sqlscripts
-        VHOST_ROOT: /var/www/...
-        VHOST_HTDOCSDIR: /var/www/.../htdocs
-        VHOST_CGIBINDIR: /var/www/.../cgi-bin
-        VHOST_CONFDIR: /var/www/.../
-        VHOST_ERRORSDIR: /var/www/.../error
-        VHOST_ICONSDIR: /var/www/.../icons
-        VHOST_HOSTNAME: ...
-        VHOST_SERVER: apache
-        VHOST_APPDIR: /
-        VHOST_CONFIG_UID: ...
-        VHOST_CONFIG_GID: ...
-        VHOST_SERVER_UID: ...
-        VHOST_SERVER_GID: ...
-        VHOST_DEFAULT_UID: 0
-        VHOST_DEFAULT_GID: 0
-        VHOST_PERMS_SERVEROWNED_DIR: 0775
-        VHOST_PERMS_SERVEROWNED_FILE: 0664
-        VHOST_PERMS_CONFIGOWNED_DIR: 0755
-        VHOST_PERMS_CONFIGOWNED_FILE: 0644
-        VHOST_PERMS_DEFAULTOWNED_DIR: 0755
-        VHOST_PERMS_VIRTUALOWNED_FILE: o-w
-        VHOST_PERMS_INSTALLDIR: 0755
-        ROOT: /
-        PN: horde
-        PVR: 3.0.5
-        <BLANKLINE>
-        =================================================================
-        <BLANKLINE>"
         '''
 
         v_root = self.get_config('vhost_root')
@@ -337,7 +200,3 @@ class Ebuild:
             result[i] = str(value)
 
         return result
-
-if __name__ == '__main__':
-    import doctest, sys
-    doctest.testmod(sys.modules[__name__])

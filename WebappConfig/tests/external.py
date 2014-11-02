@@ -22,10 +22,13 @@ import os
 import unittest
 import sys
 
+from  WebappConfig.config    import Config
 from  WebappConfig.content   import Contents
 from  WebappConfig.db        import WebappDB, WebappSource
 from  WebappConfig.debug     import OUT
 from  WebappConfig.dotconfig import DotConfig
+from  WebappConfig.ebuild    import Ebuild
+from  WebappConfig.server    import Basic
 from  warnings               import filterwarnings, resetwarnings
 
 HERE = os.path.dirname(os.path.realpath(__file__))
@@ -290,6 +293,40 @@ class DotConfigTest(unittest.TestCase):
         self.assertEqual(output[0], '* Would have removed ' +
                          '/'.join((HERE, 'testfiles', 'htdocs', 'horde',
                                    '.webapp')))
+
+
+
+class EbuildTest(unittest.TestCase):
+    def test_showpostinst(self):
+        config = Config()
+        approot = '/'.join((HERE, 'testfiles', 'share-webapps'))
+        appdir  = '/'.join((approot, 'horde', '3.0.5'))
+        conf   = {'my_htdocsbase': 'htdocs', 'pn': 'horde', 'pvr': '3.0.5',
+                  'vhost_server_uid': 'apache', 'vhost_server_git': 'apache',
+                  'my_approot': approot,
+                  'my_appdir': appdir,
+                  'my_hookscriptsdir': '/'.join((appdir, 'hooks')),
+                  'my_cgibinbase': 'cgi-bin', 'my_errorsbase': 'error',
+                  'my_iconsbase': 'icons',
+                  'my_serverconfigdir': '/'.join((appdir, 'conf')),
+                  'my_hostrootdir': '/'.join((appdir, 'hostroot')),
+                  'my_htdocsdir': '/'.join((appdir, 'htdocs')),
+                  'my_sqlscriptsdir': '/'.join((appdir, 'sqlscripts')),
+                 }
+
+        for key in conf.keys():
+            config.config.set('USER', key, conf[key])
+
+        ebuild = Ebuild(config)
+        ebuild.show_postinst()
+        output = sys.stdout.getvalue().split('\n')
+
+        self.assertEqual(output[5], 'MY_HOSTROOTDIR: ' + '/'.join((HERE,
+                                                                 'testfiles',
+                                                                 'share-webapps',
+                                                                 'horde',
+                                                                 '3.0.5',
+                                                                 'hostroot')))
 
 
 if __name__ == '__main__':

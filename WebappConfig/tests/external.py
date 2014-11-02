@@ -29,6 +29,7 @@ from  WebappConfig.debug     import OUT
 from  WebappConfig.dotconfig import DotConfig
 from  WebappConfig.ebuild    import Ebuild
 from  WebappConfig.filetype  import FileType
+from  WebappConfig.protect   import Protection
 from  WebappConfig.server    import Basic
 from  warnings               import filterwarnings, resetwarnings
 
@@ -366,7 +367,61 @@ class FileTypeTest(unittest.TestCase):
         self.assertEqual(types.dirtype('foo.txt'), 'default-owned')
 
 
+class ProtectTest(unittest.TestCase):
+    def test_getprotectedname(self):
+        pro = Protection('', 'horde', '3.0.5', 'portage')
+        self.assertEqual(pro.get_protectedname('/'.join((HERE,
+                                                         'testfiles',
+                                                         'protect',
+                                                         'empty')),
+                                               'test'),
+                        '/'.join((HERE, 'testfiles', 'protect', 'empty',
+                                  '/._cfg0000_test')))
+
+    def test_dirisconfprotected(self):
+        pro = Protection('', 'horde', '3.0.5', 'portage')
+        strange_htdocs = '/'.join(('/my', 'strange', 'htdocs'))
+        pro.config_protect += ' ' + strange_htdocs
+
+        self.assertTrue(pro.dirisconfigprotected(strange_htdocs))
+        self.assertTrue(pro.dirisconfigprotected('/'.join((strange_htdocs,
+                                                           'where', 'i',
+                                                           'installed', 'x'))))
+        self.assertTrue(pro.dirisconfigprotected('/'.join((strange_htdocs,
+                                                           'where', 'i',
+                                                           'installed', 'x/'))))
+
+        pro.config_protect += ' bad_user' + strange_htdocs
+        self.assertFalse(pro.dirisconfigprotected('/'.join(('/my', 'bad_user',
+                                                            'htdocs', 'where',
+                                                            'i', 'installed',
+                                                            'x'))))
+        self.assertFalse(pro.dirisconfigprotected('/'))
+
+
+    def test_how_to_update(self):
+        OUT.color_off()
+        pro = Protection('', 'horde', '3.0.5', 'portage')
+        strange_htdocs = '/'.join(('/my', 'strange', 'htdocs', 'where', 'i',
+                                   'installed', 'x'))
+        pro.how_to_update([strange_htdocs])
+        output = sys.stdout.getvalue().split('\n')
+
+        self.assertEqual(output[3], '* CONFIG_PROTECT="' + strange_htdocs +
+                                    '" etc-update')
+
+        # Adding a virtual config protected directory:
+        i = strange_htdocs.replace('/where/i/instaled/x', '')
+        pro.config_protect += ' ' + i
+
+        pro.how_to_update([strange_htdocs])
+        output = sys.stdout.getvalue().split('\n')
+
+        self.assertEqual(output[8], '* etc-update')
+        
+
 if __name__ == '__main__':
     filterwarnings('ignore')
     unittest.main(module=__name__, buffer=True)
+    
     resetwarnings()

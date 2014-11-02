@@ -64,25 +64,6 @@ class Protection:
         Inputs:
           destination -  the directory that the file is being installed into
           filename    - the original name of the file
-
-        Let's test the code on some examples:
-
-        >>> import os.path
-        >>> here = os.path.dirname(os.path.realpath(__file__))
-
-        >>> a = Protection('','horde','3.0.5','portage')
-        >>> a.get_protectedname(here + '/tests/testfiles/protect/empty',
-        ...                     'test')#doctest: +ELLIPSIS
-        '.../tests/testfiles/protect/empty//._cfg0000_test'
-
-        >>> a.get_protectedname(here + '/tests/testfiles/protect/simple',
-        ...                     'test')#doctest: +ELLIPSIS
-        '.../tests/testfiles/protect/simple//._cfg0001_test'
-
-        >>> a.get_protectedname(here + '/tests/testfiles/protect/complex',
-        ...                     'test')#doctest: +ELLIPSIS
-        '.../tests/testfiles/protect/complex//._cfg0801_test'
-
         '''
 
         my_file    = os.path.basename(filename)
@@ -117,30 +98,6 @@ class Protection:
         Traverses the path of parent directories for the
         given install dir and checks if any matches the list
         of config protected files.
-
-        >>> a = Protection('','horde','3.0.5','portage')
-
-        Add a virtual config protected directory:
-
-        >>> a.config_protect += ' /my/strange/htdocs/'
-        >>> a.dirisconfigprotected('/my/strange/htdocs/where/i/installed/x')
-        True
-        >>> a.dirisconfigprotected('/my/strange/htdocs/where/i/installed/x/')
-        True
-        >>> a.config_protect += ' /my/strange/htdocs'
-        >>> a.dirisconfigprotected('/my/strange/htdocs/where/i/installed/x')
-        True
-        >>> a.dirisconfigprotected('/my/strange/htdocs/where/i/installed/x/')
-        True
-
-        >>> a.config_protect += ' bad_user /my/strange/htdocs'
-        >>> a.dirisconfigprotected('/my/bad_user/htdocs/where/i/installed/x')
-        False
-        >>> a.dirisconfigprotected('/my/strange/htdocs/where/i/installed/x/')
-        True
-
-        >>> a.dirisconfigprotected('/')
-        False
         '''
 
         my_master = []
@@ -176,39 +133,6 @@ class Protection:
     def how_to_update(self, dirs):
         '''
         Instruct the user how to update the application.
-
-        >>> OUT.color_off()
-        >>> a = Protection('','horde','3.0.5','portage')
-
-        >>> a.how_to_update(['/my/strange/htdocs/where/i/installed/x'])
-        * One or more files have been config protected
-        * To complete your install, you need to run the following command(s):
-        * 
-        * CONFIG_PROTECT="/my/strange/htdocs/where/i/installed/x" etc-update
-        * 
-        >>> a.how_to_update(['/a/','/c/'])
-        * One or more files have been config protected
-        * To complete your install, you need to run the following command(s):
-        * 
-        * CONFIG_PROTECT="/a/" etc-update
-        * CONFIG_PROTECT="/c/" etc-update
-        * 
-        >>> a.how_to_update(['/a//test3','/a//test3/abc', '/c/'])
-        * One or more files have been config protected
-        * To complete your install, you need to run the following command(s):
-        * 
-        * CONFIG_PROTECT="/a//test3" etc-update
-        * CONFIG_PROTECT="/c/" etc-update
-        * 
-
-        Add a virtual config protected directory:
-
-        >>> a.config_protect += ' /my/strange/htdocs/'
-        >>> a.how_to_update(['/my/strange/htdocs/where/i/installed/x'])
-        * One or more files have been config protected
-        * To complete your install, you need to run the following command(s):
-        * 
-        * etc-update
         '''
         my_command = self.update_command
 
@@ -237,7 +161,3 @@ class Protection:
         OUT.warn('One or more files have been config protected\nTo comple'
                  'te your install, you need to run the following command(s):\n\n'
                  + my_command_list)
-
-if __name__ == '__main__':
-    import doctest, sys
-    doctest.testmod(sys.modules[__name__])

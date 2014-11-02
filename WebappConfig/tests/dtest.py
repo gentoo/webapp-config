@@ -8,12 +8,10 @@
 
 import unittest, doctest, sys
 
-import WebappConfig.protect
 import WebappConfig.worker
 
 def test_suite():
     return unittest.TestSuite((
-        doctest.DocTestSuite(WebappConfig.protect),
         doctest.DocTestSuite(WebappConfig.worker),
         ))
 

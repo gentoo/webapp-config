@@ -31,6 +31,7 @@ from  WebappConfig.ebuild    import Ebuild
 from  WebappConfig.filetype  import FileType
 from  WebappConfig.protect   import Protection
 from  WebappConfig.server    import Basic
+from  WebappConfig.worker    import WebappAdd, WebappRemove
 from  warnings               import filterwarnings, resetwarnings
 
 HERE = os.path.dirname(os.path.realpath(__file__))
@@ -419,6 +420,86 @@ class ProtectTest(unittest.TestCase):
 
         self.assertEqual(output[8], '* etc-update')
         
+
+class WebappAddTest(unittest.TestCase):
+    def test_mk(self):
+        OUT.color_off()
+        contents = Contents('/'.join((HERE, 'testfiles', 'installtest')),
+                            pretend = True)
+        webrm = WebappRemove(contents, True, True)
+        protect = Protection('', 'horde', '3.0.5', 'portage')
+        source = WebappSource(root = '/'.join((HERE, 'testfiles',
+                                             'share-webapps')),
+                              category = '', package = 'installtest',
+                              version = '1.0')
+        source.read()
+        source.ignore = ['.svn']
+
+        webadd = WebappAdd('htdocs',
+                           '/'.join((HERE, 'testfiles', 'installtest')),
+                           {'dir': {'default-owned': ('root',
+                                                      'root',
+                                                      '0644')},
+                            'file': {'virtual':      ('root',
+                                                       'root',
+                                                       '0644'),
+                                     'server-owned': ('apache',
+                                                      'apache',
+                                                      '0660'),
+                                     'config-owned': ('nobody',
+                                                      'nobody',
+                                                      '0600')}
+                           },
+                           {'content': contents,
+                            'removal': webrm,
+                            'protect': protect,
+                            'source' : source},
+                           {'relative': 1,
+                            'upgrade' : False,
+                            'pretend' : True,
+                            'verbose' : False,
+                            'linktype': 'soft'})
+        webadd.mkfile('test1')
+        webadd.mkfile('test4')
+        webadd.mkfile('test2')
+        webadd.mkfile('test3')
+        webadd.mkdir('dir1')
+        webadd.mkdir('dir2')
+
+        output = sys.stdout.getvalue().split('\n')
+
+        self.assertEqual(output[0], '*     pretending to add: sym 1 virtual ' +
+                                    '"test1"')
+        self.assertEqual(output[1], '*     pretending to add: file 1 ' +
+                                    'server-owned "test4"')
+        self.assertEqual(output[3], '*     pretending to add: sym 1 virtual ' +
+                                    '"test2"')
+        self.assertEqual(output[4], '^o^ hiding test3')
+        self.assertEqual(output[6], '*     pretending to add: dir 1 ' +
+                                    'default-owned "dir1"')
+        self.assertEqual(output[8], '*     pretending to add: dir 1 ' +
+                                    'default-owned "dir2"')
+
+        # Now testing all of them combined:
+        webadd.mkdirs('')
+        output = sys.stdout.getvalue().split('\n')
+        self.assertEqual(output[20], '^o^ hiding /test3')
+
+
+class WebappRemoveTest(unittest.TestCase):
+    def test_remove_files(self):
+        OUT.color_off()
+        contents = Contents('/'.join((HERE, 'testfiles', 'contents', 'app2')),
+                            package = 'test', version = '1.0', pretend = True)
+        contents.read()
+        webrm = WebappRemove(contents, True, True)
+        webrm.remove_files()
+
+        output = sys.stdout.getvalue().split('\n')
+        self.assertEqual(output[3], '*     pretending to remove: ' +
+                         '/'.join((HERE, 'testfiles', 'contents', 'app2',
+                                   'test3')))
+
 
 if __name__ == '__main__':
     filterwarnings('ignore')

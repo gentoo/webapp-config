@@ -44,27 +44,6 @@ class WebappRemove:
     '''
     This is the handler for removal of web applications from their virtual
     install locations.
-
-    For removal of files a content handler is sufficient:
-
-    >>> OUT.color_off()
-    >>> import os.path
-    >>> here = os.path.dirname(os.path.realpath(__file__))
-    >>> from WebappConfig.content import Contents
-    >>> a = Contents(here + '/tests/testfiles/contents/app2',
-    ...              package = 'test', version = '1.0', pretend = True)
-    >>> a.read()
-    >>> b = WebappRemove(a, True, True)
-
-    # Pretend to remove files:
-
-    # b.remove_files() #doctest: +ELLIPSIS
-
-    # Deleted the test since this will almost certainly fail because
-    # of the modification time.
-
-    Deleted test for removal of directories. They are always reported as 'not
-    empty' in case I am working in the subversion repository.
     '''
 
     def __init__(self,
@@ -168,102 +147,6 @@ class WebappAdd:
     '''
     This is the class that handles the actual transfer of files from
     the web application source directory to the virtual install location.
-
-    The setup of the class is rather complex since a lot of different
-    handlers are needed for the task.
-
-    >>> OUT.color_off()
-    >>> import os.path
-    >>> here = os.path.dirname(os.path.realpath(__file__))
-
-    The content handler points to the virtual install directory:
-
-    >>> from WebappConfig.content import Contents
-    >>> a = Contents(here + '/tests/testfiles/installtest', pretend = True)
-
-    Removal of files will be necessary while upgrading :
-
-    >>> b = WebappRemove(a, True, True)
-
-    The handler for protected files is simple:
-
-    >>> import WebappConfig.protect
-    >>> c = WebappConfig.protect.Protection('','horde','3.0.5','portage')
-
-    And finally a fully initialized source is needed:
-
-    >>> from WebappConfig.db import WebappSource
-    >>> d = WebappSource(root=here + '/tests/testfiles/share-webapps',
-    ...             category='', package='installtest', version='1.0')
-    >>> d.read()
-    >>> d.ignore = ['.svn']
-
-    >>> e = WebappAdd('htdocs',
-    ...               here + '/tests/testfiles/installtest',
-    ...               {'dir'  : {
-    ...                          'default-owned': ('root', 'root', '0644'),
-    ...                         },
-    ...                'file' : {
-    ...                          'virtual' : ('root', 'root', '0644'),
-    ...                          'server-owned' : ('apache', 'apache', '0660'),
-    ...                          'config-owned' : ('nobody', 'nobody', '0600'),
-    ...                         }},
-    ...               {'content': a,
-    ...                'removal': b,
-    ...                'protect': c,
-    ...                'source' : d},
-    ...               {'relative': 1,
-    ...                'upgrade':  False,
-    ...                'pretend':  True,
-    ...                'verbose':  False,
-    ...                'linktype': 'soft'})
-
-    Installing a standard file:
-
-    >>> e.mkfile('test1')
-    *     pretending to add: sym 1 virtual "test1"
-    >>> e.mkfile('test4')
-    *     pretending to add: file 1 server-owned "test4"
-
-    This location is already occupied. But since the file is not
-    known, it will be deleted:
-
-    >>> e.mkfile('test2') #doctest: +ELLIPSIS
-    *     would have removed ".../tests/testfiles/installtest/test2" since it is in the way for the current install. It should not be present in that location!
-    *     pretending to add: sym 1 virtual "test2"
-
-    This location is also occupied but it it is a config protected
-    file so it may not be removed:
-
-    >>> e.mkfile('test3') #doctest: 
-    ^o^ hiding test3
-    *     pretending to add: file 1 config-owned "test3"
-    
-    >>> e.mkdir('dir1') 
-    *     pretending to add: dir 1 default-owned "dir1"
-    
-    >>> e.mkdir('dir2') #doctest: +ELLIPSIS
-    *     .../tests/testfiles/installtest/dir2 already exists, but is not a directory - removing
-    *     pretending to add: dir 1 default-owned "dir2"
-
-    And finally everything combined:
-
-    >>> e.mkdirs('') #doctest: +ELLIPSIS
-    *     Installing from .../tests/testfiles/share-webapps/installtest/1.0/htdocs/
-    *     pretending to add: dir 1 default-owned "dir1"
-    *     Installing from .../tests/testfiles/share-webapps/installtest/1.0/htdocs/dir1
-    *     pretending to add: sym 1 virtual "dir1/webapp_test"
-    *     .../tests/testfiles/installtest//dir2 already exists, but is not a directory - removing
-    *     pretending to add: dir 1 default-owned "dir2"
-    *     Installing from .../tests/testfiles/share-webapps/installtest/1.0/htdocs/dir2
-    *     pretending to add: sym 1 virtual "dir2/webapp_test"
-    *     pretending to add: sym 1 virtual "test1"
-    *     would have removed ".../tests/testfiles/installtest//test2" since it is in the way for the current install. It should not be present in that location!
-    *     pretending to add: sym 1 virtual "test2"
-    ^o^ hiding /test3
-    *     pretending to add: file 1 config-owned "test3"
-    *     pretending to add: file 1 server-owned "test4"
-
     '''
 
     def __init__(self,
@@ -593,8 +476,3 @@ class WebappAdd:
                            filename,
                            dst_name,
                            self.__relative)
-
-
-if __name__ == '__main__':
-    import doctest, sys
-    doctest.testmod(sys.modules[__name__])

@@ -21,15 +21,12 @@
 
 import sys, os, os.path, re, socket, time
 
-try:
+if sys.hexversion >= 0x3000000:
     # Python 3
     import configparser
-    if sys.version_info >= (3, 2):
-        from configparser import ConfigParser as configparser_ConfigParser
-        from configparser import ExtendedInterpolation
-    else:
-        from configparser import SafeConfigParser as configparser_ConfigParser
-except ImportError:
+    from configparser import ConfigParser as configparser_ConfigParser
+    from configparser import ExtendedInterpolation
+else:
     # Python 2
     import ConfigParser as configparser
     from ConfigParser import SafeConfigParser as configparser_ConfigParser

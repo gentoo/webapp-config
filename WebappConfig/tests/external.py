@@ -257,7 +257,7 @@ class WebappSourceTest(unittest.TestCase):
                                   package = 'nihil',
                                   version = '3.0.5',
                                   pm = 'portage')
-            self.assertEqual(source.packageavail(), 1)
+            self.assertEqual(source.packageavail(), 0)
 
 
 class DotConfigTest(unittest.TestCase):

@@ -579,7 +579,7 @@ class Config:
 
         info_opts.add_argument('-li',
                                '--list-installs',
-                               nargs = 2,
+                               nargs = '*',
                                help = 'List all current virtual installs for <a'
                                'pplication>. Use * for the package name and/or '
                                'version number to list more than one package / '
@@ -972,32 +972,43 @@ class Config:
 
         OUT.debug('Checking command line arguments', 1)
 
-        if self.work in ['install', 'clean', 'query', 'show_postinst',
-                         'show_postupgrade', 'upgrade']:
+        if self.work in ['install', 'clean', 'query', 'list_installs',
+                         'show_postinst', 'show_postupgrade', 'upgrade']:
             # get cat / pn
             args = options[self.work]
+            m    = args[0].split('/')
 
-            m = args[0].split('/')
+            if self.work == 'list_installs' and len(args) > 2:
+                msg = os.path.basename(sys.argv[0]) + ': error: argument -li/'\
+                      '--list-installs: expected up to 2 arguments'
+
+                self.parser.print_usage()
+                print(msg)
+                sys.exit()
 
             if len(m) == 1:
-                self.config.set('USER', 'pn',  m[0])
+                if '*' not in m:
+                    self.config.set('USER', 'pn',  m[0])
             elif len(m) == 2:
                 self.config.set('USER', 'cat', m[0])
-                self.config.set('USER', 'pn',  m[1])
+                if '*' not in m:
+                    self.config.set('USER', 'pn',  m[1])
             else:
                 OUT.die('Invalid package name')
 
-            argsvr = args[1].split('.')
-            if len(argsvr) == 1:
-                OUT.die('Invalid package version: %(pvr)s' % {'pvr': args[1]})
+            if len(args) > 1:
+                argsvr = args[1].split('.')
+                if len(argsvr) == 1:
+                    OUT.die('Invalid package version: %(pvr)s' % {'pvr': args[1]})
 
-            pvr = ''
-            for i in range(0, len(argsvr)):
-                if not i == len(argsvr) - 1:
-                    pvr += argsvr[i] + '.'
-                else:
-                    pvr += argsvr[i]
-            self.config.set('USER', 'pvr', pvr)
+                pvr = ''
+                for i in range(0, len(argsvr)):
+                    if not i == len(argsvr) - 1:
+                        pvr += argsvr[i] + '.'
+                    else:
+                        pvr += argsvr[i]
+                self.config.set('USER', 'pvr', pvr)
+
 
     # --------------------------------------------------------------------
     # Helper functions

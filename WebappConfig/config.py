@@ -904,15 +904,15 @@ class Config:
                             'verbose'      : 'g_verbose',
                             'bug_report'   : 'g_bugreport'}
 
-        for i in list(option_to_config.keys()):
-            if i in options and options[i]:
+        for key in option_to_config:
+            if key in options and options[key]:
                 # If it's a list, we're expecting only one value in the list.
-                if isinstance(options[i], list):
-                    self.config.set('USER', option_to_config[i],
-                                    str(options[i][0]))
+                if isinstance(options[key], list):
+                    self.config.set('USER', option_to_config[key],
+                                    str(options[key][0]))
                 else:
-                    self.config.set('USER', option_to_config[i],
-                                    str(options[i]))
+                    self.config.set('USER', option_to_config[key],
+                                    str(options[key]))
 
         # handle verbosity
         if ('pretend' in options

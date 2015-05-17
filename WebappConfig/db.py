@@ -403,7 +403,7 @@ class WebappDB(AppHierarchy):
                     OUT.info('  ' + i[3].strip(), 1)
                 else:
                     # This is a simplified form for the webapp.eclass
-                    OUT.info(i[3].strip(), 1)
+                    print(i[3].strip())
 
 # ========================================================================
 # Handler for /usr/share/webapps

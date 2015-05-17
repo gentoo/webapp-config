@@ -1013,7 +1013,8 @@ class Config:
                             pvr += argsvr[i]
                     self.config.set('USER', 'pvr', pvr)
 
-                if not options['dir'] and self.work != 'list_installs':
+                if (not options['dir'] and
+                    self.work not in ('list_installs', 'query')):
                     pn  = self.config.get('USER', 'pn')
                     msg = 'Install dir flag not supplied, defaulting to '\
                           '"%(pn)s".' % {'pn': pn}

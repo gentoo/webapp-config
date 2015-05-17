@@ -429,8 +429,9 @@ class Config:
                                '--dir',
                                nargs = 1,
                                help = 'Install <application> into DIR under the'
-                               ' htdocs dir. The default is '
-                               + self.config.get('USER', 'g_installdir'))
+                               ' htdocs dir. Not specifying using this flag'
+                               ' will result in defaulting to the package '
+                               ' name.')
 
         inst_locs.add_argument('-h',
                                '--host',
@@ -891,7 +892,6 @@ class Config:
 
         # Map command line options into the configuration
         option_to_config = {'host'         : 'vhost_hostname',
-                            'dir'          : 'g_installdir',
                             'server'       : 'vhost_server',
                             'secure'       : 'g_secure',
                             'user'         : 'vhost_config_uid',
@@ -1008,6 +1008,15 @@ class Config:
                     else:
                         pvr += argsvr[i]
                 self.config.set('USER', 'pvr', pvr)
+
+            if not options['dir'] and self.work != 'list_installs':
+                pn  = self.config.get('USER', 'pn')
+                msg = 'Install dir flag not supplied, defaulting to '\
+                      '"%(pn)s".' % {'pn': pn}
+
+                OUT.warn(msg)
+                self.config.set('USER', 'g_installdir', pn)
+                self.flag_dir = True
 
 
     # --------------------------------------------------------------------

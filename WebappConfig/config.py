@@ -1001,7 +1001,8 @@ class Config:
                 if len(args) > 1:
                     argsvr = args[1].split('.')
                     if len(argsvr) == 1:
-                        OUT.die('Invalid package version: %(pvr)s' % {'pvr': args[1]})
+                        OUT.die('Invalid package version: %(pvr)s'
+                                % {'pvr': args[1]})
 
                     pvr = ''
                     for i in range(0, len(argsvr)):
@@ -1384,17 +1385,15 @@ class Config:
             # upgrade
 
             # okay - what do we have?
+            msg = 'Removing '
+            if old['WEB_CATEGORY']:
+                msg += old['WEB_CATEGORY'] + '/'
+            msg += old['WEB_PN'] + '-' + old['WEB_PVR'] + ' from '\
+                   + self.installdir() + '\n  Installed by '\
+                   + old['WEB_INSTALLEDBY'] + ' on ' + old['WEB_INSTALLEDDATE']\
+                   + '\n  Config files owned by ' + old['WEB_INSTALLEDFOR']
 
-            OUT.info('Removing '
-                     + old['WEB_CATEGORY'] + '/'
-                     + old['WEB_PN'] + '-'
-                     + old['WEB_PVR'] + ' from '
-                     + self.installdir() + '\n'
-                     + '  Installed by '
-                     + old['WEB_INSTALLEDBY'] + ' on '
-                     + old['WEB_INSTALLEDDATE'] + '\n'
-                     +'  Config files owned by '
-                     + old['WEB_INSTALLEDFOR'], 1)
+            OUT.info(msg, 1)
 
             content = self.create_content(old['WEB_CATEGORY'], old['WEB_PN'], old['WEB_PVR'])
             content.read()

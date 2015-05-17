@@ -892,6 +892,7 @@ class Config:
 
         # Map command line options into the configuration
         option_to_config = {'host'         : 'vhost_hostname',
+                            'dir'          : 'g_installdir',
                             'server'       : 'vhost_server',
                             'secure'       : 'g_secure',
                             'user'         : 'vhost_config_uid',

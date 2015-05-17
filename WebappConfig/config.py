@@ -976,47 +976,49 @@ class Config:
                          'show_postinst', 'show_postupgrade', 'upgrade']:
             # get cat / pn
             args = options[self.work]
-            m    = args[0].split('/')
 
-            if self.work == 'list_installs' and len(args) > 2:
-                msg = os.path.basename(sys.argv[0]) + ': error: argument -li/'\
-                      '--list-installs: expected up to 2 arguments'
+            if len(args):
+                m    = args[0].split('/')
 
-                self.parser.print_usage()
-                print(msg)
-                sys.exit()
+                if self.work == 'list_installs' and len(args) > 2:
+                    msg = os.path.basename(sys.argv[0]) + ': error: argument '\
+                          '-li/--list-installs: expected up to 2 arguments'
 
-            if len(m) == 1:
-                if '*' not in m:
-                    self.config.set('USER', 'pn',  m[0])
-            elif len(m) == 2:
-                self.config.set('USER', 'cat', m[0])
-                if '*' not in m:
-                    self.config.set('USER', 'pn',  m[1])
-            else:
-                OUT.die('Invalid package name')
+                    self.parser.print_usage()
+                    print(msg)
+                    sys.exit()
 
-            if len(args) > 1:
-                argsvr = args[1].split('.')
-                if len(argsvr) == 1:
-                    OUT.die('Invalid package version: %(pvr)s' % {'pvr': args[1]})
+                if len(m) == 1:
+                    if '*' not in m:
+                        self.config.set('USER', 'pn',  m[0])
+                elif len(m) == 2:
+                    self.config.set('USER', 'cat', m[0])
+                    if '*' not in m:
+                        self.config.set('USER', 'pn',  m[1])
+                else:
+                    OUT.die('Invalid package name')
 
-                pvr = ''
-                for i in range(0, len(argsvr)):
-                    if not i == len(argsvr) - 1:
-                        pvr += argsvr[i] + '.'
-                    else:
-                        pvr += argsvr[i]
-                self.config.set('USER', 'pvr', pvr)
+                if len(args) > 1:
+                    argsvr = args[1].split('.')
+                    if len(argsvr) == 1:
+                        OUT.die('Invalid package version: %(pvr)s' % {'pvr': args[1]})
 
-            if not options['dir'] and self.work != 'list_installs':
-                pn  = self.config.get('USER', 'pn')
-                msg = 'Install dir flag not supplied, defaulting to '\
-                      '"%(pn)s".' % {'pn': pn}
+                    pvr = ''
+                    for i in range(0, len(argsvr)):
+                        if not i == len(argsvr) - 1:
+                            pvr += argsvr[i] + '.'
+                        else:
+                            pvr += argsvr[i]
+                    self.config.set('USER', 'pvr', pvr)
 
-                OUT.warn(msg)
-                self.config.set('USER', 'g_installdir', pn)
-                self.flag_dir = True
+                if not options['dir'] and self.work != 'list_installs':
+                    pn  = self.config.get('USER', 'pn')
+                    msg = 'Install dir flag not supplied, defaulting to '\
+                          '"%(pn)s".' % {'pn': pn}
+
+                    OUT.warn(msg)
+                    self.config.set('USER', 'g_installdir', pn)
+                    self.flag_dir = True
 
 
     # --------------------------------------------------------------------

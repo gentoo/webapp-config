@@ -933,10 +933,6 @@ class Config:
 
             OUT.set_info_level(1)
 
-        # store original installdir
-        self.config.set('USER', 'g_orig_installdir',
-                        self.config.get('USER', 'g_installdir'))
-
         # Provide simple subdomain support
         self.split_hostname()
 
@@ -1022,6 +1018,10 @@ class Config:
                     OUT.warn(msg)
                     self.config.set('USER', 'g_installdir', pn)
                     self.flag_dir = True
+
+        # store original installdir
+        self.config.set('USER', 'g_orig_installdir',
+                        self.config.get('USER', 'g_installdir'))
 
 
     # --------------------------------------------------------------------

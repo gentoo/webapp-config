@@ -28,13 +28,21 @@
           <address><email>php@gunnarwrobel.de</email></address>
         </affiliation>
       </author>
+      <author>
+        <firstname>Devan</firstname>
+        <surname>Franchini</surname>
+        <affiliation>
+          <address><email>twitch153@gentoo.org</email></address>
+        </affiliation>
+      </author>
     </authorgroup>
 
     <copyright>
-      <year>2003-2005</year>
+      <year>2003-2015</year>
       <holder>Stuart Herbert</holder>
       <holder>Renat Lumpau</holder>
       <holder>Gunnar Wrobel</holder>
+      <holder>Devan Franchini</holder>
     </copyright>
 
   </articleinfo>
@@ -45,7 +53,7 @@
     <refentry>
       <refentryinfo>
         <title>webapp-config</title>
-	<date>November 2005</date>
+	<date>July 2015</date>
 	<productname>Gentoo Linux</productname>
       </refentryinfo>
       <refmeta>

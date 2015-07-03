@@ -70,14 +70,14 @@
 	  <arg choice="opt">
 	    <option>--bug-report</option>
 	  </arg>
-	  <arg choice="plain">
-	    <option>-I</option>
-	  </arg>
 	  <arg choice="opt">
 	    <option>-dghusDE</option>
 	    <option>--soft</option>
 	    <option>--copy</option>
 	    <option>--secure</option>
+	  </arg>
+	  <arg choice="plain">
+	    <option>-I</option>
 	  </arg>
 	  <arg choice="req">
 	    <replaceable>app-name</replaceable>
@@ -91,16 +91,16 @@
 	  <command>webapp-config</command>
 	  <arg choice="opt">
 	    <option>--bug-report</option>
+	  </arg>
+	  <arg choice="opt">
+	    <option>-dghusDE</option>
+	    <option>--soft</option>
+	    <option>--copy</option>
+	    <option>--secure</option>
 	  </arg>
 	  <arg choice="plain">
 	    <option>-U</option>
 	  </arg>
-	  <arg choice="opt">
-	    <option>-dghusDE</option>
-	    <option>--soft</option>
-	    <option>--copy</option>
-	    <option>--secure</option>
-	  </arg>
 	  <arg choice="req">
 	    <replaceable>app-name</replaceable>
 	  </arg>
@@ -113,9 +113,6 @@
 	  <command>webapp-config</command>
 	  <arg choice="opt">
 	    <option>--bug-report</option>
-	  </arg>
-	  <arg choice="plain">
-	    <option>-C</option>
 	  </arg>
 	  <arg choice="req">
 	    <option>-d</option>
@@ -123,6 +120,9 @@
 	  </arg>
 	  <arg choice="opt">
 	    <replaceable>--secure</replaceable>
+	  </arg>
+	  <arg choice="plain">
+	    <option>-C</option>
 	  </arg>
 	  <arg choice="req">
 	    <replaceable>app-name</replaceable>
@@ -141,8 +141,6 @@
 	    <arg>
 	      <replaceable>app-name</replaceable>
 	    </arg>
-	  </group>
-	  <group choice="opt">
 	    <arg>
 	      <replaceable>app-version</replaceable>
 	    </arg>
@@ -156,12 +154,27 @@
 	  </arg>
 	  <arg choice="opt">
 	    <arg choice="req">
-	      <replaceable>app-version</replaceable>
+	      <replaceable>app-name</replaceable>
 	    </arg>
 	    <arg choice="opt">
 	      <replaceable>app-version</replaceable>
 	    </arg>
 	  </arg>
+	</cmdsynopsis>
+
+	<cmdsynopsis>
+	  <command>webapp-config</command>
+	  <arg choice="plain">
+	    <option>--prune-database</option>
+	  </arg>
+	  <group choice="plain">
+            <arg choice="req">
+	      <replaceable>pretend</replaceable>
+	    </arg>
+	    <arg choice="req">
+	      <replaceable>clean</replaceable>
+	    </arg>
+	  </group>
 	</cmdsynopsis>
 
 	<cmdsynopsis>
@@ -182,10 +195,10 @@
 	  <arg choice="plain">
 	    <option>--show-postinst</option>
 	  </arg>
-	  <arg choice="plain">
+	  <arg choice="req">
 	    <replaceable>app-name</replaceable>
 	  </arg>
-	  <arg choice="plain">
+	  <arg choice="req">
 	    <replaceable>app-version</replaceable>
 	  </arg>
 	</cmdsynopsis>
@@ -193,11 +206,21 @@
 	<cmdsynopsis>
 	  <command>webapp-config</command>
 	  <group choice="plain">
-	    <arg>--list-servers</arg>
-	    <arg>-v</arg>
-	    <arg>--version</arg>
-	    <arg>-h</arg>
-	    <arg>--help</arg>
+	    <arg choice="plain">
+	      <option>--list-servers</option>
+	    </arg>
+	    <arg choice="plain">
+	        <option>-v</option>
+	    </arg>
+	    <arg choice="plain">
+	        <option>--version</option>
+	    </arg>
+	    <arg choice="plain">
+	        <option>-h</option>
+	    </arg>
+	    <arg choice="plain">
+	      <option>--help</option>
+	    </arg>
 	  </group>
 	</cmdsynopsis>
 
@@ -264,32 +287,32 @@
         <title>Actions</title>
 	<variablelist>
 	  <varlistentry>
-	    <term><option>-I</option></term>
-	    <term><option>--install</option></term>
+	    <term><option>-I</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
+	    <term><option>--install</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
 	    <listitem>
 	      <para>Activate <emphasis>install mode</emphasis>.</para>
 	    </listitem>
 	  </varlistentry>
 
 	  <varlistentry>
-	    <term><option>-U</option></term>
-	    <term><option>--upgrade</option></term>
+	    <term><option>-U</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
+	    <term><option>--upgrade</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
 	    <listitem>
 	      <para>Activate <emphasis>upgrade mode</emphasis>.</para>
 	    </listitem>
 	  </varlistentry>
 
 	  <varlistentry>
-	    <term><option>-C</option></term>
-	    <term><option>--clean</option></term>
+	    <term><option>-C</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
+	    <term><option>--clean</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
 	    <listitem>
 	      <para>Activate <emphasis>remove mode</emphasis>.</para>
 	    </listitem>
 	  </varlistentry>
 
 	  <varlistentry>
+	    <term><option>-li</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
 	    <term><option>--list-installs</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
-	    <term><option>--li</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
 	    <listitem>
 	      <para>Outputs a list of all the virtual copies of the <replaceable>app-name</replaceable>-<replaceable>app-version</replaceable> package.</para>
 	      <para>If you omit <replaceable>app-name</replaceable> or <replaceable>app-version</replaceable> webapp-config will display all available packages/versions.</para>
@@ -297,16 +320,39 @@
 	  </varlistentry>
 
 	  <varlistentry>
+	    <term><option>-lui</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
 	    <term><option>--list-unused-installs</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
-	    <term><option>--lui</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
 	    <listitem>
 	      <para>Outputs a list of all the master copies of the <replaceable>app-name</replaceable>-<replaceable>app-version</replaceable> package that have not been installed using <command>webapp-config</command> <option>-I</option>.</para>
 	    </listitem>
 	  </varlistentry>
 
 	  <varlistentry>
+	    <term><option>-pd</option> <replaceable>action</replaceable></term>
+	    <term><option>--prune-database</option> <replaceable>action</replaceable></term>
+	    <listitem>
+	      <para>Cleans up the installed webapps database for lingering uninstalled webapps. Behavior is determined by the <replaceable>action</replaceable> given.</para>
+	      <para><replaceable>action</replaceable> must be one of:</para>
+	      <variablelist>
+	        <varlistentry>
+	          <term>pretend</term>
+		  <listitem>
+		    <para>Shows output of what would be cleaned from the database</para>
+		  </listitem>
+		</varlistentry>
+		<varlistentry>
+		  <term>clean</term>
+		  <listitem>
+		    <para>Removes webapp entries that are not installed on the system</para>
+		  </listitem>
+		</varlistentry>
+	    </variablelist>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>-si</option></term>
 	    <term><option>--show-installed</option></term>
-	    <term><option>--si</option></term>
 	    <listitem>
 	      <para>Outputs the app-name and app-version of the application installed in <replaceable>directory</replaceable>.</para>
 	      <para>Use the <option>-d</option> switch to tell <command>webapp-config</command> which <replaceable>directory</replaceable> to look in.  <replaceable>directory</replaceable> is a directory under the htdocs dir.</para>
@@ -314,24 +360,24 @@
 	  </varlistentry>
 
 	  <varlistentry>
+	    <term><option>-spi</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
 	    <term><option>--show-postinst</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
-	    <term><option>--spi</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
 	    <listitem>
 	      <para>Displays the post-installation instructions of the <replaceable>app-name</replaceable>-<replaceable>app-version</replaceable> package.  Very handy if you didn't see them displayed when the package was installed.</para>
 	    </listitem>
 	  </varlistentry>
 
 	  <varlistentry>
+	    <term><option>-spu</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
 	    <term><option>--show-postupgrade</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
-	    <term><option>--spu</option> <replaceable>app-name</replaceable> <replaceable>app-version</replaceable></term>
 	    <listitem>
 	      <para>Displays the post-upgrade instructions of the <replaceable>app-name</replaceable>-<replaceable>app-version</replaceable> package.  Very handy if you didn't see them displayed when the package was upgraded.</para>
 	    </listitem>
 	  </varlistentry>
 
 	  <varlistentry>
+	    <term><option>-ls</option></term>
 	    <term><option>--list-servers</option></term>
-	    <term><option>--ls</option></term>
 	    <listitem>
 	      <para>Outputs a list of the web servers that <command>webapp-config</command> currently supports.</para>
 	      <para>Use the <option>-s</option> <replaceable>server</replaceable> switch to change which web-server an install or upgrade should use.</para>
@@ -485,6 +531,7 @@
 	  </varlistentry>
 
 	  <varlistentry>
+	    <term><option>-sf</option></term>
 	    <term><option>--soft</option></term>
 	    <listitem>
 	      <para>Use this option to create the virtual copy using symbolic links.</para>
@@ -493,6 +540,7 @@
 	  </varlistentry>
 
 	  <varlistentry>
+	    <term><option>-c</option></term>
 	    <term><option>--copy</option></term>
 	    <listitem>
 	      <para>Use this option to create the virtual copy by copying the files from the <filename>/usr/share/webapps/</filename> directories.</para>
@@ -501,6 +549,7 @@
 	  </varlistentry>
 
 	  <varlistentry>
+	    <term><option>-S</option></term>
 	    <term><option>--secure</option></term>
 	    <listitem>
 	      <para>Use this option to install into the <filename>htdocs-secure</filename> directory rather than into the <filename>htdocs</filename> directory.</para>
@@ -510,8 +559,8 @@
 	  </varlistentry>
 
 	  <varlistentry>
-	    <term><option>--default-dirs</option></term>
-	    <term><option>--dd</option></term>
+	    <term><option>-dd</option> <replaceable>type</replaceable></term>
+	    <term><option>--default-dirs</option> <replaceable>type</replaceable></term>
 	    <listitem>
 	      <para><replaceable>type</replaceable> must be one of:</para>
 	      <variablelist>
@@ -538,8 +587,8 @@
 	  </varlistentry>
 
 	  <varlistentry>
+	    <term><option>-vf</option> <replaceable>type</replaceable></term>
 	    <term><option>--virtual-files</option> <replaceable>type</replaceable></term>
-	    <term><option>--vf</option> <replaceable>type</replaceable></term>
 	    <listitem>
 	      <para><replaceable>type</replaceable> must be one of:</para>
 	      <variablelist>

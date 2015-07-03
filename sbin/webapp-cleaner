@@ -95,7 +95,7 @@ function prune() {
 }
 
 function clean_unused() {
-	local output=$(${WEBAPP_CONFIG} --lui ${PN})
+	local output=$(${WEBAPP_CONFIG} -lui ${PN})
 
 	if [[ -z ${output} ]] ; then
 		einfo "Nothing to clean"

@@ -101,7 +101,7 @@ class Ebuild:
 
         for i in post_instructions:
             i = i.replace('"', '\\"')
-            post.append(os.popen('echo -n "' + i + '"\n').read()[:-1])
+            post.append(os.popen('printf "' + i + '"\n').read()[:-1])
 
         post = post + [
             '',

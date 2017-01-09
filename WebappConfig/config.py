@@ -1581,7 +1581,8 @@ class Config:
                            'cherokee' : WebappConfig.server.Cherokee,
                            'nginx'    : WebappConfig.server.Nginx,
                            'gatling'  : WebappConfig.server.Gatling,
-                           'tracd'    : WebappConfig.server.Tracd,}
+                           'tracd'    : WebappConfig.server.Tracd,
+                           'uwsgi'    : WebappConfig.server.uWSGI,}
 
 
         server = self.config.get('USER', 'vhost_server')

@@ -70,6 +70,7 @@ vhost_hostname="localhost"
 # nginx
 # gatling
 # tracd
+# uwsgi
 
 #
 # you can override this setting by using the -s switch to webapp-config

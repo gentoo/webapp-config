@@ -366,6 +366,16 @@ class Tracd(Basic):
         self.vhost_server_uid = get_user('tracd')
         self.vhost_server_gid = get_group('tracd')
 
+class uWSGI(Basic):
+
+    name   = 'uWSGI'
+    desc   = 'supports installation on uWSGI'
+    dep    = 'www-servers/uwsgi'
+
+    def set_server_user(self):
+        self.vhost_server_uid = get_user('uwsgi')
+        self.vhost_server_gid = get_group('uwsgi')
+
 def listservers():
 
     OUT.notice('\n'.join(['apache',
@@ -373,4 +383,5 @@ def listservers():
                           'cherokee',
                           'nginx',
                           'gatling',
-                          'tracd',]))
+                          'tracd',
+                          'uwsgi',]))

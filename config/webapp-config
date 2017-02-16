@@ -42,9 +42,9 @@
 # If you want to have fine grained control over the location the web
 # applications get installed, you can use the third setting
 
-vhost_root="/var/www/${vhost_hostname}"
-#vhost_root="/srv/${vhost_hostname}/www"
-#vhost_root="/var/www/${vhost_subdomain_1}/${vhost_subdomain_2}/${vhost_subdomain_3}"
+vhost_root="@GENTOO_PORTAGE_EPREFIX@/var/www/${vhost_hostname}"
+#vhost_root="@GENTOO_PORTAGE_EPREFIX@/srv/${vhost_hostname}/www"
+#vhost_root="@GENTOO_PORTAGE_EPREFIX@/var/www/${vhost_subdomain_1}/${vhost_subdomain_2}/${vhost_subdomain_3}"
 
 # some web applications need to know what host they are serving up pages
 # for.  this information is configured when the application is installed

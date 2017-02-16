@@ -26,6 +26,7 @@ import time, os, os.path, re
 import WebappConfig.wrapper as wrapper
 
 from WebappConfig.debug       import OUT
+from WebappConfig.eprefix     import EPREFIX
 from WebappConfig.permissions import PermissionMap
 
 
@@ -166,7 +167,7 @@ class WebappDB(AppHierarchy):
 
     def __init__(self,
                  fs_root    = '/',
-                 root       = '/var/db/webapps',
+                 root       = EPREFIX + '/var/db/webapps',
                  category   = '',
                  package    = '',
                  version    = '',
@@ -416,8 +417,8 @@ class WebappSource(AppHierarchy):
     '''
 
     def __init__(self,
-                 fs_root    = '/',
-                 root       = '/usr/share/webapps',
+                 fs_root    = EPREFIX + '/',
+                 root       = EPREFIX + '/usr/share/webapps',
                  category   = '',
                  package    = '',
                  version    = '',

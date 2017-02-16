@@ -37,9 +37,11 @@ import WebappConfig.wrapper as wrapper
 
 from argparse             import ArgumentParser
 from WebappConfig.debug   import OUT
+from WebappConfig.eprefix import EPREFIX
 from WebappConfig.version import WCVERSION
 
 from WebappConfig.permissions import PermissionMap
+
 
 # ========================================================================
 # BashParser class
@@ -223,14 +225,14 @@ class Config:
         self.__d = {
             'config_protect'               : '',
             # Necessary to load the config file
-            'my_etcconfig'                 : '/etc/vhosts/webapp-config',
+            'my_etcconfig'                 : EPREFIX + '/etc/vhosts/webapp-config',
             'my_dotconfig'                 : '.webapp',
             'my_version'                   : WCVERSION,
             'my_conf_version'              : '7',
             'my_bugsurl'                   : wrapper.bugs_link,
             'g_myname'                     : sys.argv[0],
-            'g_orig_installdir'            : '/',
-            'g_installdir'                 : '/',
+            'g_orig_installdir'            : EPREFIX + '/',
+            'g_installdir'                 : EPREFIX + '/',
             'g_link_options'               : '',
             'g_link_type'                  : 'hard',
             'g_configprefix'               : '._cfg',
@@ -265,9 +267,9 @@ class Config:
             # -- wrobel
             'vhost_server_uid'  : 'root',
             'vhost_server_gid'  : 'root',
-            'my_persistroot'    : '/var/db/webapps',
+            'my_persistroot'    : EPREFIX + '/var/db/webapps',
             'wa_installsbase'   : 'installs',
-            'vhost_root'        : '/var/www/${vhost_hostname}',
+            'vhost_root'        : EPREFIX + '/var/www/${vhost_hostname}',
             'g_htdocsdir'       : '${vhost_root}/${my_htdocsbase}',
             'my_appdir'         : '${my_approot}/${my_appsuffix}',
             'my_htdocsdir'      : '${my_appdir}/htdocs',
@@ -277,7 +279,7 @@ class Config:
             'my_iconsdir'       : '${my_hostrootdir}/${my_iconsbase}',
             'my_errorsdir'      : '${my_hostrootdir}/${my_errorsbase}',
             'g_cgibindir'      : '${vhost_root}/${my_cgibinbase}',
-            'my_approot'        : '/usr/share/webapps',
+            'my_approot'        : EPREFIX + '/usr/share/webapps',
             'package_manager'   : 'portage',
             'allow_absolute'    : 'no',
             'my_hostrootbase'   : 'hostroot',

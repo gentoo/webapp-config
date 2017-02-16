@@ -22,6 +22,7 @@
 import os, os.path
 
 from WebappConfig.debug        import OUT
+from WebappConfig.eprefix      import EPREFIX
 from WebappConfig.worker       import WebappRemove, WebappAdd
 from WebappConfig.permissions  import get_group, get_user
 
@@ -195,7 +196,7 @@ class Basic:
             dir = self.__destd
             dirs = []
 
-            while dir != '/':
+            while dir != EPREFIX + '/':
                 dirs.insert(0, dir)
                 dir = os.path.dirname(dir)
 

@@ -395,7 +395,6 @@ class Message:
         ## Is the caller an obejct? If so he provides 'self'
         if 'self' in list(callerlocals.keys()):
             callerobject = callerlocals['self']
-            del callerlocals['self']
             if self.show_class_variables:
                 cv = inspect.getmembers(callerobject,
                                         lambda x: not inspect.ismethod(x))

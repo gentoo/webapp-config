@@ -78,7 +78,7 @@ class Protection:
 
         numbers = []
         prefix  = self.protect_prefix
-        rep = re.compile(prefix.replace('.','\.') + '(\d{4})_')
+        rep = re.compile(prefix.replace('.',r'\.') + r'(\d{4})_')
 
         for i in entries:
             rem = rep.match(i)

@@ -71,6 +71,7 @@ vhost_hostname="localhost"
 # gatling
 # tracd
 # uwsgi
+# caddy
 
 #
 # you can override this setting by using the -s switch to webapp-config

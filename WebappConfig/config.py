@@ -1584,7 +1584,8 @@ class Config:
                            'nginx'    : WebappConfig.server.Nginx,
                            'gatling'  : WebappConfig.server.Gatling,
                            'tracd'    : WebappConfig.server.Tracd,
-                           'uwsgi'    : WebappConfig.server.uWSGI,}
+                           'uwsgi'    : WebappConfig.server.uWSGI,
+                           'caddy'    : WebappConfig.server.Caddy, }
 
 
         server = self.config.get('USER', 'vhost_server')

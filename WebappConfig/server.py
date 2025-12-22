@@ -377,6 +377,16 @@ class uWSGI(Basic):
         self.vhost_server_uid = get_user('uwsgi')
         self.vhost_server_gid = get_group('uwsgi')
 
+class Caddy(Basic):
+
+    name   = 'Caddy'
+    desc   = 'supports installation on Caddy'
+    dep    = 'www-servers/caddy'
+
+    def set_server_user(self):
+        self.vhost_server_uid = get_user('http')
+        self.vhost_server_gid = get_group('http')
+
 def listservers():
 
     OUT.notice('\n'.join(['apache',
@@ -385,4 +395,5 @@ def listservers():
                           'nginx',
                           'gatling',
                           'tracd',
-                          'uwsgi',]))
+                          'uwsgi',
+                          'caddy',]))

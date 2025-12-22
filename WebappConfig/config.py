@@ -327,7 +327,7 @@ class Config:
         cat = self.maybe_get('cat')
         pn  = self.config.get('USER', 'pn')
         pvr = self.config.get('USER', 'pvr')
-        my_approot = self.config.get('USER', 'my_approot')
+        my_approot = os.path.normpath(self.__r + self.config.get('USER', 'my_approot'))
 
         old_layout = os.path.join(my_approot, pn, pvr)
 

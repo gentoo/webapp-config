@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "webapp-config"
+dynamic = ["version"]
+description = "Python script for managing the deployment of web-based applications"
+license = "GPL-2.0-only"
+authors = [
+    { name = "Stuart Herbert", email = "stuart@gentoo.org"},
+    { name = "Renat Lumpau", email = "rl03@gentoo.org" },
+    { name = "Gunnar Wrobel", email = "php@gunnarwrobel.de" },
+    { name = "Devan Franchini", email = "twitch153@gentoo.org" },
+]
+
+[project.urls]
+Repository = "https://gitweb.gentoo.org/proj/webapp-config.git/"
+Documentation = "https://wiki.gentoo.org/wiki/Webapp-config"
+
+[tool.setuptools]
+packages.find.include = ["WebappConfig"]
+packages.find.exclude = ["*tests", "*tests*"]
+include-package-data = false

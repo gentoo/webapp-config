@@ -68,7 +68,6 @@ vhost_hostname="localhost"
 # lighttpd
 # nginx
 # gatling
-# tracd
 # uwsgi
 # caddy
 

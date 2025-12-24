@@ -1582,7 +1582,6 @@ class Config:
                            'lighttpd' : WebappConfig.server.Lighttpd,
                            'nginx'    : WebappConfig.server.Nginx,
                            'gatling'  : WebappConfig.server.Gatling,
-                           'tracd'    : WebappConfig.server.Tracd,
                            'uwsgi'    : WebappConfig.server.uWSGI,
                            'caddy'    : WebappConfig.server.Caddy, }
 

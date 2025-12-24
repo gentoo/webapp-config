@@ -327,16 +327,6 @@ class Lighttpd(Basic):
         self.vhost_server_uid = get_user('lighttpd')
         self.vhost_server_gid = get_group('lighttpd')
 
-class Cherokee(Basic):
-
-    name   = 'Cherokee'
-    desc   = 'supports installation on Cherokee'
-    dep    = 'www-servers/cherokee'
-
-    def set_server_user(self):
-        self.vhost_server_uid = get_user('cherokee')
-        self.vhost_server_gid = get_group('cherokee')
-
 class Nginx(Basic):
 
     name   = 'Nginx'
@@ -391,7 +381,6 @@ def listservers():
 
     OUT.notice('\n'.join(['apache',
                           'lighttpd',
-                          'cherokee',
                           'nginx',
                           'gatling',
                           'tracd',

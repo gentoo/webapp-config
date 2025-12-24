@@ -1580,7 +1580,6 @@ class Config:
 
         allowed_servers = {'apache'   : WebappConfig.server.Apache,
                            'lighttpd' : WebappConfig.server.Lighttpd,
-                           'cherokee' : WebappConfig.server.Cherokee,
                            'nginx'    : WebappConfig.server.Nginx,
                            'gatling'  : WebappConfig.server.Gatling,
                            'tracd'    : WebappConfig.server.Tracd,

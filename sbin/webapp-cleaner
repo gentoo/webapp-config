@@ -42,7 +42,7 @@ function help() {
 }
 
 function sanity_checks() {
-	WEBAPP_CONFIG=$(which webapp-config)
+	WEBAPP_CONFIG=$(command -v webapp-config)
 	if [ "${WEBAPP_CONFIG}x" == "x" ]; then
 		eerror "webapp-config not found"
 		exit 1

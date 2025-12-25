@@ -22,3 +22,4 @@ Documentation = "https://wiki.gentoo.org/wiki/Webapp-config"
 packages.find.include = ["WebappConfig"]
 packages.find.exclude = ["*tests", "*tests*"]
 include-package-data = false
+script-files = ["sbin/webapp-config", "sbin/webapp-cleaner"]

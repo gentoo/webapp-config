@@ -13,5 +13,4 @@ def get_version():
 setuptools.setup(
       name          = 'webapp-config',
       version       = get_version(),
-      scripts       = ['sbin/webapp-config', 'sbin/webapp-cleaner'],
 )

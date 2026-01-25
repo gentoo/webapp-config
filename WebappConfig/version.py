@@ -14,7 +14,7 @@
 # ========================================================================
 
 # TODO: migrate to setuptools_scm?
-WCVERSION = '1.56'
+WCVERSION = '1.56-post1'
 
 if __name__ == '__main__':
     print(WCVERSION)

@@ -22,7 +22,7 @@ installation.  '''
 # Dependencies
 # ------------------------------------------------------------------------
 
-import hashlib, re, os, os.path
+import hashlib, re, os, os.path, io
 
 from WebappConfig.debug       import OUT
 from WebappConfig.permissions import PermissionMap
@@ -139,7 +139,7 @@ class Contents:
             OUT.die('Content file ' + dbpath + ' is missing or not accessibl'
                     'e!')
 
-        content = open(dbpath).readlines()
+        content = io.open(dbpath, encoding='utf-8').readlines()
 
         for i in content:
 
